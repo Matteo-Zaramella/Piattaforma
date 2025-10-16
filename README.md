@@ -247,5 +247,5 @@ Uso personale - Tutti i diritti riservati
 ---
 
 **Sviluppato con Claude Code**
-**Versione**: 1.0.0
+**Versione**: 1.1.0
 **Data**: Ottobre 2025
