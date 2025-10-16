@@ -1,0 +1,694 @@
+{% extends "base.html" %}
+
+{% block title %}Workout {{ workout_type }} - Piattaforma{% endblock %}
+
+{% block content %}
+<!-- Header compatto -->
+<div class="workout-header">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">
+            <span class="badge workout-badge-{{ workout_type }}">WORKOUT {{ workout_type }}</span>
+        </h5>
+        <span id="exercise-counter" class="text-muted">1/{{ template.esercizi|length }}</span>
+    </div>
+
+    <!-- Progress bar sottile -->
+    <div class="progress workout-progress">
+        <div id="progress-bar" class="progress-bar workout-bar-{{ workout_type }}"
+             role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        </div>
+    </div>
+</div>
+
+<form id="workout-form" method="POST" action="{{ url_for('fitness.save_workout') }}">
+    <input type="hidden" name="workout_type" value="{{ workout_type }}">
+    <input type="hidden" name="data" value="{{ data }}">
+
+    <!-- Container esercizi -->
+    <div id="exercises-container">
+        {% for esercizio in template.esercizi %}
+            {% set idx = loop.index0 %}
+
+            {% if not esercizio.get('skip_form') %}
+            <!-- Esercizio {{ idx }} - Design compatto -->
+            <div class="exercise-step" data-exercise="{{ idx }}" style="display: none;">
+                <div class="exercise-card">
+                    <!-- Header esercizio -->
+                    <div class="exercise-header workout-bg-{{ workout_type }}">
+                        <h6 class="exercise-name">{{ esercizio.nome }}</h6>
+                        <small class="exercise-category">{{ esercizio.categoria }}</small>
+                    </div>
+
+                    <!-- Body esercizio - tutto in viewport -->
+                    <div class="exercise-body">
+                        {% if esercizio.get('skip_peso') %}
+                        <!-- Solo ripetizioni (bodyweight) -->
+                        <div class="series-grid">
+                            {% for rip_target in esercizio.serie %}
+                                {% set serie_num = loop.index %}
+                                <div class="serie-item">
+                                    <div class="serie-label">S{{ serie_num }}</div>
+                                    <input type="number"
+                                           name="rip_{{ idx }}_{{ serie_num }}"
+                                           class="serie-input"
+                                           placeholder="{{ rip_target }}"
+                                           min="0"
+                                           inputmode="numeric">
+                                    <div class="serie-target">{{ rip_target }}</div>
+                                    <input type="hidden" name="peso_{{ idx }}_{{ serie_num }}" value="">
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        {% else %}
+                        <!-- Con peso -->
+
+                        <!-- Toggle peso mode - compatto -->
+                        <div class="peso-mode-toggle">
+                            <input type="radio" class="btn-check" name="peso_mode_{{ idx }}" id="peso_unico_{{ idx }}" value="unico" {% if esercizio.get('peso_mode', 'unico') == 'unico' %}checked{% endif %}>
+                            <label class="mode-btn" for="peso_unico_{{ idx }}">
+                                <i class="bi bi-1-circle"></i> Unico
+                            </label>
+
+                            <input type="radio" class="btn-check" name="peso_mode_{{ idx }}" id="peso_diverso_{{ idx }}" value="diverso" {% if esercizio.get('peso_mode', 'unico') == 'diverso' %}checked{% endif %}>
+                            <label class="mode-btn" for="peso_diverso_{{ idx }}">
+                                <i class="bi bi-123"></i> Per Serie
+                            </label>
+                        </div>
+
+                        <!-- Peso unico -->
+                        <div id="peso_unico_container_{{ idx }}" class="peso-container">
+                            <!-- Campo peso unico - grande e centrale -->
+                            <div class="peso-unico-input-wrapper">
+                                <label>Peso (kg)</label>
+                                <input type="number"
+                                       step="0.5"
+                                       class="peso-unico-main peso-unico-input"
+                                       data-exercise="{{ idx }}"
+                                       placeholder="0"
+                                       min="0"
+                                       inputmode="decimal">
+                            </div>
+
+                            <!-- Grid serie compatta -->
+                            <div class="series-grid">
+                                {% for rip_target in esercizio.serie %}
+                                    {% set serie_num = loop.index %}
+                                    <div class="serie-item">
+                                        <div class="serie-label">S{{ serie_num }}</div>
+                                        <input type="number"
+                                               name="rip_{{ idx }}_{{ serie_num }}"
+                                               class="serie-input"
+                                               placeholder="{{ rip_target }}"
+                                               min="0"
+                                               inputmode="numeric">
+                                        <div class="serie-target">{{ rip_target }}</div>
+                                        <input type="hidden" name="peso_{{ idx }}_{{ serie_num }}" class="peso-hidden-{{ idx }}">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Peso diverso per serie -->
+                        <div id="peso_diverso_container_{{ idx }}" class="peso-container" style="display: none;">
+                            <div class="series-grid-dual">
+                                {% for rip_target in esercizio.serie %}
+                                    {% set serie_num = loop.index %}
+                                    <div class="serie-dual-item">
+                                        <div class="serie-label-dual">Serie {{ serie_num }}</div>
+                                        <div class="serie-dual-inputs">
+                                            <div class="input-group-dual">
+                                                <label>Peso</label>
+                                                <input type="number"
+                                                       step="0.5"
+                                                       name="peso_diverso_{{ idx }}_{{ serie_num }}"
+                                                       class="serie-input-small peso-diverso-input"
+                                                       data-exercise="{{ idx }}"
+                                                       data-serie="{{ serie_num }}"
+                                                       placeholder="kg"
+                                                       min="0"
+                                                       inputmode="decimal">
+                                            </div>
+                                            <div class="input-group-dual">
+                                                <label>Rip</label>
+                                                <input type="number"
+                                                       name="rip_diverso_{{ idx }}_{{ serie_num }}"
+                                                       class="serie-input-small"
+                                                       placeholder="{{ rip_target }}"
+                                                       min="0"
+                                                       inputmode="numeric">
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Footer con bottoni navigazione -->
+                    <div class="exercise-footer">
+                        <button type="button" class="nav-btn prev-btn prev-exercise" {% if idx == 0 %}disabled{% endif %}>
+                            <i class="bi bi-chevron-left"></i> Indietro
+                        </button>
+                        <button type="button" class="nav-btn next-btn workout-btn-{{ workout_type }} next-exercise">
+                            Avanti <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- Esercizi skip (pause, stretching) -->
+            <div class="exercise-step skip-exercise" data-exercise="{{ idx }}" style="display: none;">
+                <div class="exercise-card">
+                    <div class="skip-content">
+                        <i class="bi bi-info-circle skip-icon"></i>
+                        <h5>{{ esercizio.nome }}</h5>
+                        {% if esercizio.serie %}
+                        <p>{{ esercizio.serie|join(', ') }}</p>
+                        {% endif %}
+                        <button type="button" class="nav-btn next-btn workout-btn-{{ workout_type }} next-exercise">
+                            Fatto! <i class="bi bi-check-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Schermata finale -->
+        <div id="final-screen" style="display: none;">
+            <div class="exercise-card final-card">
+                <div class="final-content">
+                    <i class="bi bi-check-circle-fill final-icon"></i>
+                    <h4>Workout Completato!</h4>
+                    <p>Ottimo lavoro! 💪</p>
+                    <div class="final-buttons">
+                        <button type="button" class="nav-btn prev-btn" onclick="window.location.href='{{ url_for('fitness.scheda_workout') }}'">
+                            <i class="bi bi-x-circle"></i> Annulla
+                        </button>
+                        <button type="submit" class="nav-btn next-btn workout-btn-{{ workout_type }}">
+                            <i class="bi bi-save"></i> Salva
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    /* Reset e base */
+    body {
+        background-color: var(--bg-color, #f8f9fa);
+        transition: background-color 0.3s ease;
+    }
+
+    /* Header compatto */
+    .workout-header {
+        position: sticky;
+        top: 0;
+        background: var(--bg-color, #ffffff);
+        padding: 0.75rem;
+        z-index: 100;
+        border-bottom: 1px solid var(--border-color, #dee2e6);
+    }
+
+    .workout-progress {
+        height: 4px;
+        background-color: var(--progress-bg, #e9ecef);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    /* Badge workout */
+    .workout-badge-A { background-color: #0d6efd !important; }
+    .workout-badge-B { background-color: #198754 !important; }
+    .workout-badge-C { background-color: #dc3545 !important; }
+
+    .workout-bar-A { background-color: #0d6efd; }
+    .workout-bar-B { background-color: #198754; }
+    .workout-bar-C { background-color: #dc3545; }
+
+    .workout-bg-A { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); }
+    .workout-bg-B { background: linear-gradient(135deg, #198754 0%, #146c43 100%); }
+    .workout-bg-C { background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); }
+
+    .workout-btn-A { background-color: #0d6efd; }
+    .workout-btn-B { background-color: #198754; }
+    .workout-btn-C { background-color: #dc3545; }
+
+    /* Card esercizio - tutto visibile */
+    .exercise-card {
+        background: var(--card-bg, #ffffff);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 120px);
+        max-height: calc(100vh - 120px);
+    }
+
+    .exercise-header {
+        color: white;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .exercise-name {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .exercise-category {
+        opacity: 0.9;
+        font-size: 0.85rem;
+    }
+
+    .exercise-body {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Toggle peso mode - compatto */
+    .peso-mode-toggle {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .mode-btn {
+        flex: 1;
+        padding: 0.5rem;
+        text-align: center;
+        border: 2px solid var(--border-color, #dee2e6);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        background: var(--card-bg, #ffffff);
+        color: var(--text-color, #212529);
+    }
+
+    .btn-check:checked + .mode-btn {
+        background: var(--primary-color, #0d6efd);
+        color: white;
+        border-color: var(--primary-color, #0d6efd);
+    }
+
+    /* Input peso unico - prominente */
+    .peso-unico-input-wrapper {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .peso-unico-input-wrapper label {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--text-muted, #6c757d);
+        margin-bottom: 0.25rem;
+    }
+
+    .peso-unico-main {
+        width: 120px;
+        height: 60px;
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+        border: 2px solid var(--primary-color, #0d6efd);
+        border-radius: 12px;
+        background: var(--input-bg, #ffffff);
+        color: var(--text-color, #212529);
+    }
+
+    /* Grid serie - compatta e leggibile */
+    .series-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .serie-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .serie-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted, #6c757d);
+    }
+
+    .serie-input {
+        width: 100%;
+        height: 48px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        text-align: center;
+        border: 2px solid var(--border-color, #dee2e6);
+        border-radius: 8px;
+        background: var(--input-bg, #ffffff);
+        color: var(--text-color, #212529);
+    }
+
+    .serie-input:focus {
+        outline: none;
+        border-color: var(--primary-color, #0d6efd);
+    }
+
+    .serie-target {
+        font-size: 0.75rem;
+        color: var(--text-muted, #6c757d);
+    }
+
+    /* Grid peso diverso */
+    .series-grid-dual {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .serie-dual-item {
+        background: var(--input-bg, #f8f9fa);
+        border-radius: 8px;
+        padding: 0.75rem;
+    }
+
+    .serie-label-dual {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-color, #212529);
+    }
+
+    .serie-dual-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .input-group-dual {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-group-dual label {
+        font-size: 0.75rem;
+        color: var(--text-muted, #6c757d);
+        margin-bottom: 0.25rem;
+    }
+
+    .serie-input-small {
+        height: 48px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        border: 2px solid var(--border-color, #dee2e6);
+        border-radius: 8px;
+        background: var(--card-bg, #ffffff);
+        color: var(--text-color, #212529);
+    }
+
+    /* Footer navigazione */
+    .exercise-footer {
+        display: flex;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: var(--footer-bg, #f8f9fa);
+        border-top: 1px solid var(--border-color, #dee2e6);
+    }
+
+    .nav-btn {
+        flex: 1;
+        height: 50px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .prev-btn {
+        background: var(--secondary-bg, #6c757d);
+        color: white;
+    }
+
+    .next-btn {
+        color: white;
+    }
+
+    .nav-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .nav-btn:active:not(:disabled) {
+        transform: scale(0.98);
+    }
+
+    /* Skip exercise */
+    .skip-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .skip-icon {
+        font-size: 3rem;
+        color: var(--primary-color, #0d6efd);
+        margin-bottom: 1rem;
+    }
+
+    /* Final screen */
+    .final-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .final-icon {
+        font-size: 4rem;
+        color: #198754;
+        margin-bottom: 1rem;
+    }
+
+    .final-buttons {
+        display: flex;
+        gap: 0.75rem;
+        width: 100%;
+        margin-top: 1.5rem;
+    }
+
+    /* Animation */
+    .exercise-step {
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Hide number input arrows on mobile */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --input-bg: #3a3a3a;
+            --text-color: #ffffff;
+            --text-muted: #a0a0a0;
+            --border-color: #4a4a4a;
+            --footer-bg: #2d2d2d;
+            --progress-bg: #4a4a4a;
+            --secondary-bg: #5a5a5a;
+        }
+    }
+
+    /* Prevent zoom on iOS */
+    @supports (-webkit-touch-callout: none) {
+        input {
+            font-size: 16px !important;
+        }
+    }
+</style>
+
+<script>
+    let currentStep = 0;
+    const totalSteps = document.querySelectorAll('.exercise-step').length;
+
+    // Mostra il primo esercizio
+    showStep(0);
+
+    // Inizializza i container peso
+    function initializePesoContainers() {
+        document.querySelectorAll('[name^="peso_mode_"]').forEach(radio => {
+            if (radio.checked) {
+                const exerciseIdx = radio.name.split('_')[2];
+                const mode = radio.value;
+
+                const unicoContainer = document.getElementById(`peso_unico_container_${exerciseIdx}`);
+                const diversoContainer = document.getElementById(`peso_diverso_container_${exerciseIdx}`);
+
+                if (unicoContainer && diversoContainer) {
+                    if (mode === 'unico') {
+                        unicoContainer.style.display = 'block';
+                        diversoContainer.style.display = 'none';
+                    } else {
+                        unicoContainer.style.display = 'none';
+                        diversoContainer.style.display = 'block';
+                    }
+                }
+            }
+        });
+    }
+
+    initializePesoContainers();
+
+    // Gestione cambio modalità peso
+    document.querySelectorAll('[name^="peso_mode_"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const exerciseIdx = this.name.split('_')[2];
+            const mode = this.value;
+
+            const unicoContainer = document.getElementById(`peso_unico_container_${exerciseIdx}`);
+            const diversoContainer = document.getElementById(`peso_diverso_container_${exerciseIdx}`);
+
+            if (mode === 'unico') {
+                unicoContainer.style.display = 'block';
+                diversoContainer.style.display = 'none';
+            } else {
+                unicoContainer.style.display = 'none';
+                diversoContainer.style.display = 'block';
+            }
+        });
+    });
+
+    // Sincronizza peso unico
+    document.querySelectorAll('.peso-unico-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const exerciseIdx = this.dataset.exercise;
+            const peso = this.value;
+            document.querySelectorAll(`.peso-hidden-${exerciseIdx}`).forEach(hidden => {
+                hidden.value = peso;
+            });
+        });
+    });
+
+    // Pulsanti next
+    document.querySelectorAll('.next-exercise').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const currentExercise = document.querySelector(`[data-exercise="${currentStep}"]`);
+            if (!currentExercise.classList.contains('skip-exercise')) {
+                const exerciseIdx = currentStep;
+                const modeSelected = document.querySelector(`input[name="peso_mode_${exerciseIdx}"]:checked`);
+
+                if (modeSelected && modeSelected.value === 'diverso') {
+                    document.querySelectorAll(`[name^="peso_diverso_${exerciseIdx}_"]`).forEach(pesoInput => {
+                        const serie = pesoInput.dataset.serie;
+                        const ripInput = document.querySelector(`[name="rip_diverso_${exerciseIdx}_${serie}"]`);
+
+                        const targetPeso = document.querySelector(`[name="peso_${exerciseIdx}_${serie}"]`);
+                        const targetRip = document.querySelector(`[name="rip_${exerciseIdx}_${serie}"]`);
+
+                        if (targetPeso) targetPeso.value = pesoInput.value;
+                        if (targetRip) targetRip.value = ripInput.value;
+                    });
+                }
+            }
+
+            if (currentStep < totalSteps - 1) {
+                currentStep++;
+                showStep(currentStep);
+            } else {
+                document.querySelectorAll('.exercise-step').forEach(step => step.style.display = 'none');
+                document.getElementById('final-screen').style.display = 'block';
+                updateProgress(100);
+                updateCounter();
+            }
+        });
+    });
+
+    // Pulsanti prev
+    document.querySelectorAll('.prev-exercise').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+    });
+
+    function showStep(stepIndex) {
+        document.querySelectorAll('.exercise-step').forEach(step => step.style.display = 'none');
+        document.getElementById('final-screen').style.display = 'none';
+
+        const steps = document.querySelectorAll('.exercise-step');
+        if (steps[stepIndex]) {
+            steps[stepIndex].style.display = 'block';
+            const progress = ((stepIndex + 1) / totalSteps) * 100;
+            updateProgress(progress);
+            updateCounter();
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function updateProgress(percentage) {
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.style.width = percentage + '%';
+        progressBar.setAttribute('aria-valuenow', percentage);
+    }
+
+    function updateCounter() {
+        const counter = document.getElementById('exercise-counter');
+        counter.textContent = `${currentStep + 1}/${totalSteps}`;
+    }
+
+    // Prevent accidental page refresh
+    window.addEventListener('beforeunload', function (e) {
+        if (currentStep > 0 && currentStep < totalSteps) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+</script>
+{% endblock %}

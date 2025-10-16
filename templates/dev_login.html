@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Dev Tools Login - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h3 class="text-center mb-4">
+                    <i class="bi bi-code-slash"></i> Dev Tools
+                </h3>
+                <p class="text-center text-muted mb-4">
+                    Accesso per manutenzione codice
+                </p>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password Dev</label>
+                        <input type="password" class="form-control" id="password" name="password" required autofocus>
+                        <div class="form-text">Solo per Claude o interventi manuali</div>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Accedi</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-link">Torna alla Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

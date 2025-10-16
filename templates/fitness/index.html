@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Fitness - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-heart-pulse"></i> Fitness Dashboard</h1>
+        <div>
+            <a href="{{ url_for('fitness.scheda_workout') }}" class="btn btn-success btn-lg me-2">
+                <i class="bi bi-clipboard-check"></i> Scheda Allenamento
+            </a>
+            <a href="{{ url_for('fitness.add_pasto') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuovo Pasto
+            </a>
+            <a href="{{ url_for('fitness.add_allenamento') }}" class="btn btn-danger">
+                <i class="bi bi-plus-circle"></i> Nuovo Allenamento
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h6>Allenamenti (7gg)</h6>
+                <h2>{{ stats.allenamenti_settimana }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h6>Pasti Oggi</h6>
+                <h2>{{ stats.pasti_oggi }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h6>Totale Allenamenti</h6>
+                <h2>{{ stats.totale_allenamenti }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h6>Totale Pasti</h6>
+                <h2>{{ stats.totale_pasti }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-egg-fried"></i> Pasti Recenti</h5>
+                <a href="{{ url_for('fitness.pasti') }}" class="btn btn-sm btn-light">Vedi tutti</a>
+            </div>
+            <div class="card-body">
+                {% if recent_meals %}
+                    <div class="list-group">
+                        {% for pasto in recent_meals %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">
+                                        <span class="badge bg-primary">{{ pasto.tipo_pasto }}</span>
+                                        {{ pasto.descrizione }}
+                                    </h6>
+                                    <small class="text-muted">{{ pasto.data }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Nessun pasto registrato</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Allenamenti Recenti</h5>
+                <a href="{{ url_for('fitness.allenamenti') }}" class="btn btn-sm btn-light">Vedi tutti</a>
+            </div>
+            <div class="card-body">
+                {% if recent_workouts %}
+                    <div class="list-group">
+                        {% for allenamento in recent_workouts %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ allenamento.esercizio }}</h6>
+                                    <small class="text-muted">
+                                        {{ allenamento.data }} -
+                                        {% if allenamento.ripetizioni %}{{ allenamento.ripetizioni }} reps{% endif %}
+                                        {% if allenamento.peso %} x {{ allenamento.peso }} kg{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Nessun allenamento registrato</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

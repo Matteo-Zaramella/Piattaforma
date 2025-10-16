@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Task Lavoro - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-briefcase"></i> Task Lavoro</h1>
+        <a href="{{ url_for('task_lavoro.add') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuovo Task
+        </a>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="btn-group" role="group">
+            <a href="?stato=all" class="btn btn-outline-secondary {{ 'active' if filter_stato == 'all' else '' }}">
+                Tutti ({{ counts.da_fare + counts.in_corso + counts.completato }})
+            </a>
+            <a href="?stato=da_fare" class="btn btn-outline-primary {{ 'active' if filter_stato == 'da_fare' else '' }}">
+                Da fare ({{ counts.da_fare }})
+            </a>
+            <a href="?stato=in_corso" class="btn btn-outline-warning {{ 'active' if filter_stato == 'in_corso' else '' }}">
+                In corso ({{ counts.in_corso }})
+            </a>
+            <a href="?stato=completato" class="btn btn-outline-success {{ 'active' if filter_stato == 'completato' else '' }}">
+                Completati ({{ counts.completato }})
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% if tasks %}
+            {% for task in tasks %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5>
+                                {{ task.titolo }}
+                                <span class="badge bg-{{ 'danger' if task.priorita == 'alta' else 'secondary' if task.priorita == 'media' else 'info' }}">
+                                    {{ task.priorita }}
+                                </span>
+                                <span class="badge bg-{{ 'success' if task.stato == 'completato' else 'warning' if task.stato == 'in_corso' else 'secondary' }}">
+                                    {{ task.stato }}
+                                </span>
+                            </h5>
+                            <p class="text-muted mb-1">{{ task.descrizione if task.descrizione }}</p>
+                            {% if task.deadline %}
+                            <small class="text-danger"><i class="bi bi-calendar"></i> Scadenza: {{ task.deadline }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <form method="POST" action="{{ url_for('task_lavoro.toggle_status', task_id=task.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-{{ 'success' if task.stato != 'completato' else 'secondary' }}">
+                                    <i class="bi bi-check-circle"></i> {{ 'Completa' if task.stato != 'completato' else 'Riapri' }}
+                                </button>
+                            </form>
+                            <a href="{{ url_for('task_lavoro.edit', task_id=task.id) }}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('task_lavoro.delete', task_id=task.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">Nessun task trovato</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

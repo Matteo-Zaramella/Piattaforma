@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Matched Betting - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-currency-exchange"></i> Matched Betting</h1>
+        <div>
+            <a href="{{ url_for('matched_betting.stats') }}" class="btn btn-info">
+                <i class="bi bi-graph-up"></i> Statistiche
+            </a>
+            <a href="{{ url_for('matched_betting.add') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuova Scommessa
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5>Profitto Totale</h5>
+                <h2>&euro; {{ "%.2f"|format(total_profit) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Scommesse Totali</h5>
+                <h2>{{ bets|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5>Media Profitto</h5>
+                <h2>&euro; {{ "%.2f"|format(total_profit / bets|length if bets|length > 0 else 0) }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Data Evento</th>
+                        <th>Evento</th>
+                        <th>Bookmaker</th>
+                        <th>Stake/Quote</th>
+                        <th>Mercato</th>
+                        <th>Offerta</th>
+                        <th>Profitto</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if bets %}
+                        {% for bet in bets %}
+                        <tr>
+                            <td>{{ bet.data_evento if bet.data_evento else '-' }}</td>
+                            <td><strong>{{ bet.evento }}</strong></td>
+                            <td>
+                                <span class="badge bg-primary">{{ bet.bookmaker_back }}</span>
+                                {% if bet.bookmaker_lay %}
+                                <span class="badge bg-secondary">{{ bet.bookmaker_lay }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>
+                                    Back: &euro;{{ bet.stake_back }} @ {{ bet.quota_back }}<br>
+                                    {% if bet.stake_lay %}Lay: &euro;{{ bet.stake_lay }} @ {{ bet.quota_lay }}{% endif %}
+                                </small>
+                            </td>
+                            <td>{{ bet.mercato }}</td>
+                            <td><small>{{ bet.offerta }}</small></td>
+                            <td>
+                                <strong class="{{ 'text-success' if bet.profitto >= 0 else 'text-danger' }}">
+                                    &euro; {{ "%.2f"|format(bet.profitto) }}
+                                </strong>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('matched_betting.edit', bet_id=bet.id) }}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('matched_betting.delete', bet_id=bet.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">Nessuna scommessa registrata</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

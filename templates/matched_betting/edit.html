@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Modifica Scommessa - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h4 class="mb-0"><i class="bi bi-pencil"></i> Modifica Scommessa</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bookmaker Back *</label>
+                            <input type="text" name="bookmaker_back" class="form-control" value="{{ bet.bookmaker_back }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bookmaker Lay</label>
+                            <input type="text" name="bookmaker_lay" class="form-control" value="{{ bet.bookmaker_lay if bet.bookmaker_lay }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Stake Back *</label>
+                            <input type="number" step="0.01" name="stake_back" class="form-control" value="{{ bet.stake_back }}" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Quota Back *</label>
+                            <input type="number" step="0.01" name="quota_back" class="form-control" value="{{ bet.quota_back }}" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Stake Lay</label>
+                            <input type="number" step="0.01" name="stake_lay" class="form-control" value="{{ bet.stake_lay if bet.stake_lay }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Quota Lay</label>
+                            <input type="number" step="0.01" name="quota_lay" class="form-control" value="{{ bet.quota_lay if bet.quota_lay }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Evento *</label>
+                            <input type="text" name="evento" class="form-control" value="{{ bet.evento }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data Evento</label>
+                            <input type="datetime-local" name="data_evento" class="form-control" value="{{ bet.data_evento if bet.data_evento }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Rating</label>
+                            <select name="rating" class="form-control">
+                                <option value="">Seleziona...</option>
+                                <option value="SNR" {% if bet.rating == 'SNR' %}selected{% endif %}>SNR</option>
+                                <option value="Qualificante" {% if bet.rating == 'Qualificante' %}selected{% endif %}>Qualificante</option>
+                                <option value="Reload" {% if bet.rating == 'Reload' %}selected{% endif %}>Reload</option>
+                                <option value="Altro" {% if bet.rating == 'Altro' %}selected{% endif %}>Altro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Mercato</label>
+                            <input type="text" name="mercato" class="form-control" value="{{ bet.mercato if bet.mercato }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Profitto</label>
+                            <input type="number" step="0.01" name="profitto" class="form-control" value="{{ bet.profitto }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Offerta</label>
+                        <input type="text" name="offerta" class="form-control" value="{{ bet.offerta if bet.offerta }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Note</label>
+                        <textarea name="note" class="form-control" rows="3">{{ bet.note if bet.note }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('matched_betting.index') }}" class="btn btn-secondary">Annulla</a>
+                        <button type="submit" class="btn btn-warning">Aggiorna Scommessa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

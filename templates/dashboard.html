@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Dashboard</h1>
+        <p class="lead">Benvenuto, {{ session.username }}!</p>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <!-- Matched Betting Card -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Matched Betting</h6>
+                        <h2 class="card-title mb-0">{{ stats.betting_count }}</h2>
+                        <p class="card-text small">scommesse totali</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-currency-exchange" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+                <a href="{{ url_for('matched_betting.index') }}" class="text-white text-decoration-none">
+                    Visualizza <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Lavoro Card -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-success h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Task Lavoro</h6>
+                        <h2 class="card-title mb-0">{{ stats.task_lavoro_pending }}</h2>
+                        <p class="card-text small">task in sospeso</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-briefcase" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+                <a href="{{ url_for('task_lavoro.index') }}" class="text-white text-decoration-none">
+                    Visualizza <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Privati Card -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-warning h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Task Privati</h6>
+                        <h2 class="card-title mb-0">{{ stats.task_privati_pending }}</h2>
+                        <p class="card-text small">task in sospeso</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-list-check" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+                <a href="{{ url_for('task_privati.index') }}" class="text-white text-decoration-none">
+                    Visualizza <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fitness Card -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-danger h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Fitness</h6>
+                        <h2 class="card-title mb-0">{{ stats.allenamenti_settimana }}</h2>
+                        <p class="card-text small">allenamenti (7gg)</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-heart-pulse" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+                <a href="{{ url_for('fitness.index') }}" class="text-white text-decoration-none">
+                    Visualizza <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h3>Accesso Rapido</h3>
+    </div>
+    <div class="col-md-4 mt-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-plus-circle"></i> Nuova Scommessa</h5>
+                <p class="card-text">Aggiungi una nuova scommessa matched betting</p>
+                <a href="{{ url_for('matched_betting.add') }}" class="btn btn-primary">Aggiungi</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mt-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-plus-circle"></i> Nuovo Task</h5>
+                <p class="card-text">Crea un nuovo task di lavoro</p>
+                <a href="{{ url_for('task_lavoro.add') }}" class="btn btn-success">Aggiungi</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mt-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-plus-circle"></i> Nuovo Allenamento</h5>
+                <p class="card-text">Registra una sessione di allenamento</p>
+                <a href="{{ url_for('fitness.add_allenamento') }}" class="btn btn-danger">Aggiungi</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Nuova Scommessa - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Nuova Scommessa</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bookmaker Back *</label>
+                            <input type="text" name="bookmaker_back" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bookmaker Lay</label>
+                            <input type="text" name="bookmaker_lay" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Stake Back *</label>
+                            <input type="number" step="0.01" name="stake_back" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Quota Back *</label>
+                            <input type="number" step="0.01" name="quota_back" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Stake Lay</label>
+                            <input type="number" step="0.01" name="stake_lay" class="form-control">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Quota Lay</label>
+                            <input type="number" step="0.01" name="quota_lay" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Evento *</label>
+                            <input type="text" name="evento" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data Evento</label>
+                            <input type="datetime-local" name="data_evento" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Rating</label>
+                            <select name="rating" class="form-control">
+                                <option value="">Seleziona...</option>
+                                <option value="SNR">SNR</option>
+                                <option value="Qualificante">Qualificante</option>
+                                <option value="Reload">Reload</option>
+                                <option value="Altro">Altro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Mercato</label>
+                            <input type="text" name="mercato" class="form-control" placeholder="es. 1X2">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Profitto</label>
+                            <input type="number" step="0.01" name="profitto" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Offerta</label>
+                        <input type="text" name="offerta" class="form-control" placeholder="Descrizione offerta">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Note</label>
+                        <textarea name="note" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('matched_betting.index') }}" class="btn btn-secondary">Annulla</a>
+                        <button type="submit" class="btn btn-primary">Salva Scommessa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Dev Tools - Piattaforma{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+<style>
+    .file-tree {
+        max-height: 600px;
+        overflow-y: auto;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+    .file-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .file-item:hover {
+        background: #e9ecef;
+    }
+    .file-item.active {
+        background: #0d6efd;
+        color: white;
+    }
+    .CodeMirror {
+        height: 600px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-code-slash"></i> Dev Tools
+        </h1>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Questa sezione permette di visualizzare e modificare il codice dei moduli.
+            <strong>Attenzione:</strong> Modifiche errate possono compromettere il funzionamento dell'applicazione.
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- File Tree -->
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <i class="bi bi-folder2-open"></i> File Progetto
+            </div>
+            <div class="card-body p-0">
+                <div class="file-tree">
+                    {% for file in files %}
+                        <div class="file-item" data-file="{{ file }}">
+                            <i class="bi bi-file-code"></i> {{ file }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header bg-secondary text-white">
+                <i class="bi bi-info-circle"></i> Info
+            </div>
+            <div class="card-body">
+                <p class="small mb-2"><strong>File totali:</strong> {{ files|length }}</p>
+                <p class="small mb-2"><strong>Database:</strong> SQLite</p>
+                <p class="small mb-0"><strong>Framework:</strong> Flask</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Editor -->
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span id="current-file-name">
+                    <i class="bi bi-file-code"></i> Seleziona un file
+                </span>
+                <div>
+                    <button id="save-btn" class="btn btn-sm btn-success" disabled>
+                        <i class="bi bi-save"></i> Salva
+                    </button>
+                    <button id="reload-btn" class="btn btn-sm btn-warning" disabled>
+                        <i class="bi bi-arrow-clockwise"></i> Ricarica
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <textarea id="code-editor"></textarea>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header bg-secondary text-white">
+                <i class="bi bi-terminal"></i> Comandi Rapidi
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Database</h6>
+                        <p class="small">Per resettare il database, eliminalo e riavvia l'app:</p>
+                        <code>rm piattaforma.db && python app.py</code>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Export Codice</h6>
+                        <p class="small">Per condividere il codice con Claude, copia il contenuto del file selezionato e incollalo nella chat.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+<script>
+    let editor;
+    let currentFile = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inizializza CodeMirror
+        editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+            lineNumbers: true,
+            theme: 'monokai',
+            mode: 'python',
+            indentUnit: 4,
+            tabSize: 4,
+            lineWrapping: true
+        });
+
+        // Click su file
+        document.querySelectorAll('.file-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const file = this.getAttribute('data-file');
+                loadFile(file);
+
+                // Highlight file attivo
+                document.querySelectorAll('.file-item').forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Salva file
+        document.getElementById('save-btn').addEventListener('click', saveFile);
+
+        // Ricarica file
+        document.getElementById('reload-btn').addEventListener('click', function() {
+            if (currentFile) loadFile(currentFile);
+        });
+    });
+
+    function loadFile(file) {
+        fetch('/dev-tools/view-file?file=' + encodeURIComponent(file))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    editor.setValue(data.content);
+                    currentFile = file;
+                    document.getElementById('current-file-name').innerHTML =
+                        '<i class="bi bi-file-code"></i> ' + file;
+
+                    // Abilita pulsanti
+                    document.getElementById('save-btn').disabled = false;
+                    document.getElementById('reload-btn').disabled = false;
+
+                    // Imposta mode in base all'estensione
+                    setEditorMode(file);
+                } else {
+                    alert('Errore nel caricamento del file: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Errore: ' + error);
+            });
+    }
+
+    function saveFile() {
+        if (!currentFile) return;
+
+        const content = editor.getValue();
+
+        fetch('/dev-tools/save-file', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                file: currentFile,
+                content: content
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('File salvato con successo!');
+            } else {
+                alert('Errore nel salvataggio: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Errore: ' + error);
+        });
+    }
+
+    function setEditorMode(filename) {
+        let mode = 'python';
+        if (filename.endsWith('.html')) mode = 'htmlmixed';
+        else if (filename.endsWith('.css')) mode = 'css';
+        else if (filename.endsWith('.js')) mode = 'javascript';
+        else if (filename.endsWith('.json')) mode = 'javascript';
+
+        editor.setOption('mode', mode);
+    }
+</script>
+{% endblock %}

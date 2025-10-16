@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiche Matched Betting - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1><i class="bi bi-graph-up"></i> Statistiche Matched Betting</h1>
+        <a href="{{ url_for('matched_betting.index') }}" class="btn btn-secondary">Torna alla lista</a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Scommesse Totali</h6>
+                <h2>{{ stats.total_bets }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Profitto Totale</h6>
+                <h2 class="text-success">&euro; {{ "%.2f"|format(stats.total_profit) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Profitto Medio</h6>
+                <h2 class="text-info">&euro; {{ "%.2f"|format(stats.avg_profit) }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Profitto per Bookmaker
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Bookmaker</th>
+                            <th>Scommesse</th>
+                            <th>Profitto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in stats.by_bookmaker %}
+                        <tr>
+                            <td>{{ book.bookmaker_back }}</td>
+                            <td>{{ book.count }}</td>
+                            <td class="{{ 'text-success' if book.profit >= 0 else 'text-danger' }}">&euro; {{ "%.2f"|format(book.profit) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                Profitto per Mese
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Mese</th>
+                            <th>Scommesse</th>
+                            <th>Profitto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for month in stats.by_month %}
+                        <tr>
+                            <td>{{ month.month }}</td>
+                            <td>{{ month.count }}</td>
+                            <td class="{{ 'text-success' if month.profit >= 0 else 'text-danger' }}">&euro; {{ "%.2f"|format(month.profit) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

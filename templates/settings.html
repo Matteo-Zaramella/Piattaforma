@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Impostazioni - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4 settings-page">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center mb-3">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-link text-decoration-none p-0 me-3">
+                    <i class="bi bi-arrow-left fs-4"></i>
+                </a>
+                <h2 class="mb-0 fw-bold">
+                    <i class="bi bi-gear-fill me-2"></i>Impostazioni
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-8 col-xl-7 mx-auto">
+            <form method="POST" action="{{ url_for('settings.update') }}"
+                <!-- Sezione Aspetto -->
+                <div class="settings-card mb-3">
+                    <div class="settings-card-header">
+                        <i class="bi bi-palette-fill me-2"></i>
+                        <span>Aspetto</span>
+                    </div>
+                    <div class="settings-card-body">
+                        <!-- Dark Mode Toggle -->
+                        <div class="settings-item">
+                            <div class="settings-item-info">
+                                <div class="settings-item-icon">
+                                    <i class="bi bi-moon-stars-fill"></i>
+                                </div>
+                                <div class="settings-item-text">
+                                    <div class="settings-item-title">Modalità Scura</div>
+                                    <div class="settings-item-desc">Tema scuro per ridurre affaticamento visivo</div>
+                                </div>
+                            </div>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="dark_mode" name="dark_mode"
+                                    {% if preferences.dark_mode %}checked{% endif %}>
+                            </div>
+                        </div>
+
+                        <!-- Language Selector -->
+                        <div class="settings-item border-0 mb-0">
+                            <div class="settings-item-info">
+                                <div class="settings-item-icon">
+                                    <i class="bi bi-translate"></i>
+                                </div>
+                                <div class="settings-item-text flex-grow-1">
+                                    <div class="settings-item-title">Lingua</div>
+                                    <select class="form-select form-select-sm mt-2" id="language" name="language">
+                                        <option value="it" {% if preferences.language == 'it' %}selected{% endif %}>🇮🇹 Italiano</option>
+                                        <option value="en" {% if preferences.language == 'en' %}selected{% endif %}>🇬🇧 English</option>
+                                        <option value="es" {% if preferences.language == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Notifiche -->
+                <div class="settings-card mb-3">
+                    <div class="settings-card-header">
+                        <i class="bi bi-bell-fill me-2"></i>
+                        <span>Notifiche</span>
+                    </div>
+                    <div class="settings-card-body">
+                        <div class="settings-item border-0 mb-0">
+                            <div class="settings-item-info">
+                                <div class="settings-item-icon">
+                                    <i class="bi bi-bell"></i>
+                                </div>
+                                <div class="settings-item-text">
+                                    <div class="settings-item-title">Abilita Notifiche</div>
+                                    <div class="settings-item-desc">Ricevi notifiche per scadenze e promemoria</div>
+                                </div>
+                            </div>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="notifications" name="notifications"
+                                    {% if preferences.notifications %}checked{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Account -->
+                <div class="settings-card mb-3">
+                    <div class="settings-card-header">
+                        <i class="bi bi-person-fill me-2"></i>
+                        <span>Account</span>
+                    </div>
+                    <div class="settings-card-body">
+                        <div class="settings-item">
+                            <div class="settings-item-info flex-grow-1">
+                                <div class="settings-item-icon">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="settings-item-text flex-grow-1">
+                                    <div class="settings-item-title">Username</div>
+                                    <div class="settings-item-value">{{ session.username }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-item border-0 mb-0">
+                            <div class="settings-item-info flex-grow-1">
+                                <div class="settings-item-icon">
+                                    <i class="bi bi-key"></i>
+                                </div>
+                                <div class="settings-item-text">
+                                    <div class="settings-item-title">Password</div>
+                                    <div class="settings-item-desc">Modifica la tua password</div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
+                                Cambia
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Azioni Rapide -->
+                <div class="settings-card mb-3">
+                    <div class="settings-card-header">
+                        <i class="bi bi-lightning-fill me-2"></i>
+                        <span>Azioni Rapide</span>
+                    </div>
+                    <div class="settings-card-body">
+                        <button class="settings-action-btn mb-2" id="quickToggleDark" type="button">
+                            <i class="bi bi-moon-stars"></i>
+                            <span>Toggle Modalità Scura</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </button>
+                        <a href="{{ url_for('dev_tools') }}" class="settings-action-btn">
+                            <i class="bi bi-code-slash"></i>
+                            <span>Dev Tools</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Informazioni -->
+                <div class="settings-card mb-3">
+                    <div class="settings-card-header">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <span>Informazioni</span>
+                    </div>
+                    <div class="settings-card-body">
+                        <div class="settings-item">
+                            <div class="settings-item-text">
+                                <div class="settings-item-title">Versione</div>
+                            </div>
+                            <div class="settings-item-value">1.1.0</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-text">
+                                <div class="settings-item-title">Piattaforma</div>
+                            </div>
+                            <div class="settings-item-value">Flask + SQLite</div>
+                        </div>
+                        <div class="settings-item border-0 mb-0">
+                            <div class="settings-item-text">
+                                <div class="settings-item-title">Sviluppato con</div>
+                            </div>
+                            <div class="settings-item-value">Claude Code</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottone Salva -->
+                <div class="d-grid gap-2 mt-4 mb-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-circle-fill me-2"></i>Salva Modifiche
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Toggle rapido modalità scura
+    document.getElementById('quickToggleDark').addEventListener('click', function() {
+        fetch('{{ url_for("settings.toggle_dark_mode") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Applica immediatamente il tema
+                if (data.dark_mode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                // Aggiorna lo switch
+                document.getElementById('dark_mode').checked = data.dark_mode;
+
+                // Mostra feedback visivo
+                const btn = this;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check-lg"></i> Applicato!';
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-outline-primary');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-primary');
+                }, 1500);
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Dettaglio Workout {{ session.workout_type }} - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1>
+            <span class="badge {{ 'bg-primary' if session.workout_type == 'A' else 'bg-success' if session.workout_type == 'B' else 'bg-danger' }} fs-3">
+                WORKOUT {{ session.workout_type }}
+            </span>
+        </h1>
+        <p class="lead">
+            <i class="bi bi-calendar3"></i> {{ session.data }}
+            {% if session.completato %}
+            <span class="text-success ms-3"><i class="bi bi-check-circle-fill"></i> Completato</span>
+            {% endif %}
+        </p>
+        <a href="{{ url_for('fitness.workout_history') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Torna allo Storico
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% if exercises_grouped %}
+            {% for esercizio_nome, series in exercises_grouped.items() %}
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-dumbbell"></i> {{ esercizio_nome }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="20%">Serie</th>
+                                    <th width="40%">Ripetizioni</th>
+                                    <th width="40%">Peso (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for serie in series %}
+                                <tr>
+                                    <td class="text-center align-middle">
+                                        <strong>Serie {{ serie.serie_numero }}</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if serie.ripetizioni %}
+                                        <span class="badge bg-primary fs-6">{{ serie.ripetizioni }}</span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if serie.peso %}
+                                        <span class="badge bg-success fs-6">{{ "%.1f"|format(serie.peso) }} kg</span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if series[0].note %}
+                    <div class="mt-2">
+                        <small class="text-muted"><i class="bi bi-info-circle"></i> Note: {{ series[0].note }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> Nessun esercizio registrato per questo workout.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-info-circle"></i> Informazioni Sessione
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>ID Sessione:</strong> #{{ session.id }}</p>
+                <p class="mb-1"><strong>Registrato il:</strong> {{ session.created_at }}</p>
+                <p class="mb-0"><strong>Esercizi completati:</strong> {{ exercises_grouped|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

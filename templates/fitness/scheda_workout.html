@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Scheda Allenamento - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1><i class="bi bi-clipboard-check"></i> Scheda Allenamento Zaramella</h1>
+        <p class="lead">Seleziona il workout del giorno</p>
+        <a href="{{ url_for('fitness.index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Torna al Fitness
+        </a>
+        <a href="{{ url_for('fitness.workout_history') }}" class="btn btn-info">
+            <i class="bi bi-clock-history"></i> Storico Workout
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    {% for workout in workout_types %}
+    <div class="col-md-4">
+        <div class="card h-100 {{ 'border-primary' if workout.type == 'A' else 'border-success' if workout.type == 'B' else 'border-danger' }}">
+            <div class="card-header {{ 'bg-primary' if workout.type == 'A' else 'bg-success' if workout.type == 'B' else 'bg-danger' }} text-white text-center">
+                <h3 class="mb-0">WORKOUT {{ workout.type }}</h3>
+            </div>
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-3 text-muted">{{ workout.nome.split(' - ')[1] if ' - ' in workout.nome else workout.nome }}</h6>
+
+                {% if workout.type == 'A' %}
+                <p class="small text-muted">
+                    <i class="bi bi-activity"></i> Riscaldamento<br>
+                    <i class="bi bi-heart-pulse"></i> Petto e Tricipiti<br>
+                    <i class="bi bi-lightning"></i> Gambe<br>
+                    <i class="bi bi-shield"></i> Core
+                </p>
+                {% elif workout.type == 'B' %}
+                <p class="small text-muted">
+                    <i class="bi bi-activity"></i> Riscaldamento<br>
+                    <i class="bi bi-heart-pulse"></i> Bicipiti<br>
+                    <i class="bi bi-heart-pulse"></i> Dorsali<br>
+                    <i class="bi bi-heart-pulse"></i> Spalle<br>
+                    <i class="bi bi-shield"></i> Core
+                </p>
+                {% elif workout.type == 'C' %}
+                <p class="small text-muted">
+                    <i class="bi bi-stopwatch"></i> Cardio<br>
+                    <i class="bi bi-heart-pulse"></i> Petto e Dorso<br>
+                    <i class="bi bi-lightning"></i> Gambe<br>
+                    <i class="bi bi-shield"></i> Core
+                </p>
+                {% endif %}
+
+                <a href="{{ url_for('fitness.start_workout', workout_type=workout.type) }}"
+                   class="btn {{ 'btn-primary' if workout.type == 'A' else 'btn-success' if workout.type == 'B' else 'btn-danger' }} btn-lg w-100 mt-3">
+                    <i class="bi bi-play-circle"></i> Inizia Workout
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if recent_workouts %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <i class="bi bi-calendar3"></i> Ultimi Workout Completati
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Workout</th>
+                                <th>Stato</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for workout in recent_workouts[:5] %}
+                            <tr>
+                                <td><strong>{{ workout.data }}</strong></td>
+                                <td>
+                                    <span class="badge {{ 'bg-primary' if workout.workout_type == 'A' else 'bg-success' if workout.workout_type == 'B' else 'bg-danger' }}">
+                                        WORKOUT {{ workout.workout_type }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if workout.completato %}
+                                    <span class="text-success"><i class="bi bi-check-circle-fill"></i> Completato</span>
+                                    {% else %}
+                                    <span class="text-warning"><i class="bi bi-hourglass-split"></i> In corso</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('fitness.workout_detail', session_id=workout.id) }}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> Dettagli
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if recent_workouts|length > 5 %}
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('fitness.workout_history') }}" class="btn btn-outline-primary">
+                        Vedi tutti i workout <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

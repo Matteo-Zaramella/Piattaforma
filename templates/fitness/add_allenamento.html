@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Nuovo Allenamento - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Nuovo Allenamento</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Data *</label>
+                        <input type="date" name="data" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Esercizio *</label>
+                        <input type="text" name="esercizio" class="form-control" required placeholder="es. Panca piana, Squat, Corsa...">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ripetizioni</label>
+                            <input type="number" name="ripetizioni" class="form-control" placeholder="es. 10">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Peso (kg)</label>
+                            <input type="number" step="0.1" name="peso" class="form-control" placeholder="es. 50.0">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Note</label>
+                        <textarea name="note" class="form-control" rows="3" placeholder="Note aggiuntive..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('fitness.allenamenti') }}" class="btn btn-secondary">Annulla</a>
+                        <button type="submit" class="btn btn-danger">Salva Allenamento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

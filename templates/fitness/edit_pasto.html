@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Modifica Pasto - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h4 class="mb-0"><i class="bi bi-pencil"></i> Modifica Pasto</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Data *</label>
+                        <input type="date" name="data" class="form-control" value="{{ pasto.data }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo Pasto *</label>
+                        <select name="tipo_pasto" class="form-control" required>
+                            <option value="colazione" {% if pasto.tipo_pasto == 'colazione' %}selected{% endif %}>Colazione</option>
+                            <option value="pranzo" {% if pasto.tipo_pasto == 'pranzo' %}selected{% endif %}>Pranzo</option>
+                            <option value="cena" {% if pasto.tipo_pasto == 'cena' %}selected{% endif %}>Cena</option>
+                            <option value="snack" {% if pasto.tipo_pasto == 'snack' %}selected{% endif %}>Snack</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descrizione (Menù) *</label>
+                        <textarea name="descrizione" class="form-control" rows="4" required>{{ pasto.descrizione }}</textarea>
+                        <div class="form-text">Descrivi cosa hai mangiato</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('fitness.pasti') }}" class="btn btn-secondary">Annulla</a>
+                        <button type="submit" class="btn btn-warning">Aggiorna Pasto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

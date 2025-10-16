@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiche Fitness - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1><i class="bi bi-graph-up"></i> Statistiche Fitness</h1>
+        <a href="{{ url_for('fitness.index') }}" class="btn btn-secondary">Torna alla Dashboard Fitness</a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Giorni di Allenamento</h6>
+                <h2 class="text-primary">{{ workouts_by_month|length if workouts_by_month else 0 }}</h2>
+                <p class="small text-muted mb-0">ultimi 12 mesi</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Esercizi Totali</h6>
+                <h2 class="text-success">{{ top_exercises|length if top_exercises else 0 }}</h2>
+                <p class="small text-muted mb-0">esercizi diversi</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="text-muted">Record Personali</h6>
+                <h2 class="text-danger">{{ progress|length if progress else 0 }}</h2>
+                <p class="small text-muted mb-0">esercizi tracciati</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-calendar3"></i> Allenamenti per Mese
+            </div>
+            <div class="card-body">
+                {% if workouts_by_month %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Mese</th>
+                                <th>Giorni</th>
+                                <th>Esercizi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for month in workouts_by_month %}
+                            <tr>
+                                <td><strong>{{ month.month }}</strong></td>
+                                <td>{{ month.days }}</td>
+                                <td>{{ month.exercises }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Nessun dato disponibile</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-trophy"></i> Esercizi Più Frequenti
+            </div>
+            <div class="card-body">
+                {% if top_exercises %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Esercizio</th>
+                                <th>Volte</th>
+                                <th>Peso Medio</th>
+                                <th>Max</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ex in top_exercises %}
+                            <tr>
+                                <td><strong>{{ ex.esercizio }}</strong></td>
+                                <td>{{ ex.count }}</td>
+                                <td>{{ "%.1f"|format(ex.avg_peso) if ex.avg_peso else '-' }} kg</td>
+                                <td class="text-success"><strong>{{ "%.1f"|format(ex.max_peso) if ex.max_peso else '-' }} kg</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Nessun dato disponibile</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-award"></i> Record Personali
+            </div>
+            <div class="card-body">
+                {% if progress %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Esercizio</th>
+                                <th>Record Peso</th>
+                                <th>Record Ripetizioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pr in progress %}
+                            <tr>
+                                <td><strong>{{ pr.esercizio }}</strong></td>
+                                <td class="text-success">
+                                    {% if pr.record_peso %}
+                                    <i class="bi bi-trophy-fill"></i> {{ "%.1f"|format(pr.record_peso) }} kg
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td class="text-primary">
+                                    {% if pr.record_rip %}
+                                    <i class="bi bi-arrow-up-circle-fill"></i> {{ pr.record_rip }} rip
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Nessun record personale ancora registrato.
+                    <a href="{{ url_for('fitness.add_allenamento') }}" class="alert-link">Inizia ad allenarti!</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
