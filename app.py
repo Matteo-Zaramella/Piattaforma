@@ -27,17 +27,6 @@ app.register_blueprint(settings_bp)
 # Password per Dev Tools (solo per Claude/manutenzione)
 DEV_TOOLS_PASSWORD = "dev_access_2024"
 
-# Inizializza il database all'avvio se non esiste
-def ensure_db_initialized():
-    """Assicura che il database sia inizializzato"""
-    if not os.path.exists(app.config['DATABASE']):
-        print("Database non trovato, inizializzazione in corso...")
-        init_db()
-        print("Database inizializzato con successo!")
-
-# Esegui l'inizializzazione
-ensure_db_initialized()
-
 def get_db():
     """Connessione al database"""
     db = sqlite3.connect(app.config['DATABASE'])
@@ -184,6 +173,12 @@ def init_db():
 
     db.commit()
     db.close()
+
+# Inizializza il database all'avvio se non esiste
+if not os.path.exists(app.config['DATABASE']):
+    print("Database non trovato, inizializzazione in corso...")
+    init_db()
+    print("Database inizializzato con successo!")
 
 def login_required(f):
     """Decorator per proteggere le route"""
