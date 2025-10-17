@@ -56,3 +56,4 @@ CREDENTIALS.md
 .env
 *.env
 
+# Deploy trigger
