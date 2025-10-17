@@ -33,15 +33,9 @@ else:
     app.config['USE_POSTGRES'] = False
 
 # Registra i blueprints dei moduli
-from modules.matched_betting import bp as matched_betting_bp
-from modules.task_lavoro import bp as task_lavoro_bp
-from modules.task_privati import bp as task_privati_bp
 from modules.fitness import bp as fitness_bp
 from modules.settings import bp as settings_bp
 
-app.register_blueprint(matched_betting_bp)
-app.register_blueprint(task_lavoro_bp)
-app.register_blueprint(task_privati_bp)
 app.register_blueprint(fitness_bp)
 app.register_blueprint(settings_bp)
 
@@ -375,20 +369,14 @@ def dashboard():
     else:
         date_query = 'data >= date("now", "-7 days")'
 
-    # Statistiche rapide
+    # Statistiche rapide (solo fitness)
     stats = {
-        'betting_count': execute_query(conn,
-                                      'SELECT COUNT(*) as cnt FROM matched_betting WHERE user_id = ?',
-                                      (user_id,), fetch_one=True)['cnt'],
-        'task_lavoro_pending': execute_query(conn,
-                                            'SELECT COUNT(*) as cnt FROM task_lavoro WHERE user_id = ? AND stato != ?',
-                                            (user_id, 'completato'), fetch_one=True)['cnt'],
-        'task_privati_pending': execute_query(conn,
-                                             'SELECT COUNT(*) as cnt FROM task_privati WHERE user_id = ? AND stato != ?',
-                                             (user_id, 'completato'), fetch_one=True)['cnt'],
         'allenamenti_settimana': execute_query(conn,
                                               f'SELECT COUNT(*) as cnt FROM allenamenti WHERE user_id = ? AND {date_query}',
-                                              (user_id,), fetch_one=True)['cnt']
+                                              (user_id,), fetch_one=True)['cnt'],
+        'pasti_oggi': execute_query(conn,
+                                   f'SELECT COUNT(*) as cnt FROM pasti WHERE user_id = ? AND data = CURRENT_DATE',
+                                   (user_id,), fetch_one=True)['cnt']
     }
 
     conn.close()
