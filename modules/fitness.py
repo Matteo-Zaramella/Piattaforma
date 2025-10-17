@@ -2,11 +2,19 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from datetime import datetime, timedelta
 from modules.workout_templates import get_workout_template, get_all_workout_types
 
-# Importa utilities database
+# Importa utilities database dal modulo principale
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from db_utils import get_db, execute_query, USE_POSTGRES
+
+# Aggiungi il parent directory al path se necessario
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+import db_utils
+get_db = db_utils.get_db
+execute_query = db_utils.execute_query
+USE_POSTGRES = db_utils.USE_POSTGRES
 
 bp = Blueprint('fitness', __name__, url_prefix='/fitness')
 
