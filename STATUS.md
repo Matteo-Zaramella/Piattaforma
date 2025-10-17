@@ -47,31 +47,30 @@ Web app privata personale accessibile su **matteozaramella.com** con:
 
 ---
 
+## ✅ PROBLEMI RISOLTI
+
+### ✅ RISOLTO: Internal Server Error 500 (2025-10-17)
+
+**Problema**: Registrazione utenti falliva con errore 500
+
+**Causa identificata**:
+1. `psycopg2` non installato → Risolto rimuovendo versione fissa da requirements.txt
+2. Connection string Supabase errata → Hostname pooler sbagliato
+
+**Soluzione**:
+- `psycopg2-binary` (senza versione) si installa correttamente
+- Connection string corretta: `postgresql://postgres.wuvuapmjclahbmngntku:PASSWORD@aws-1-eu-north-1.pooler.supabase.com:6543/postgres`
+- Nota: Region è `eu-north-1` (Stockholm) NON `eu-central-1` (Frankfurt)
+
+**Verifica**:
+- ✅ Database inizializzato: `curl https://matteozaramella.com/init-database-tables`
+- ✅ Registrazione utente funzionante
+- ✅ Login funzionante
+- ✅ Sessione persistente
+
 ## ⚠️ PROBLEMI ATTUALI (DA RISOLVERE)
 
-### 🔴 CRITICO: Internal Server Error 500
-
-**Problema**: Registrazione utenti fallisce con errore 500
-
-**Causa identificata**: `psycopg2` non viene installato correttamente su Render
-
-**Dettagli tecnici**:
-- DATABASE_URL configurato correttamente su Render
-- Supabase connection string valida
-- `requirements.txt` contiene `psycopg2-binary`
-- Ma l'app su Render non riesce a importare psycopg2
-- Errore: "psycopg2 non installato ma DATABASE_URL configurato"
-
-**Ultimo tentativo in corso**:
-- Commit `4d42174`: Rimosso numero versione da psycopg2-binary
-- Deploy in corso al momento della scrittura
-- Deploy ID: da verificare
-
-**Possibili soluzioni da provare**:
-1. Aggiungere `libpq-dev` alle dipendenze sistema (apt-buildpack)
-2. Usare variabile `PYTHON_VERSION` in Render
-3. Verificare logs build Render per errori installazione
-4. Creare script `build.sh` custom
+**Nessun problema critico al momento.**
 
 ---
 
@@ -108,7 +107,8 @@ Piattaforma/
 ### Supabase PostgreSQL (DATABASE PERMANENTE)
 - **Project ID**: `wuvuapmjclahbmngntku`
 - **Password**: `n5x8%XnUK5xMWnV5qWg6`
-- **Connection String**: `postgresql://postgres.wuvuapmjclahbmngntku:n5x8%25XnUK5xMWnV5qWg6@aws-0-eu-central-1.pooler.supabase.com:6543/postgres`
+- **Connection String (Transaction Mode - ATTIVA)**: `postgresql://postgres.wuvuapmjclahbmngntku:n5x8%25XnUK5xMWnV5qWg6@aws-1-eu-north-1.pooler.supabase.com:6543/postgres`
+- **Region**: EU North (Stockholm) - `aws-1-eu-north-1`
 - **Dashboard**: https://supabase.com/dashboard/project/wuvuapmjclahbmngntku
 
 ### Cloudflare

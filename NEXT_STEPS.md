@@ -1,120 +1,71 @@
 # 🚀 PROSSIMI PASSI - Piattaforma
 
 **Data creazione**: 2025-10-17 (Sessione 1)
+**Ultimo aggiornamento**: 2025-10-17 (Sessione 2)
 
 ---
 
-## 🔴 PRIORITÀ MASSIMA: Fixare Errore 500
+## ✅ COMPLETATO: Errore 500 Risolto!
 
-### Problema
-Il sito carica ma la registrazione utenti fallisce con Internal Server Error 500.
+### Problema (RISOLTO)
+Il sito caricava ma la registrazione utenti falliva con Internal Server Error 500.
 
-### Causa
-`psycopg2` non viene installato correttamente su Render nonostante sia in `requirements.txt`
+### Causa Identificata
+1. `psycopg2-binary` con versione specifica non si installava → Risolto usando `psycopg2-binary` senza versione
+2. Connection string Supabase errata → Hostname pooler sbagliato (`aws-0-eu-central-1` invece di `aws-1-eu-north-1`)
 
-### Soluzioni da Provare (in ordine)
-
-#### Soluzione 1: Attendere deploy in corso ⏳
-**Status**: Deploy `4d42174` in corso (psycopg2-binary senza versione)
-
-**Azione**:
-1. Aspetta che deploy completi
-2. Testa endpoint: `curl https://matteozaramella.com/init-database-tables`
-3. Se ritorna `{"success": true}` → Problema risolto!
-4. Se ritorna ancora errore psycopg2 → Prova Soluzione 2
-
-#### Soluzione 2: Aggiungi dipendenze di sistema
-**Problema**: Render potrebbe non avere libpq-dev necessario per psycopg2
-
-**Azione**:
-1. Crea file `render.yaml`:
-```yaml
-services:
-  - type: web
-    name: piattaforma
-    env: python
-    buildCommand: apt-get update && apt-get install -y libpq-dev && pip install -r requirements.txt
-    startCommand: gunicorn app:app
-```
-
-2. Commit e push:
-```bash
-cd C:\Users\offic\Desktop\Piattaforma
-git add render.yaml
-git commit -m "Add render.yaml con libpq-dev"
-git push
-```
-
-#### Soluzione 3: Usa Aptfile (Render buildpack)
-**Azione**:
-1. Crea file `Aptfile` (senza estensione):
-```
-libpq-dev
-```
-
-2. Commit e push:
-```bash
-git add Aptfile
-git commit -m "Add Aptfile per libpq-dev"
-git push
-```
-
-#### Soluzione 4: Verifica logs build
-**Azione**:
-```bash
-# Ottieni ultimo deploy ID
-curl -H "Authorization: Bearer rnd_VIWjnZZkLnc7bfd0GHPSmzt7V838" "https://api.render.com/v1/services/srv-d3of691r0fns73c5t110/deploys?limit=1" | grep '"id"'
-
-# Cerca errori build (sostituisci DEPLOY_ID)
-# Logs non disponibili via API - vai su dashboard Render manualmente
-```
-
-**Dashboard Render**: https://dashboard.render.com/web/srv-d3of691r0fns73c5t110
-
-Cerca tab "Logs" o "Events" per vedere errori installazione pip
-
-#### Soluzione 5: Fallback a SQLite temporaneo
-**Se nulla funziona**, usa temporaneamente SQLite:
-
-```bash
-# Rimuovi DATABASE_URL da Render env vars
-curl -X DELETE -H "Authorization: Bearer rnd_VIWjnZZkLnc7bfd0GHPSmzt7V838" "https://api.render.com/v1/services/srv-d3of691r0fns73c5t110/env-vars/DATABASE_URL"
-```
-
-**Problema**: Dati non persistono (ephemeral filesystem)
-**Usa solo come test temporaneo**
+### Soluzione Applicata
+- ✅ Aggiornato `requirements.txt` con `psycopg2-binary` (senza versione)
+- ✅ Corretto hostname pooler: `aws-1-eu-north-1.pooler.supabase.com`
+- ✅ Database inizializzato con successo
+- ✅ Registrazione e login funzionanti
 
 ---
 
-## ✅ DOPO Risolto Errore 500
+## 🎯 PRIORITÀ ATTUALE
 
-### Step 1: Inizializza Tabelle Supabase
+### 1. Rimuovi Endpoint `/init-database-tables` (Sicurezza) ⚠️
 
-**Endpoint creato**: `/init-database-tables`
+**Problema**: L'endpoint `/init-database-tables` è pubblico e chiunque può chiamarlo.
 
-```bash
-curl https://matteozaramella.com/init-database-tables
+**Azione**:
+Apri `app.py` e rimuovi o proteggi l'endpoint (linee 467-474 circa):
+
+**Opzione A - Rimuovi** (consigliato):
+```python
+# Commenta o elimina queste righe
+# @app.route('/init-database-tables')
+# def init_database_tables():
+#     ...
 ```
 
-**Output atteso**:
-```json
-{"success": true, "message": "Database inizializzato con successo!"}
+**Opzione B - Proteggi con password**:
+```python
+@app.route('/init-database-tables')
+def init_database_tables():
+    password = request.args.get('password')
+    if password != 'SECRET_PASSWORD_QUI':
+        return jsonify({'error': 'Unauthorized'}), 401
+    try:
+        init_db()
+        return jsonify({'success': True, 'message': 'Database inizializzato con successo!'}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 ```
 
-Se errore, esegui init manualmente (vedi sotto)
+Poi commit e push.
 
-### Step 2: Test Registrazione Utente
+### 2. Test Persistenza Dati
 
-```bash
-# Registra utente test
-curl -X POST https://matteozaramella.com/register \
-  -d "username=testuser&password=testpass123" \
-  -L -i
+**Importante**: Verifica che i dati sopravvivano al sleep di Render
 
-# Dovrebbe ritornare redirect (302) a /login
-```
+1. Registra un utente reale su https://matteozaramella.com
+2. Aggiungi alcuni dati (scommessa, task, etc.)
+3. **Aspetta 20-30 minuti** (Render Free va in sleep dopo inattività)
+4. Riapri il sito e fai login
+5. Verifica che tutti i dati ci siano ancora ✅
 
-### Step 3: Test Completo
+### 3. Test Completo
 
 1. Apri browser su: https://matteozaramella.com
 2. Registra account reale
