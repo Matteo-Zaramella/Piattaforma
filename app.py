@@ -464,6 +464,15 @@ def save_file():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+@app.route('/init-database-tables')
+def init_database_tables():
+    """Endpoint temporaneo per inizializzare tabelle database"""
+    try:
+        init_db()
+        return jsonify({'success': True, 'message': 'Database inizializzato con successo!'}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Inizializza database se non esiste (o verifica tabelle PostgreSQL)
     if app.config['USE_POSTGRES']:
