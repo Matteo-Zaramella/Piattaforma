@@ -50,3 +50,9 @@ Thumbs.db
 # Backup files
 *.bak
 *~
+
+# Credentials (non committare!)
+CREDENTIALS.md
+.env
+*.env
+
