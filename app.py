@@ -363,28 +363,50 @@ def dashboard():
     conn = get_db()
     user_id = session['user_id']
 
-    # Query compatibile con PostgreSQL e SQLite per data recente
-    if app.config['USE_POSTGRES']:
-        date_query = "data >= CURRENT_DATE - INTERVAL '7 days'"
-    else:
-        date_query = 'data >= date("now", "-7 days")'
+    try:
+        # Query compatibile con PostgreSQL e SQLite per data recente
+        if app.config['USE_POSTGRES']:
+            date_query = "data >= CURRENT_DATE - INTERVAL '7 days'"
+        else:
+            date_query = 'data >= date("now", "-7 days")'
 
-    # Statistiche rapide (solo fitness)
-    if app.config['USE_POSTGRES']:
-        today_query = "data = CURRENT_DATE"
-    else:
-        today_query = 'data = date("now")'
+        # Statistiche rapide (solo fitness)
+        if app.config['USE_POSTGRES']:
+            today_query = "data = CURRENT_DATE"
+        else:
+            today_query = 'data = date("now")'
 
-    stats = {
-        'allenamenti_settimana': execute_query(conn,
+        try:
+            allenamenti_result = execute_query(conn,
                                               f'SELECT COUNT(*) as cnt FROM allenamenti WHERE user_id = ? AND {date_query}',
-                                              (user_id,), fetch_one=True)['cnt'],
-        'pasti_oggi': execute_query(conn,
-                                   f'SELECT COUNT(*) as cnt FROM pasti WHERE user_id = ? AND {today_query}',
-                                   (user_id,), fetch_one=True)['cnt']
-    }
+                                              (user_id,), fetch_one=True)
+            allenamenti_count = allenamenti_result['cnt'] if allenamenti_result else 0
+        except Exception as e:
+            print(f"Errore query allenamenti: {e}")
+            allenamenti_count = 0
 
-    conn.close()
+        try:
+            pasti_result = execute_query(conn,
+                                       f'SELECT COUNT(*) as cnt FROM pasti WHERE user_id = ? AND {today_query}',
+                                       (user_id,), fetch_one=True)
+            pasti_count = pasti_result['cnt'] if pasti_result else 0
+        except Exception as e:
+            print(f"Errore query pasti: {e}")
+            pasti_count = 0
+
+        stats = {
+            'allenamenti_settimana': allenamenti_count,
+            'pasti_oggi': pasti_count
+        }
+
+    except Exception as e:
+        print(f"Errore generale dashboard: {e}")
+        stats = {
+            'allenamenti_settimana': 0,
+            'pasti_oggi': 0
+        }
+    finally:
+        conn.close()
 
     return render_template('dashboard.html', stats=stats)
 
