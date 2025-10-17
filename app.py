@@ -370,12 +370,17 @@ def dashboard():
         date_query = 'data >= date("now", "-7 days")'
 
     # Statistiche rapide (solo fitness)
+    if app.config['USE_POSTGRES']:
+        today_query = "data = CURRENT_DATE"
+    else:
+        today_query = 'data = date("now")'
+
     stats = {
         'allenamenti_settimana': execute_query(conn,
                                               f'SELECT COUNT(*) as cnt FROM allenamenti WHERE user_id = ? AND {date_query}',
                                               (user_id,), fetch_one=True)['cnt'],
         'pasti_oggi': execute_query(conn,
-                                   f'SELECT COUNT(*) as cnt FROM pasti WHERE user_id = ? AND data = CURRENT_DATE',
+                                   f'SELECT COUNT(*) as cnt FROM pasti WHERE user_id = ? AND {today_query}',
                                    (user_id,), fetch_one=True)['cnt']
     }
 
