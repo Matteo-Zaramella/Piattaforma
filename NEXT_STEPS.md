@@ -24,7 +24,19 @@ Il sito caricava ma la registrazione utenti falliva con Internal Server Error 50
 
 ## 🎯 PRIORITÀ ATTUALE
 
-### 1. Rimuovi Endpoint `/init-database-tables` (Sicurezza) ⚠️
+### 1. ✅ Verificare che Fitness funzioni completamente
+
+**Stato**: In corso - Deploy finale in esecuzione
+
+**Test da fare**:
+- Login al sito
+- Accesso dashboard
+- Aggiungere pasti
+- Aggiungere allenamenti
+- Visualizzare statistiche
+- Usare scheda workout A/B/C
+
+### 2. Rimuovi Endpoint `/init-database-tables` (Sicurezza) ⚠️
 
 **Problema**: L'endpoint `/init-database-tables` è pubblico e chiunque può chiamarlo.
 
@@ -199,28 +211,107 @@ curl https://matteozaramella.com
 
 ---
 
-## 🎯 Prossime Funzionalità (Opzionali)
+## 🚀 FASE 2: Sistema Multi-Utente e Ruoli (PRIORITÀ ALTA)
 
-### Fase 2: Miglioramenti UX
+### Obiettivo
+Rendere il sito accessibile a ~100 persone con diversi livelli di accesso
+
+### Funzionalità Richieste
+
+#### 1. Nuovo Modulo: Lista Regali (Wishlist) 📦
+**Utenti**: ~100 persone (sola lettura)
+
+**Caratteristiche**:
+- Pagina pubblica/semi-pubblica accessibile tramite link
+- Lista oggetti desiderati per regali
+- Campi: Nome oggetto, Descrizione, Link acquisto, Prezzo stimato, Priorità
+- Possibilità di "prenotare" un regalo (per evitare duplicati)
+- Dashboard admin (solo tu) per gestire la lista
+
+**Implementazione**:
+- Non serve registrazione per lettori
+- Accesso tramite URL speciale o password condivisa semplice
+- Backend PostgreSQL per persistenza
+
+#### 2. Ruoli Utente per Fitness 🏋️
+
+**Nuovi ruoli da implementare**:
+- **Admin** (tu) - Accesso completo
+- **Trainer** - Può visualizzare sezione allenamenti + statistiche
+- **Nutrizionista** - Può visualizzare sezione pasti + statistiche
+- **Lettore** (Wishlist) - Solo visualizzazione lista regali
+
+**Sistema di permessi**:
+```python
+# Esempio struttura
+users:
+  - username: matteo (admin - tutto)
+  - username: trainer_mario (role: trainer - solo fitness/allenamenti)
+  - username: nutrizionista_laura (role: nutritionist - solo fitness/pasti)
+  - wishlist: accesso pubblico con token/password
+```
+
+**Modifiche necessarie**:
+1. Aggiungere campo `role` alla tabella `users`
+2. Decorator `@role_required(['admin', 'trainer'])` per proteggere route
+3. Modificare templates per mostrare solo sezioni autorizzate
+4. Dashboard differenziata per ruolo
+
+### Step Implementazione
+
+**Step 1**: Sistema Ruoli Base
+- [  ] Aggiungere colonna `role` a tabella users (PostgreSQL)
+- [  ] Creare decorator `@role_required(roles)`
+- [  ] Aggiornare registrazione per assegnare ruoli
+- [  ] Dashboard page differenziata per ruolo
+
+**Step 2**: Modulo Wishlist/Regali
+- [  ] Creare tabella `wishlist_items`
+- [  ] Creare blueprint `modules/wishlist.py`
+- [  ] Pagina pubblica con autenticazione leggera (token URL)
+- [  ] Sistema "prenota regalo" (marca come riservato)
+- [  ] Admin page per gestire lista
+
+**Step 3**: Permessi Fitness per Trainer/Nutrizionista
+- [  ] Proteggere route fitness con ruoli appropriati
+- [  ] Trainer: accesso a allenamenti, workout, statistiche allenamenti
+- [  ] Nutrizionista: accesso a pasti, statistiche alimentazione
+- [  ] Nascondere sezioni non autorizzate nei template
+
+**Step 4**: Test e Deploy
+- [  ] Creare account test per ogni ruolo
+- [  ] Verificare permessi funzionino correttamente
+- [  ] Testare wishlist con link pubblico
+- [  ] Deploy su Render
+
+### Considerazioni Tecniche
+
+**Performance**:
+- 100 utenti contemporanei dovrebbero essere gestibili con Render Starter ($7/mo)
+- Nessun standby con piano pagato
+- Database Supabase Free supporta fino a 500MB (sufficiente)
+
+**Sicurezza**:
+- Wishlist: token URL monouso o password condivisa semplice
+- Trainer/Nutrizionista: Login standard con username/password
+- Rate limiting per evitare abusi
+- HTTPS già attivo tramite Cloudflare
+
+## 🎯 Prossime Funzionalità (Opzionali - Bassa Priorità)
+
+### Fase 3: Miglioramenti UX
 
 1. **Dashboard migliorata** con statistiche grafiche
 2. **Export dati** (CSV, JSON)
-3. **Filtri avanzati** per task e scommesse
-4. **Notifiche email** per scadenze
+3. **Notifiche email** per scadenze
+4. **Tema personalizzabile** (dark mode, colori)
 
-### Fase 3: Sicurezza
-
-1. **2FA** (autenticazione a due fattori)
-2. **Rate limiting** su login
-3. **IP whitelist** via Cloudflare
-4. **Backup automatici** daily
-
-### Fase 4: Nuovi Moduli
+### Fase 4: Funzionalità Avanzate
 
 1. **Finanze** - Tracking entrate/uscite
 2. **Note** - Sistema note personali
 3. **Calendario integrato** - Eventi e scadenze
-4. **API** - Endpoint REST per app mobile
+4. **App Mobile** - PWA o React Native
 
 ---
 
@@ -265,6 +356,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ---
 
-**Ultimo aggiornamento**: 2025-10-17 14:45 (Fine Sessione 1)
+**Ultimo aggiornamento**: 2025-10-17 16:30 (Sessione 2)
 
-**Prossima azione**: Verificare deploy `4d42174` e testare `/init-database-tables`
+**Prossima azione**:
+1. Verificare che dashboard e fitness funzionino dopo l'ultimo deploy
+2. Iniziare implementazione sistema ruoli (Fase 2)
