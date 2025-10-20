@@ -13,6 +13,63 @@
             color: #ffffff;
             min-height: 100vh;
             padding: 2rem 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Sfondo ASCII Art */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                /* Riga 1 */
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">:)</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">...</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">♥</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">---</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">*_*</text></svg>'),
+                /* Riga 2 */
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">~~~</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">:D</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">...</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">★</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">---</text></svg>'),
+                /* Riga 3 */
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">:P</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">~~~</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">♪</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">...</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">;)</text></svg>'),
+                /* Riga 4 */
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">---</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">^_^</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">~~~</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.8)">☆</text></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="30" font-family="monospace" font-size="14" fill="rgba(100,100,100,0.3)">...</text></svg>');
+            background-position:
+                /* Riga 1 */
+                5% 10%, 15% 10%, 25% 10%, 35% 10%, 45% 10%,
+                /* Riga 2 */
+                55% 30%, 65% 30%, 75% 30%, 85% 30%, 95% 30%,
+                /* Riga 3 */
+                10% 50%, 20% 50%, 30% 50%, 40% 50%, 50% 50%,
+                /* Riga 4 */
+                60% 70%, 70% 70%, 80% 70%, 90% 70%, 5% 90%;
+            background-repeat: no-repeat;
+        }
+
+        /* Rendi il contenuto sopra lo sfondo */
+        .hero-section,
+        .sections-container,
+        .footer {
+            position: relative;
+            z-index: 1;
         }
 
         .hero-section {
