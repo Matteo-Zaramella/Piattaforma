@@ -2,6 +2,37 @@
 
 {% block title %}Nuovo Pasto - Piattaforma{% endblock %}
 
+{% block extra_css %}
+<style>
+    .preset-selector {
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        background: #f8f9fa;
+    }
+
+    .manual-input-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #dee2e6;
+    }
+
+    .pasto-preview {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+        display: none;
+    }
+
+    .pasto-preview.show {
+        display: block;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-md-8 offset-md-2">
@@ -10,7 +41,7 @@
                 <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Nuovo Pasto</h4>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" id="pastoForm">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data *</label>
@@ -18,22 +49,66 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Tipo Pasto *</label>
-                            <select name="tipo_pasto" class="form-control" required>
+                            <select name="tipo_pasto" id="tipoPasto" class="form-control" required>
                                 <option value="">Seleziona...</option>
-                                <option value="colazione">Colazione</option>
-                                <option value="pranzo">Pranzo</option>
-                                <option value="cena">Cena</option>
-                                <option value="snack">Snack</option>
+                                <option value="Colazione">Colazione</option>
+                                <option value="Spuntino mattina">Spuntino mattina</option>
+                                <option value="Pranzo">Pranzo</option>
+                                <option value="Spuntino pomeriggio">Spuntino pomeriggio</option>
+                                <option value="Cena">Cena</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Descrizione *</label>
-                        <textarea name="descrizione" class="form-control" rows="4" required placeholder="Descrivi il pasto..."></textarea>
+                    <!-- Pasti predefiniti dal menu -->
+                    <div class="preset-selector">
+                        <h5 class="mb-3"><i class="bi bi-bookmark-star"></i> Pasti del Menu</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Seleziona un pasto dal menu (opzionale)</label>
+                            <select id="presetPasto" class="form-control">
+                                <option value="">-- Oppure inserisci manualmente sotto --</option>
+                                <optgroup label="💪 Con Allenamento">
+                                    <option value="Caffè e latte, clementine, 100g albume + 1 uovo, pane e burro d'arachidi">Colazione: Caffè e latte, clementine, 100g albume + 1 uovo, pane e burro d'arachidi</option>
+                                    <option value="Caffè e latte, banana, fiocchi d'avena, yogurt greco bianco, 20g cioccolato fondente">Colazione: Caffè e latte, banana, fiocchi d'avena, yogurt greco, cioccolato fondente</option>
+                                    <option value="Banana + yogurt greco">Spuntino: Banana + yogurt greco</option>
+                                    <option value="Taralli e cioccolato">Spuntino: Taralli e cioccolato</option>
+                                    <option value="100g carote, 90g riso, 200g verdure, 200g sgombro">Pranzo: 100g carote, 90g riso, 200g verdure, 200g sgombro</option>
+                                    <option value="100g carote, 90g riso, 200g verdure, 250g lenticchie">Pranzo: 100g carote, 90g riso, 200g verdure, 250g lenticchie</option>
+                                    <option value="100g carote, 90g riso, 200g verdure, 250g fagioli">Pranzo: 100g carote, 90g riso, 200g verdure, 250g fagioli</option>
+                                    <option value="100g verdura cruda (finocchio/pomodoro), 200g verdura cotta, 200g pollo">Cena: 100g verdura cruda, 200g verdura cotta, 200g pollo</option>
+                                    <option value="100g verdura cruda (finocchio/pomodoro), 200g verdura cotta, 250g ricotta">Cena: 100g verdura cruda, 200g verdura cotta, 250g ricotta</option>
+                                    <option value="100g verdura cruda (finocchio/pomodoro), 200g verdura cotta, 200g carpaccio di sorana">Cena: 100g verdura cruda, 200g verdura cotta, 200g carpaccio di sorana</option>
+                                </optgroup>
+                                <optgroup label="🧘 Senza Allenamento">
+                                    <option value="30g frutta secca">Spuntino: 30g frutta secca</option>
+                                    <option value="Frutta (pera abate / 2 susine / melagrana) + frutta secca">Spuntino: Frutta (pera/susine/melagrana) + frutta secca</option>
+                                    <option value="Barretta">Spuntino: Barretta</option>
+                                    <option value="100g carote, 70g riso, 200g verdure, 200g sgombro">Pranzo: 100g carote, 70g riso, 200g verdure, 200g sgombro</option>
+                                    <option value="100g carote, 70g riso, 200g verdure, 250g lenticchie">Pranzo: 100g carote, 70g riso, 200g verdure, 250g lenticchie</option>
+                                    <option value="100g carote, 70g riso, 200g verdure, 250g fagioli">Pranzo: 100g carote, 70g riso, 200g verdure, 250g fagioli</option>
+                                </optgroup>
+                                <optgroup label="🍕 Pasto Libero">
+                                    <option value="PASTO LIBERO">Pasto libero (domenica sera)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div id="presetPreview" class="pasto-preview">
+                            <strong>Anteprima:</strong>
+                            <p id="presetText" class="mb-0 mt-2"></p>
+                        </div>
                     </div>
 
-                    <div class="d-flex justify-content-between">
+                    <!-- Inserimento manuale -->
+                    <div class="manual-input-section">
+                        <h5 class="mb-3"><i class="bi bi-pencil"></i> Inserimento Manuale</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Descrizione Pasto *</label>
+                            <textarea name="descrizione" id="descrizione" class="form-control" rows="4" required placeholder="Inserisci i dettagli del pasto..."></textarea>
+                            <small class="text-muted">Verrà compilato automaticamente se selezioni un pasto dal menu sopra</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
                         <a href="{{ url_for('fitness.pasti') }}" class="btn btn-secondary">Annulla</a>
                         <button type="submit" class="btn btn-primary">Salva Pasto</button>
                     </div>
@@ -42,4 +117,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Gestione selezione pasto predefinito
+    document.getElementById('presetPasto').addEventListener('change', function() {
+        const selectedValue = this.value;
+        const descrizioneField = document.getElementById('descrizione');
+        const presetPreview = document.getElementById('presetPreview');
+        const presetText = document.getElementById('presetText');
+
+        if (selectedValue) {
+            descrizioneField.value = selectedValue;
+            presetText.textContent = selectedValue;
+            presetPreview.classList.add('show');
+        } else {
+            presetPreview.classList.remove('show');
+        }
+    });
+
+    // Imposta data odierna di default
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelector('input[name="data"]').value = today;
+    });
+</script>
 {% endblock %}

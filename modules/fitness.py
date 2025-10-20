@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash, current_app, make_response
 from datetime import datetime, timedelta
 from modules.workout_templates import get_workout_template, get_all_workout_types
+import csv
+import io
 
 # Importa utilities database dal modulo principale
 import sys
@@ -446,3 +448,110 @@ def workout_detail(session_id):
     return render_template('fitness/workout_detail.html',
                          session=session_data,
                          exercises_grouped=exercises_grouped)
+
+@bp.route('/allenamenti/export')
+def export_allenamenti():
+    """Esporta tutti gli allenamenti in formato CSV"""
+    conn = get_db()
+    user_id = session['user_id']
+
+    # Recupera tutti gli allenamenti dell'utente
+    allenamenti = execute_query(conn, '''
+        SELECT data, esercizio, ripetizioni, peso, note, created_at
+        FROM allenamenti
+        WHERE user_id = ?
+        ORDER BY data DESC, created_at ASC
+    ''', (user_id,), fetch_all=True)
+
+    conn.close()
+
+    # Crea file CSV in memoria
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Intestazioni CSV
+    writer.writerow(['Data', 'Esercizio', 'Ripetizioni', 'Peso (kg)', 'Note', 'Data Inserimento'])
+
+    # Dati
+    for row in allenamenti:
+        writer.writerow([
+            row['data'],
+            row['esercizio'],
+            row['ripetizioni'] or '',
+            row['peso'] or '',
+            row['note'] or '',
+            row['created_at']
+        ])
+
+    # Prepara la risposta
+    output.seek(0)
+    response = make_response(output.getvalue())
+    response.headers['Content-Disposition'] = f'attachment; filename=allenamenti_{datetime.now().strftime("%Y%m%d")}.csv'
+    response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+
+    return response
+
+@bp.route('/workout/export')
+def export_workout_sessions():
+    """Esporta le sessioni di workout strutturati in formato CSV"""
+    conn = get_db()
+    user_id = session['user_id']
+
+    # Recupera tutte le sessioni workout con i relativi esercizi
+    sessions = execute_query(conn, '''
+        SELECT ws.id, ws.data, ws.workout_type, ws.completato, ws.created_at
+        FROM workout_sessions ws
+        WHERE ws.user_id = ?
+        ORDER BY ws.data DESC
+    ''', (user_id,), fetch_all=True)
+
+    # Crea file CSV in memoria
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Intestazioni CSV
+    writer.writerow(['Data', 'Tipo Workout', 'Completato', 'Esercizio', 'Serie', 'Ripetizioni', 'Peso (kg)', 'Note'])
+
+    # Per ogni sessione, recupera gli esercizi
+    for session in sessions:
+        exercises = execute_query(conn, '''
+            SELECT esercizio, serie_numero, ripetizioni, peso, note
+            FROM workout_exercises
+            WHERE session_id = ?
+            ORDER BY serie_numero ASC
+        ''', (session['id'],), fetch_all=True)
+
+        if exercises:
+            for i, ex in enumerate(exercises):
+                writer.writerow([
+                    session['data'] if i == 0 else '',
+                    session['workout_type'] if i == 0 else '',
+                    'Sì' if session['completato'] else 'No' if i == 0 else '',
+                    ex['esercizio'],
+                    ex['serie_numero'],
+                    ex['ripetizioni'] or '',
+                    ex['peso'] or '',
+                    ex['note'] or ''
+                ])
+        else:
+            # Sessione senza esercizi
+            writer.writerow([
+                session['data'],
+                session['workout_type'],
+                'Sì' if session['completato'] else 'No',
+                '',
+                '',
+                '',
+                '',
+                ''
+            ])
+
+    conn.close()
+
+    # Prepara la risposta
+    output.seek(0)
+    response = make_response(output.getvalue())
+    response.headers['Content-Disposition'] = f'attachment; filename=workout_sessions_{datetime.now().strftime("%Y%m%d")}.csv'
+    response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+
+    return response
