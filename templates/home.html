@@ -7,196 +7,44 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 2rem 0;
         }
 
         .hero-section {
-            min-height: 100vh;
-            background: var(--primary-gradient);
-            color: white;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
-            background-size: cover;
-            opacity: 0.3;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
+            text-align: center;
+            padding: 2rem 0 3rem;
+            margin-bottom: 2rem;
         }
 
         .hero-title {
-            font-size: 4rem;
+            font-size: 3rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
             animation: fadeInUp 0.8s ease-out;
         }
 
         .hero-subtitle {
-            font-size: 1.5rem;
-            opacity: 0.95;
-            margin-bottom: 2rem;
+            font-size: 1.3rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
             animation: fadeInUp 1s ease-out;
         }
 
         .hero-description {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 3rem;
-            max-width: 600px;
+            font-size: 1rem;
+            opacity: 0.6;
             animation: fadeInUp 1.2s ease-out;
-        }
-
-        .btn-login {
-            background: white;
-            color: #667eea;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            border: none;
-            transition: all 0.3s ease;
-            animation: fadeInUp 1.4s ease-out;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-login:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-            background: #f8f9fa;
-            color: #667eea;
-        }
-
-        .wishlist-section {
-            padding: 100px 0;
-            background: #f8f9fa;
-        }
-
-        .wishlist-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .wishlist-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .wishlist-item-title {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .wishlist-item-desc {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            height: 100%;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px;
-            font-size: 2.5rem;
-        }
-
-        .feature-icon-fitness {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .feature-icon-nutrition {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        .feature-icon-progress {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: white;
-        }
-
-        .feature-icon-export {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-        }
-
-        .feature-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .feature-description {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .about-section {
-            padding: 100px 0;
-            background: white;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .section-subtitle {
-            font-size: 1.2rem;
-            color: #666;
-            margin-bottom: 50px;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -204,64 +52,195 @@
             }
         }
 
-        .floating-shapes {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        .sections-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .section-card {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2a2a2a;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        /* Sezione Appuntamenti */
+        .appointment-item {
+            background: #252525;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .appointment-date {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .appointment-location {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Sezione Dove Sono */
+        .location-card {
+            background: #252525;
+            border-radius: 15px;
             overflow: hidden;
-            top: 0;
-            left: 0;
+            margin-bottom: 1rem;
         }
 
-        .shape {
-            position: absolute;
-            opacity: 0.1;
-            animation: float 6s ease-in-out infinite;
+        .location-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #333;
         }
 
-        .shape:nth-child(1) {
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
+        .location-content {
+            padding: 1.5rem;
         }
 
-        .shape:nth-child(2) {
-            top: 60%;
-            right: 10%;
-            animation-delay: 2s;
+        .location-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
 
-        .shape:nth-child(3) {
-            bottom: 20%;
-            left: 20%;
-            animation-delay: 4s;
+        .location-address {
+            color: #aaa;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-20px) rotate(10deg);
-            }
+        .location-time {
+            background: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
+
+        .location-link {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            background: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+
+        .location-link:hover {
+            background: #5a95f5;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Sezione Wishlist */
+        .wishlist-item {
+            background: #252525;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            border: 1px solid #2a2a2a;
+        }
+
+        .wishlist-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .wishlist-item-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wishlist-item-desc {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .wishlist-item-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .wishlist-item-link:hover {
+            color: #8a9ff5;
+        }
+
+        .priority-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+        }
+
+        .priority-alta { background: #dc3545; color: white; }
+        .priority-media { background: #ffc107; color: #000; }
+        .priority-bassa { background: #6c757d; color: white; }
 
         .footer {
-            background: #2d3748;
-            color: white;
-            padding: 30px 0;
             text-align: center;
+            padding: 3rem 0 2rem;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 4rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
+            .sections-container {
+                grid-template-columns: 1fr;
+            }
+
             .hero-title {
-                font-size: 2.5rem;
-            }
-            .hero-subtitle {
-                font-size: 1.2rem;
-            }
-            .features-section {
-                padding: 60px 0;
+                font-size: 2rem;
             }
         }
     </style>
@@ -269,87 +248,142 @@
 <body>
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="floating-shapes">
-            <i class="bi bi-heart-pulse shape" style="font-size: 5rem;"></i>
-            <i class="bi bi-bar-chart-fill shape" style="font-size: 4rem;"></i>
-            <i class="bi bi-trophy-fill shape" style="font-size: 3.5rem;"></i>
-        </div>
-
-        <div class="container hero-content">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <h1 class="hero-title" id="greeting">
-                        <i class="bi bi-graph-up-arrow"></i> Ciao!
-                    </h1>
-                    <p class="hero-subtitle" id="claim">
-                        L'unico hub centrale di Zara
-                    </p>
-                    <p class="hero-description" id="description">
-                        So perché sei qui ma non me lo ricordo
-                    </p>
-                </div>
-            </div>
+        <div class="container">
+            <h1 class="hero-title" id="greeting">
+                <i class="bi bi-graph-up-arrow"></i> Ciao!
+            </h1>
+            <p class="hero-subtitle" id="claim">
+                L'unico hub centrale di Zara
+            </p>
+            <p class="hero-description" id="description">
+                So perché sei qui ma non me lo ricordo
+            </p>
         </div>
     </section>
 
-    <!-- Lista di Babbo Natale Section -->
-    <section class="wishlist-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="text-center mb-5">
-                        <h2 class="section-title">
-                            <i class="bi bi-gift-fill text-danger"></i> Lista di Babbo Natale
-                        </h2>
-                        <p class="section-subtitle">
-                            Idee regalo per chi vuole farmi felice (aggiornata regolarmente)
-                        </p>
-                    </div>
+    <!-- Sezioni Principali -->
+    <div class="sections-container">
+        <!-- Sezione Appuntamenti (Sinistra) -->
+        <div class="section-card">
+            <h2 class="section-title">
+                <i class="bi bi-calendar-check"></i>
+                Prossimi Impegni
+            </h2>
 
-                    <div class="wishlist-container">
-                        {% if wishlist_items %}
-                            <div class="row g-4">
-                                {% for item in wishlist_items %}
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="card wishlist-card">
-                                        <div class="card-body">
-                                            <h5 class="wishlist-item-title">{{ item.nome }}</h5>
-                                            {% if item.descrizione %}
-                                            <p class="wishlist-item-desc">{{ item.descrizione }}</p>
-                                            {% endif %}
-                                            {% if item.link %}
-                                            <a href="{{ item.link }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-link-45deg"></i> Link
-                                            </a>
-                                            {% endif %}
-                                            {% if item.priorita %}
-                                            <span class="badge bg-{{ 'danger' if item.priorita == 'alta' else 'warning' if item.priorita == 'media' else 'secondary' }} ms-2">
-                                                {{ item.priorita.capitalize() }}
-                                            </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="alert alert-info text-center">
-                                <i class="bi bi-info-circle"></i> La lista è vuota al momento. Tornerò presto con nuove idee!
-                            </div>
+            {% if appointments %}
+                {% for app in appointments %}
+                <div class="appointment-item">
+                    <div class="appointment-date">
+                        <i class="bi bi-clock"></i> {{ app.data_ora }}
+                    </div>
+                    <div class="appointment-title">{{ app.titolo }}</div>
+                    {% if app.descrizione %}
+                    <div class="text-muted small">{{ app.descrizione }}</div>
+                    {% endif %}
+                    {% if app.luogo %}
+                    <div class="appointment-location">
+                        <i class="bi bi-geo-alt"></i> {{ app.luogo }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-calendar-x"></i>
+                    <p>Nessun impegno in programma</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sezione Wishlist (Centro) -->
+        <div class="section-card">
+            <h2 class="section-title">
+                <i class="bi bi-gift-fill text-danger"></i>
+                Lista di Babbo Natale
+            </h2>
+
+            {% if wishlist_items %}
+                {% for item in wishlist_items %}
+                <div class="wishlist-item">
+                    <div class="wishlist-item-title">
+                        <span>{{ item.nome }}</span>
+                        <span class="priority-badge priority-{{ item.priorita }}">
+                            {{ item.priorita }}
+                        </span>
+                    </div>
+                    {% if item.descrizione %}
+                    <div class="wishlist-item-desc">{{ item.descrizione }}</div>
+                    {% endif %}
+                    {% if item.link %}
+                    <a href="{{ item.link }}" target="_blank" class="wishlist-item-link">
+                        <i class="bi bi-link-45deg"></i> Vedi prodotto
+                    </a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-gift"></i>
+                    <p>La lista è vuota al momento.<br>Tornerò presto con nuove idee!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sezione Dove Sono (Destra) -->
+        <div class="section-card">
+            <h2 class="section-title">
+                <i class="bi bi-geo-alt-fill text-warning"></i>
+                Dove Sono
+            </h2>
+
+            {% if current_location %}
+                <div class="location-card">
+                    {% if current_location.immagine_url %}
+                    <img src="{{ current_location.immagine_url }}" alt="{{ current_location.nome_luogo }}" class="location-image">
+                    {% else %}
+                    <div class="location-image" style="display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-geo-alt" style="font-size: 3rem; color: #666;"></i>
+                    </div>
+                    {% endif %}
+
+                    <div class="location-content">
+                        <div class="location-name">{{ current_location.nome_luogo }}</div>
+
+                        {% if current_location.indirizzo %}
+                        <div class="location-address">
+                            <i class="bi bi-geo"></i> {{ current_location.indirizzo }}
+                        </div>
+                        {% endif %}
+
+                        {% if current_location.orario %}
+                        <div class="location-time">
+                            <i class="bi bi-clock"></i> {{ current_location.orario }}
+                        </div>
+                        {% endif %}
+
+                        {% if current_location.note %}
+                        <p class="text-muted small mt-2">{{ current_location.note }}</p>
+                        {% endif %}
+
+                        {% if current_location.google_maps_link %}
+                        <a href="{{ current_location.google_maps_link }}" target="_blank" class="location-link">
+                            <i class="bi bi-map"></i> Apri in Maps
+                        </a>
                         {% endif %}
                     </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-question-circle"></i>
+                    <p>Al momento non esisto,<br>torna più tardi.</p>
+                </div>
+            {% endif %}
         </div>
-    </section>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p class="mb-0">
-                &copy; 2025 Matteo Zaramella. Made with ☕ and a lot of procrastination.
-            </p>
-        </div>
+        <p>&copy; 2025 Matteo Zaramella. Made with ☕ and a lot of procrastination.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

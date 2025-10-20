@@ -231,6 +231,41 @@ def init_db():
         )
     ''')
 
+    # Tabella posizione/dove sono
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS current_location (
+            id {id_type},
+            user_id INTEGER,
+            nome_luogo {text_type} NOT NULL,
+            indirizzo {text_type},
+            google_maps_link {text_type},
+            orario {text_type},
+            note {text_type},
+            immagine_url {text_type},
+            attivo {bool_type} DEFAULT {'TRUE' if app.config['USE_POSTGRES'] else '1'},
+            data_inizio TIMESTAMP,
+            data_fine TIMESTAMP,
+            created_at TIMESTAMP {timestamp_default},
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+
+    # Tabella appuntamenti/impegni
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS appointments (
+            id {id_type},
+            user_id INTEGER,
+            titolo {text_type} NOT NULL,
+            descrizione {text_type},
+            data_ora TIMESTAMP NOT NULL,
+            luogo {text_type},
+            pubblico {bool_type} DEFAULT {'FALSE' if app.config['USE_POSTGRES'] else '0'},
+            completato {bool_type} DEFAULT {'FALSE' if app.config['USE_POSTGRES'] else '0'},
+            created_at TIMESTAMP {timestamp_default},
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+
     conn.commit()
     cursor.close()
     conn.close()
@@ -311,10 +346,10 @@ def inject_user_preferences():
 
 @app.route('/')
 def index():
-    """Home page pubblica con lista di Babbo Natale"""
+    """Home page pubblica con wishlist, posizione e appuntamenti"""
     conn = get_db()
     try:
-        # Carica solo item pubblici o tutti se non specificato
+        # Carica wishlist pubblica
         wishlist_items = execute_query(conn, '''
             SELECT nome, descrizione, link, priorita
             FROM wishlist
@@ -327,13 +362,47 @@ def index():
                 END,
                 created_at DESC
         ''', (True if app.config['USE_POSTGRES'] else 1,), fetch_all=True)
+
+        # Carica posizione attiva
+        if app.config['USE_POSTGRES']:
+            time_check = "CURRENT_TIMESTAMP BETWEEN data_inizio AND data_fine"
+        else:
+            time_check = "datetime('now') BETWEEN datetime(data_inizio) AND datetime(data_fine)"
+
+        current_location = execute_query(conn, f'''
+            SELECT nome_luogo, indirizzo, google_maps_link, orario, note, immagine_url
+            FROM current_location
+            WHERE attivo = ? AND ({time_check} OR data_fine IS NULL)
+            ORDER BY created_at DESC
+            LIMIT 1
+        ''', (True if app.config['USE_POSTGRES'] else 1,), fetch_one=True)
+
+        # Carica prossimi appuntamenti pubblici
+        if app.config['USE_POSTGRES']:
+            future_check = "data_ora >= CURRENT_TIMESTAMP"
+        else:
+            future_check = "datetime(data_ora) >= datetime('now')"
+
+        appointments = execute_query(conn, f'''
+            SELECT titolo, descrizione, data_ora, luogo
+            FROM appointments
+            WHERE pubblico = ? AND {future_check} AND completato = ?
+            ORDER BY data_ora ASC
+            LIMIT 5
+        ''', (True if app.config['USE_POSTGRES'] else 1, False if app.config['USE_POSTGRES'] else 0), fetch_all=True)
+
     except Exception as e:
-        print(f"Errore caricamento wishlist: {e}")
+        print(f"Errore caricamento home: {e}")
         wishlist_items = []
+        current_location = None
+        appointments = []
     finally:
         conn.close()
 
-    return render_template('home.html', wishlist_items=wishlist_items)
+    return render_template('home.html',
+                         wishlist_items=wishlist_items,
+                         current_location=current_location,
+                         appointments=appointments)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

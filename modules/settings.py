@@ -20,10 +20,12 @@ def get_user_preferences(user_id):
 
     # Se non esistono preferenze, creale con valori di default
     if not prefs:
-        execute_query(conn, '''
+        cursor = execute_query(conn, '''
             INSERT INTO user_preferences (user_id, dark_mode, language, notifications)
             VALUES (?, FALSE, 'it', TRUE)
         ''', (user_id,))
+        conn.commit()
+        cursor.close()
         prefs = execute_query(conn, 'SELECT * FROM user_preferences WHERE user_id = ?', (user_id,), fetch_one=True)
 
     conn.close()
@@ -50,11 +52,13 @@ def update():
     notifications = True if request.form.get('notifications') == 'on' else False
 
     conn = get_db()
-    execute_query(conn, '''
+    cursor = execute_query(conn, '''
         UPDATE user_preferences
         SET dark_mode = ?, language = ?, notifications = ?, updated_at = CURRENT_TIMESTAMP
         WHERE user_id = ?
     ''', (dark_mode, language, notifications, user_id))
+    conn.commit()
+    cursor.close()
     conn.close()
 
     flash('Impostazioni salvate con successo!', 'success')
@@ -71,11 +75,13 @@ def toggle_dark_mode():
 
     new_value = False if current['dark_mode'] else True
 
-    execute_query(conn, '''
+    cursor = execute_query(conn, '''
         UPDATE user_preferences
         SET dark_mode = ?, updated_at = CURRENT_TIMESTAMP
         WHERE user_id = ?
     ''', (new_value, user_id))
+    conn.commit()
+    cursor.close()
     conn.close()
 
     return jsonify({'success': True, 'dark_mode': new_value})
