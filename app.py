@@ -294,10 +294,8 @@ def inject_user_preferences():
 
 @app.route('/')
 def index():
-    """Redirect alla dashboard se loggato, altrimenti al login"""
-    if 'user_id' in session:
-        return redirect(url_for('dashboard'))
-    return redirect(url_for('login'))
+    """Home page pubblica"""
+    return render_template('home.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -354,7 +352,7 @@ def register():
 def logout():
     """Logout"""
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 @login_required
