@@ -86,9 +86,34 @@
             color: #667eea;
         }
 
-        .features-section {
+        .wishlist-section {
             padding: 100px 0;
             background: #f8f9fa;
+        }
+
+        .wishlist-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .wishlist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .wishlist-item-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .wishlist-item-desc {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
         }
 
         .feature-card {
@@ -262,92 +287,57 @@
                     <p class="hero-description" id="description">
                         So perché sei qui ma non me lo ricordo
                     </p>
-                    <a href="{{ url_for('login') }}" class="btn btn-login">
-                        <i class="bi bi-box-arrow-in-right"></i> Accedi all'Area Privata
-                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features-section">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Cosa Puoi Fare</h2>
-                <p class="section-subtitle">Tutte le funzionalità per raggiungere i tuoi obiettivi</p>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card feature-card">
-                        <div class="feature-icon feature-icon-fitness">
-                            <i class="bi bi-lightning-charge"></i>
-                        </div>
-                        <h3 class="feature-title">Allenamenti</h3>
-                        <p class="feature-description">
-                            Registra i tuoi workout con esercizi, serie, ripetizioni e pesi.
-                            Monitora i tuoi progressi nel tempo.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="card feature-card">
-                        <div class="feature-icon feature-icon-nutrition">
-                            <i class="bi bi-egg-fried"></i>
-                        </div>
-                        <h3 class="feature-title">Alimentazione</h3>
-                        <p class="feature-description">
-                            Traccia i tuoi pasti giornalieri, segui il tuo piano alimentare
-                            e mantieni il controllo della tua dieta.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="card feature-card">
-                        <div class="feature-icon feature-icon-progress">
-                            <i class="bi bi-graph-up"></i>
-                        </div>
-                        <h3 class="feature-title">Progressi</h3>
-                        <p class="feature-description">
-                            Visualizza statistiche dettagliate sui tuoi allenamenti
-                            e sulla tua alimentazione settimanale.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="card feature-card">
-                        <div class="feature-icon feature-icon-export">
-                            <i class="bi bi-download"></i>
-                        </div>
-                        <h3 class="feature-title">Esportazione</h3>
-                        <p class="feature-description">
-                            Esporta i tuoi dati in formato CSV per condividerli
-                            con trainer, nutrizionisti o per analisi personali.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="about-section">
+    <!-- Lista di Babbo Natale Section -->
+    <section class="wishlist-section">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                    <h2 class="section-title">Un hub. Tante cose. Zero complicazioni.</h2>
-                    <p class="section-subtitle">
-                        Questo è il mio spazio digitale personale dove tengo traccia di allenamenti,
-                        pasti e tutto ciò che mi serve per rimanere organizzato. Se sei qui,
-                        probabilmente ti ho dato accesso per farti vedere qualcosa. Sentiti libero di curiosare!
-                    </p>
-                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mt-4">
-                        <i class="bi bi-person-check"></i> Entra
-                    </a>
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <h2 class="section-title">
+                            <i class="bi bi-gift-fill text-danger"></i> Lista di Babbo Natale
+                        </h2>
+                        <p class="section-subtitle">
+                            Idee regalo per chi vuole farmi felice (aggiornata regolarmente)
+                        </p>
+                    </div>
+
+                    <div class="wishlist-container">
+                        {% if wishlist_items %}
+                            <div class="row g-4">
+                                {% for item in wishlist_items %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card wishlist-card">
+                                        <div class="card-body">
+                                            <h5 class="wishlist-item-title">{{ item.nome }}</h5>
+                                            {% if item.descrizione %}
+                                            <p class="wishlist-item-desc">{{ item.descrizione }}</p>
+                                            {% endif %}
+                                            {% if item.link %}
+                                            <a href="{{ item.link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-link-45deg"></i> Link
+                                            </a>
+                                            {% endif %}
+                                            {% if item.priorita %}
+                                            <span class="badge bg-{{ 'danger' if item.priorita == 'alta' else 'warning' if item.priorita == 'media' else 'secondary' }} ms-2">
+                                                {{ item.priorita.capitalize() }}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info text-center">
+                                <i class="bi bi-info-circle"></i> La lista è vuota al momento. Tornerò presto con nuove idee!
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

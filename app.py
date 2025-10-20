@@ -35,9 +35,11 @@ else:
 # Registra i blueprints dei moduli
 from modules.fitness import bp as fitness_bp
 from modules.settings import bp as settings_bp
+from modules.wishlist import bp as wishlist_bp
 
 app.register_blueprint(fitness_bp)
 app.register_blueprint(settings_bp)
+app.register_blueprint(wishlist_bp)
 
 # Password per Dev Tools (solo per Claude/manutenzione)
 DEV_TOOLS_PASSWORD = "dev_access_2024"
@@ -214,6 +216,21 @@ def init_db():
         )
     ''')
 
+    # Tabella wishlist (Lista di Babbo Natale)
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS wishlist (
+            id {id_type},
+            user_id INTEGER,
+            nome {text_type} NOT NULL,
+            descrizione {text_type},
+            link {text_type},
+            priorita {text_type} DEFAULT 'media',
+            pubblico {bool_type} DEFAULT {'TRUE' if app.config['USE_POSTGRES'] else '1'},
+            created_at TIMESTAMP {timestamp_default},
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+
     conn.commit()
     cursor.close()
     conn.close()
@@ -294,8 +311,29 @@ def inject_user_preferences():
 
 @app.route('/')
 def index():
-    """Home page pubblica"""
-    return render_template('home.html')
+    """Home page pubblica con lista di Babbo Natale"""
+    conn = get_db()
+    try:
+        # Carica solo item pubblici o tutti se non specificato
+        wishlist_items = execute_query(conn, '''
+            SELECT nome, descrizione, link, priorita
+            FROM wishlist
+            WHERE pubblico = ?
+            ORDER BY
+                CASE priorita
+                    WHEN 'alta' THEN 1
+                    WHEN 'media' THEN 2
+                    ELSE 3
+                END,
+                created_at DESC
+        ''', (True if app.config['USE_POSTGRES'] else 1,), fetch_all=True)
+    except Exception as e:
+        print(f"Errore caricamento wishlist: {e}")
+        wishlist_items = []
+    finally:
+        conn.close()
+
+    return render_template('home.html', wishlist_items=wishlist_items)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

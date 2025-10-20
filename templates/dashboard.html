@@ -93,6 +93,8 @@
     .app-pasti { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
     .app-workout { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
     .app-stats { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .app-wishlist { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .app-home { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
 
     @media (max-width: 576px) {
         .app-grid {
@@ -120,6 +122,22 @@
 </div>
 
 <div class="app-grid">
+    <!-- Home Pubblica -->
+    <a href="{{ url_for('index') }}" class="app-icon">
+        <div class="app-icon-circle app-home">
+            <i class="bi bi-house-door"></i>
+        </div>
+        <p class="app-icon-label">Home</p>
+    </a>
+
+    <!-- Wishlist -->
+    <a href="{{ url_for('wishlist.index') }}" class="app-icon">
+        <div class="app-icon-circle app-wishlist">
+            <i class="bi bi-gift-fill"></i>
+        </div>
+        <p class="app-icon-label">Wishlist</p>
+    </a>
+
     <!-- Allenamenti -->
     <a href="{{ url_for('fitness.allenamenti') }}" class="app-icon">
         <div class="app-icon-circle app-allenamenti">
