@@ -95,6 +95,8 @@
     .app-stats { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
     .app-wishlist { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
     .app-home { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+    .app-location { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
+    .app-appointments { background: linear-gradient(135deg, #f77062 0%, #fe5196 100%); }
 
     @media (max-width: 576px) {
         .app-grid {
@@ -174,6 +176,22 @@
             <i class="bi bi-bar-chart-line"></i>
         </div>
         <p class="app-icon-label">Statistiche</p>
+    </a>
+
+    <!-- Dove Sono -->
+    <a href="{{ url_for('location.index') }}" class="app-icon">
+        <div class="app-icon-circle app-location">
+            <i class="bi bi-geo-alt-fill"></i>
+        </div>
+        <p class="app-icon-label">Dove Sono</p>
+    </a>
+
+    <!-- Appuntamenti -->
+    <a href="{{ url_for('appointments.index') }}" class="app-icon">
+        <div class="app-icon-circle app-appointments">
+            <i class="bi bi-calendar-check"></i>
+        </div>
+        <p class="app-icon-label">Appuntamenti</p>
     </a>
 </div>
 
