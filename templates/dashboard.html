@@ -1,104 +1,176 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Piattaforma{% endblock %}
+{% block title %}Home - Piattaforma{% endblock %}
+
+{% block extra_css %}
+<style>
+    .app-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 2rem;
+        padding: 2rem 0;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .app-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        padding: 1.5rem;
+        border-radius: 20px;
+        background: var(--bs-body-bg);
+        position: relative;
+    }
+
+    .app-icon:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .app-icon-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.75rem;
+        font-size: 2.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .app-icon-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: center;
+        margin-bottom: 0;
+        color: var(--bs-body-color);
+    }
+
+    .app-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #dc3545;
+        color: white;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        min-width: 20px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+    }
+
+    .welcome-section {
+        text-align: center;
+        padding: 2rem 0 1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .welcome-section h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-section .lead {
+        color: var(--bs-secondary);
+        font-size: 1rem;
+    }
+
+    /* Colori specifici per ogni app */
+    .app-allenamenti { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .app-pasti { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .app-workout { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .app-stats { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+    @media (max-width: 576px) {
+        .app-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .app-icon-circle {
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1 class="mb-4">Dashboard</h1>
-        <p class="lead">Benvenuto, {{ session.username }}!</p>
-    </div>
+<div class="welcome-section">
+    <h1>Ciao, {{ session.username }}! 👋</h1>
+    <p class="lead">Cosa vuoi fare oggi?</p>
 </div>
 
-<div class="row g-4 mt-2">
-    <!-- Fitness Allenamenti Card -->
-    <div class="col-md-6">
-        <div class="card text-white bg-danger h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2">Allenamenti</h6>
-                        <h2 class="card-title mb-0">{{ stats.allenamenti_settimana }}</h2>
-                        <p class="card-text small">ultimi 7 giorni</p>
-                    </div>
-                    <div>
-                        <i class="bi bi-heart-pulse" style="font-size: 3rem; opacity: 0.5;"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer bg-transparent border-top-0">
-                <a href="{{ url_for('fitness.allenamenti') }}" class="text-white text-decoration-none">
-                    Visualizza <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
+<div class="app-grid">
+    <!-- Allenamenti -->
+    <a href="{{ url_for('fitness.allenamenti') }}" class="app-icon">
+        <div class="app-icon-circle app-allenamenti">
+            <i class="bi bi-heart-pulse"></i>
+            {% if stats.allenamenti_settimana > 0 %}
+            <span class="app-badge">{{ stats.allenamenti_settimana }}</span>
+            {% endif %}
         </div>
-    </div>
+        <p class="app-icon-label">Allenamenti</p>
+    </a>
 
-    <!-- Fitness Pasti Card -->
-    <div class="col-md-6">
-        <div class="card text-white bg-success h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2">Pasti</h6>
-                        <h2 class="card-title mb-0">{{ stats.pasti_oggi }}</h2>
-                        <p class="card-text small">oggi</p>
-                    </div>
-                    <div>
-                        <i class="bi bi-egg-fried" style="font-size: 3rem; opacity: 0.5;"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer bg-transparent border-top-0">
-                <a href="{{ url_for('fitness.pasti') }}" class="text-white text-decoration-none">
-                    Visualizza <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
+    <!-- Pasti -->
+    <a href="{{ url_for('fitness.pasti') }}" class="app-icon">
+        <div class="app-icon-circle app-pasti">
+            <i class="bi bi-egg-fried"></i>
+            {% if stats.pasti_oggi > 0 %}
+            <span class="app-badge">{{ stats.pasti_oggi }}</span>
+            {% endif %}
         </div>
-    </div>
+        <p class="app-icon-label">Alimentazione</p>
+    </a>
+
+    <!-- Scheda Workout -->
+    <a href="{{ url_for('fitness.scheda_workout') }}" class="app-icon">
+        <div class="app-icon-circle app-workout">
+            <i class="bi bi-dumbbell"></i>
+        </div>
+        <p class="app-icon-label">Workout</p>
+    </a>
+
+    <!-- Statistiche -->
+    <a href="{{ url_for('fitness.stats') }}" class="app-icon">
+        <div class="app-icon-circle app-stats">
+            <i class="bi bi-bar-chart-line"></i>
+        </div>
+        <p class="app-icon-label">Statistiche</p>
+    </a>
 </div>
 
-<div class="row mt-5">
-    <div class="col-12">
-        <h3>Accesso Rapido</h3>
-    </div>
-    <div class="col-md-4 mt-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-plus-circle"></i> Nuovo Allenamento</h5>
-                <p class="card-text">Registra una sessione di allenamento</p>
-                <a href="{{ url_for('fitness.add_allenamento') }}" class="btn btn-danger">Aggiungi</a>
-            </div>
+<!-- Sezione Quick Stats (opzionale, minimale) -->
+<div class="row mt-5" style="max-width: 600px; margin: 0 auto;">
+    <div class="col-6 text-center">
+        <div class="p-3">
+            <h3 class="mb-0" style="color: #667eea;">{{ stats.allenamenti_settimana }}</h3>
+            <small class="text-muted">allenamenti questa settimana</small>
         </div>
     </div>
-    <div class="col-md-4 mt-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-plus-circle"></i> Nuovo Pasto</h5>
-                <p class="card-text">Registra un pasto</p>
-                <a href="{{ url_for('fitness.add_pasto') }}" class="btn btn-success">Aggiungi</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mt-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-dumbbell"></i> Scheda Workout</h5>
-                <p class="card-text">Inizia un workout strutturato (A/B/C)</p>
-                <a href="{{ url_for('fitness.scheda_workout') }}" class="btn btn-primary">Vai</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-bar-chart"></i> Statistiche Fitness</h5>
-                <p class="card-text">Visualizza progressi e statistiche dettagliate</p>
-                <a href="{{ url_for('fitness.stats') }}" class="btn btn-outline-primary">Visualizza Statistiche</a>
-            </div>
+    <div class="col-6 text-center">
+        <div class="p-3">
+            <h3 class="mb-0" style="color: #f5576c;">{{ stats.pasti_oggi }}</h3>
+            <small class="text-muted">pasti registrati oggi</small>
         </div>
     </div>
 </div>
