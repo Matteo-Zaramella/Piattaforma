@@ -253,15 +253,14 @@
         <div class="container hero-content">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <h1 class="hero-title">
-                        <i class="bi bi-graph-up-arrow"></i> Piattaforma
+                    <h1 class="hero-title" id="greeting">
+                        <i class="bi bi-graph-up-arrow"></i> Ciao!
                     </h1>
-                    <p class="hero-subtitle">
-                        La tua piattaforma personale per il monitoraggio completo
+                    <p class="hero-subtitle" id="claim">
+                        L'unico hub centrale di Zara
                     </p>
-                    <p class="hero-description">
-                        Gestisci i tuoi allenamenti, monitora la tua alimentazione e tieni traccia dei tuoi progressi.
-                        Tutto in un unico posto, semplice e intuitivo.
+                    <p class="hero-description" id="description">
+                        So perché sei qui ma non me lo ricordo
                     </p>
                     <a href="{{ url_for('login') }}" class="btn btn-login">
                         <i class="bi bi-box-arrow-in-right"></i> Accedi all'Area Privata
@@ -340,14 +339,14 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center">
-                    <h2 class="section-title">Semplice. Efficace. Personale.</h2>
+                    <h2 class="section-title">Un hub. Tante cose. Zero complicazioni.</h2>
                     <p class="section-subtitle">
-                        Piattaforma è stata creata per rendere il monitoraggio del tuo percorso fitness
-                        il più semplice possibile. Niente di complicato, solo ciò di cui hai bisogno
-                        per rimanere motivato e raggiungere i tuoi obiettivi.
+                        Questo è il mio spazio digitale personale dove tengo traccia di allenamenti,
+                        pasti e tutto ciò che mi serve per rimanere organizzato. Se sei qui,
+                        probabilmente ti ho dato accesso per farti vedere qualcosa. Sentiti libero di curiosare!
                     </p>
                     <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mt-4">
-                        <i class="bi bi-person-check"></i> Inizia Ora
+                        <i class="bi bi-person-check"></i> Entra
                     </a>
                 </div>
             </div>
@@ -358,11 +357,63 @@
     <footer class="footer">
         <div class="container">
             <p class="mb-0">
-                &copy; 2025 Piattaforma. Tutti i diritti riservati.
+                &copy; 2025 Matteo Zaramella. Made with ☕ and a lot of procrastination.
             </p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Rotazione random di saluti, claim e descrizioni
+        const greetings = [
+            "Ciao!",
+            "Buongiorno!",
+            "Buon pomeriggio!",
+            "Buonasera!",
+            "Ehilà!",
+            "Bentornato!",
+            "Hey!",
+            "Salve!",
+            "Ciao ciao!",
+            "Eccoci qui!"
+        ];
+
+        const claims = [
+            "L'unico hub centrale di Zara",
+            "Il posto dove Zara tiene traccia di tutto",
+            "Quartier generale di Zara",
+            "Il cervello digitale di Zara",
+            "L'archivio personale di Zara",
+            "Il centro operativo di Zara",
+            "La base segreta di Zara",
+            "Il pannello di controllo di Zara"
+        ];
+
+        const descriptions = [
+            "So perché sei qui ma non me lo ricordo",
+            "Probabilmente ti ho dato questo link, forse",
+            "Benvenuto nel mio angolo di internet ordinato",
+            "Sì, è proprio quello che pensi",
+            "Non chiedere, è complicato",
+            "La risposta è: dipende",
+            "Tutto sotto controllo, più o meno",
+            "Organizzato caos digitale"
+        ];
+
+        function getRandomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        // Imposta testi random al caricamento
+        document.addEventListener('DOMContentLoaded', function() {
+            const greetingEl = document.getElementById('greeting');
+            const claimEl = document.getElementById('claim');
+            const descriptionEl = document.getElementById('description');
+
+            greetingEl.innerHTML = '<i class="bi bi-graph-up-arrow"></i> ' + getRandomItem(greetings);
+            claimEl.textContent = getRandomItem(claims);
+            descriptionEl.textContent = getRandomItem(descriptions);
+        });
+    </script>
 </body>
 </html>
