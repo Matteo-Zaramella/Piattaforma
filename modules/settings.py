@@ -22,7 +22,7 @@ def get_user_preferences(user_id):
     if not prefs:
         execute_query(conn, '''
             INSERT INTO user_preferences (user_id, dark_mode, language, notifications)
-            VALUES (?, 0, 'it', 1)
+            VALUES (?, FALSE, 'it', TRUE)
         ''', (user_id,))
         prefs = execute_query(conn, 'SELECT * FROM user_preferences WHERE user_id = ?', (user_id,), fetch_one=True)
 
@@ -44,10 +44,10 @@ def update():
     """Aggiorna le preferenze"""
     user_id = session['user_id']
 
-    # Ottieni i dati dal form
-    dark_mode = 1 if request.form.get('dark_mode') == 'on' else 0
+    # Ottieni i dati dal form - convertiti a boolean per PostgreSQL
+    dark_mode = True if request.form.get('dark_mode') == 'on' else False
     language = request.form.get('language', 'it')
-    notifications = 1 if request.form.get('notifications') == 'on' else 0
+    notifications = True if request.form.get('notifications') == 'on' else False
 
     conn = get_db()
     execute_query(conn, '''
@@ -69,7 +69,7 @@ def toggle_dark_mode():
     conn = get_db()
     current = execute_query(conn, 'SELECT dark_mode FROM user_preferences WHERE user_id = ?', (user_id,), fetch_one=True)
 
-    new_value = 0 if current['dark_mode'] else 1
+    new_value = False if current['dark_mode'] else True
 
     execute_query(conn, '''
         UPDATE user_preferences
