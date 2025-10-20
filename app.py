@@ -479,14 +479,28 @@ def save_file():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+@app.errorhandler(500)
+def handle_500_error(error):
+    """Gestisce errori interni del server"""
+    print(f"Errore 500: {error}")
+    return render_template('error.html', error_code=500, error_message="Si è verificato un errore interno del server. Riprova più tardi."), 500
+
+@app.errorhandler(404)
+def handle_404_error(error):
+    """Gestisce pagine non trovate"""
+    return render_template('error.html', error_code=404, error_message="Pagina non trovata."), 404
+
 @app.route('/init-database-tables')
+@login_required
 def init_database_tables():
-    """Endpoint temporaneo per inizializzare tabelle database"""
+    """Endpoint per inizializzare tabelle database (protetto da login)"""
     try:
         init_db()
-        return jsonify({'success': True, 'message': 'Database inizializzato con successo!'}), 200
+        flash('Database inizializzato con successo!', 'success')
+        return redirect(url_for('dashboard'))
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        flash(f'Errore inizializzazione database: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     # Inizializza database se non esiste (o verifica tabelle PostgreSQL)

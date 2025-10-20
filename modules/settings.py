@@ -1,14 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
 from functools import wraps
-import sqlite3
+from db_utils import get_db, execute_query
 
 bp = Blueprint('settings', __name__, url_prefix='/settings')
-
-def get_db():
-    """Connessione al database"""
-    db = sqlite3.connect('piattaforma.db')
-    db.row_factory = sqlite3.Row
-    return db
 
 def login_required(f):
     """Decorator per proteggere le route"""
@@ -21,19 +15,18 @@ def login_required(f):
 
 def get_user_preferences(user_id):
     """Ottieni le preferenze dell'utente"""
-    db = get_db()
-    prefs = db.execute('SELECT * FROM user_preferences WHERE user_id = ?', (user_id,)).fetchone()
+    conn = get_db()
+    prefs = execute_query(conn, 'SELECT * FROM user_preferences WHERE user_id = ?', (user_id,), fetch_one=True)
 
     # Se non esistono preferenze, creale con valori di default
     if not prefs:
-        db.execute('''
+        execute_query(conn, '''
             INSERT INTO user_preferences (user_id, dark_mode, language, notifications)
             VALUES (?, 0, 'it', 1)
         ''', (user_id,))
-        db.commit()
-        prefs = db.execute('SELECT * FROM user_preferences WHERE user_id = ?', (user_id,)).fetchone()
+        prefs = execute_query(conn, 'SELECT * FROM user_preferences WHERE user_id = ?', (user_id,), fetch_one=True)
 
-    db.close()
+    conn.close()
     return prefs
 
 @bp.route('/')
@@ -56,14 +49,13 @@ def update():
     language = request.form.get('language', 'it')
     notifications = 1 if request.form.get('notifications') == 'on' else 0
 
-    db = get_db()
-    db.execute('''
+    conn = get_db()
+    execute_query(conn, '''
         UPDATE user_preferences
         SET dark_mode = ?, language = ?, notifications = ?, updated_at = CURRENT_TIMESTAMP
         WHERE user_id = ?
     ''', (dark_mode, language, notifications, user_id))
-    db.commit()
-    db.close()
+    conn.close()
 
     flash('Impostazioni salvate con successo!', 'success')
     return redirect(url_for('settings.index'))
@@ -74,18 +66,17 @@ def toggle_dark_mode():
     """Toggle rapido della modalità scura (AJAX)"""
     user_id = session['user_id']
 
-    db = get_db()
-    current = db.execute('SELECT dark_mode FROM user_preferences WHERE user_id = ?', (user_id,)).fetchone()
+    conn = get_db()
+    current = execute_query(conn, 'SELECT dark_mode FROM user_preferences WHERE user_id = ?', (user_id,), fetch_one=True)
 
     new_value = 0 if current['dark_mode'] else 1
 
-    db.execute('''
+    execute_query(conn, '''
         UPDATE user_preferences
         SET dark_mode = ?, updated_at = CURRENT_TIMESTAMP
         WHERE user_id = ?
     ''', (new_value, user_id))
-    db.commit()
-    db.close()
+    conn.close()
 
     return jsonify({'success': True, 'dark_mode': new_value})
 
