@@ -73,7 +73,9 @@ def toggle_dark_mode():
     conn = get_db()
     current = execute_query(conn, 'SELECT dark_mode FROM user_preferences WHERE user_id = ?', (user_id,), fetch_one=True)
 
-    new_value = False if current['dark_mode'] else True
+    # Converte esplicitamente a boolean (gestisce 0/1 di SQLite e True/False di Postgres)
+    current_value = bool(current['dark_mode']) if current else False
+    new_value = not current_value
 
     cursor = execute_query(conn, '''
         UPDATE user_preferences

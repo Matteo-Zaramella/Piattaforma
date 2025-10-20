@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Nuovo Appuntamento - Piattaforma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-calendar-plus"></i> Nuovo Appuntamento</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Titolo *</label>
+                        <input type="text" name="titolo" class="form-control" required placeholder="Es. Riunione lavoro, Cena con amici...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Data e Ora *</label>
+                        <input type="datetime-local" name="data_ora" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Luogo</label>
+                        <input type="text" name="luogo" class="form-control" placeholder="Es. Ufficio, Ristorante X...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descrizione</label>
+                        <textarea name="descrizione" class="form-control" rows="3" placeholder="Dettagli sull'appuntamento..."></textarea>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="pubblico" class="form-check-input" id="pubblicoCheck">
+                        <label class="form-check-label" for="pubblicoCheck">
+                            <i class="bi bi-globe"></i> Visibile nella home pubblica
+                        </label>
+                        <small class="form-text text-muted d-block">
+                            Se spuntato, questo appuntamento sarà visibile nella sezione "Prossimi Impegni" della home
+                        </small>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-check-circle"></i> Aggiungi
+                        </button>
+                        <a href="{{ url_for('appointments.index') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Annulla
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

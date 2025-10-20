@@ -20,7 +20,7 @@
 
     <div class="row">
         <div class="col-12 col-lg-8 col-xl-7 mx-auto">
-            <form method="POST" action="{{ url_for('settings.update') }}"
+            <form method="POST" action="{{ url_for('settings.update') }}">
                 <!-- Sezione Aspetto -->
                 <div class="settings-card mb-3">
                     <div class="settings-card-header">
@@ -199,27 +199,8 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Applica immediatamente il tema
-                if (data.dark_mode) {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                }
-                // Aggiorna lo switch
-                document.getElementById('dark_mode').checked = data.dark_mode;
-
-                // Mostra feedback visivo
-                const btn = this;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="bi bi-check-lg"></i> Applicato!';
-                btn.classList.add('btn-success');
-                btn.classList.remove('btn-outline-primary');
-
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.classList.remove('btn-success');
-                    btn.classList.add('btn-outline-primary');
-                }, 1500);
+                // Ricarica la pagina per applicare il tema correttamente
+                location.reload();
             }
         });
     });

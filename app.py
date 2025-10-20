@@ -338,14 +338,18 @@ def inject_user_preferences():
     """Inietta le preferenze utente in tutti i template"""
     dark_mode = False
     if 'user_id' in session:
-        conn = get_db()
-        prefs = execute_query(conn,
-                             'SELECT dark_mode FROM user_preferences WHERE user_id = ?',
-                             (session['user_id'],),
-                             fetch_one=True)
-        if prefs:
-            dark_mode = bool(prefs['dark_mode'])
-        conn.close()
+        try:
+            conn = get_db()
+            prefs = execute_query(conn,
+                                 'SELECT dark_mode FROM user_preferences WHERE user_id = ?',
+                                 (session['user_id'],),
+                                 fetch_one=True)
+            if prefs:
+                # Converte esplicitamente a boolean (gestisce 0/1 di SQLite)
+                dark_mode = bool(int(prefs['dark_mode'])) if prefs['dark_mode'] is not None else False
+            conn.close()
+        except Exception as e:
+            print(f"Errore caricamento preferenze: {e}")
     return dict(dark_mode=dark_mode)
 
 @app.route('/')
