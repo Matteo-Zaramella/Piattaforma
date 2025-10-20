@@ -6,9 +6,14 @@
 <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mb-4">
         <h1><i class="bi bi-egg-fried"></i> Pasti</h1>
-        <a href="{{ url_for('fitness.add_pasto') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Nuovo Pasto
-        </a>
+        <div>
+            <a href="{{ url_for('fitness.export_pasti') }}" class="btn btn-success me-2">
+                <i class="bi bi-download"></i> Esporta CSV
+            </a>
+            <a href="{{ url_for('fitness.add_pasto') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuovo Pasto
+            </a>
+        </div>
     </div>
 </div>
 

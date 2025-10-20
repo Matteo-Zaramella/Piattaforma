@@ -151,6 +151,46 @@ def delete_pasto(pasto_id):
     flash('Pasto eliminato', 'success')
     return redirect(url_for('fitness.pasti'))
 
+@bp.route('/pasti/export')
+def export_pasti():
+    """Esporta tutti i pasti in formato CSV"""
+    conn = get_db()
+    user_id = session['user_id']
+
+    # Recupera tutti i pasti dell'utente
+    pasti = execute_query(conn, '''
+        SELECT data, tipo_pasto, descrizione, created_at
+        FROM pasti
+        WHERE user_id = ?
+        ORDER BY data DESC, created_at ASC
+    ''', (user_id,), fetch_all=True)
+
+    conn.close()
+
+    # Crea file CSV in memoria
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Intestazioni CSV
+    writer.writerow(['Data', 'Tipo Pasto', 'Descrizione', 'Data Inserimento'])
+
+    # Dati
+    for row in pasti:
+        writer.writerow([
+            row['data'],
+            row['tipo_pasto'],
+            row['descrizione'],
+            row['created_at']
+        ])
+
+    # Prepara la risposta
+    output.seek(0)
+    response = make_response(output.getvalue())
+    response.headers['Content-Disposition'] = f'attachment; filename=pasti_{datetime.now().strftime("%Y%m%d")}.csv'
+    response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+
+    return response
+
 # ===== ALLENAMENTI =====
 
 @bp.route('/allenamenti')
@@ -498,7 +538,7 @@ def export_workout_sessions():
     user_id = session['user_id']
 
     # Recupera tutte le sessioni workout con i relativi esercizi
-    sessions = execute_query(conn, '''
+    workout_sessions = execute_query(conn, '''
         SELECT ws.id, ws.data, ws.workout_type, ws.completato, ws.created_at
         FROM workout_sessions ws
         WHERE ws.user_id = ?
@@ -513,20 +553,20 @@ def export_workout_sessions():
     writer.writerow(['Data', 'Tipo Workout', 'Completato', 'Esercizio', 'Serie', 'Ripetizioni', 'Peso (kg)', 'Note'])
 
     # Per ogni sessione, recupera gli esercizi
-    for session in sessions:
+    for ws in workout_sessions:
         exercises = execute_query(conn, '''
             SELECT esercizio, serie_numero, ripetizioni, peso, note
             FROM workout_exercises
             WHERE session_id = ?
             ORDER BY serie_numero ASC
-        ''', (session['id'],), fetch_all=True)
+        ''', (ws['id'],), fetch_all=True)
 
         if exercises:
             for i, ex in enumerate(exercises):
                 writer.writerow([
-                    session['data'] if i == 0 else '',
-                    session['workout_type'] if i == 0 else '',
-                    'Sì' if session['completato'] else 'No' if i == 0 else '',
+                    ws['data'] if i == 0 else '',
+                    ws['workout_type'] if i == 0 else '',
+                    'Sì' if ws['completato'] else 'No' if i == 0 else '',
                     ex['esercizio'],
                     ex['serie_numero'],
                     ex['ripetizioni'] or '',
@@ -536,9 +576,9 @@ def export_workout_sessions():
         else:
             # Sessione senza esercizi
             writer.writerow([
-                session['data'],
-                session['workout_type'],
-                'Sì' if session['completato'] else 'No',
+                ws['data'],
+                ws['workout_type'],
+                'Sì' if ws['completato'] else 'No',
                 '',
                 '',
                 '',
