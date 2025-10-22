@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Game Prize{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">🎮 Admin Dashboard - Game Prize</h1>
+            {% if config %}
+                <p class="text-muted">{{ config[1] }}</p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('game_prize.admin_setup') }}" class="btn btn-primary">
+                ⚙️ Configura Gioco
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Sfide Totali</h6>
+                    <p class="display-5">{{ challenges|length }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Giocatori Attivi</h6>
+                    <p class="display-5">{{ total_players }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Completamenti</h6>
+                    <p class="display-5">{{ total_completions }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Tasso Completamento</h6>
+                    <p class="display-5">
+                        {% if challenges|length > 0 %}
+                            {{ ((total_completions / (challenges|length * total_players) * 100)|round(1))|int if total_players > 0 else 0 }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sfide Management -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📋 Gestione Sfide</h5>
+                    <a href="{{ url_for('game_prize.admin_add_challenge') }}" class="btn btn-sm btn-success">
+                        ➕ Aggiungi Sfida
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if challenges %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Numero</th>
+                                        <th>Titolo</th>
+                                        <th>Punti</th>
+                                        <th>Data Inizio</th>
+                                        <th>Data Fine</th>
+                                        <th>Azioni</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for challenge in challenges %}
+                                        <tr>
+                                            <td><strong>{{ challenge[1] }}</strong></td>
+                                            <td>{{ challenge[2] }}</td>
+                                            <td>
+                                                <span class="badge bg-success">{{ challenge[4] }}</span>
+                                            </td>
+                                            <td>
+                                                {% if challenge[5] %}
+                                                    {{ challenge[5][:10] }}
+                                                {% else %}
+                                                    <em class="text-muted">Non impostato</em>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if challenge[6] %}
+                                                    {{ challenge[6][:10] }}
+                                                {% else %}
+                                                    <em class="text-muted">Non impostato</em>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('game_prize.admin_edit_challenge', challenge_id=challenge[0]) }}"
+                                                       class="btn btn-sm btn-primary">
+                                                        ✏️ Modifica
+                                                    </a>
+                                                    <a href="{{ url_for('game_prize.admin_add_clue', challenge_id=challenge[0]) }}"
+                                                       class="btn btn-sm btn-info">
+                                                        💡 Aggiungi Indizio
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            Nessuna sfida creata. <a href="{{ url_for('game_prize.admin_add_challenge') }}">Aggiungi la prima sfida</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Info -->
+    {% if config %}
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card border-info">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">ℹ️ Configurazione Gioco</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Nome:</strong> {{ config[1] }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Data Inizio:</strong> {{ config[2] if config[2] else 'Non impostato' }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Data Fine:</strong> {{ config[3] if config[3] else 'Non impostato' }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Sfide Totali:</strong> {{ config[4] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

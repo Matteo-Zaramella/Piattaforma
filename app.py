@@ -38,12 +38,14 @@ from modules.settings import bp as settings_bp
 from modules.wishlist import bp as wishlist_bp
 from modules.location import bp as location_bp
 from modules.appointments import bp as appointments_bp
+from modules.game_prize import bp as game_prize_bp
 
 app.register_blueprint(fitness_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(wishlist_bp)
 app.register_blueprint(location_bp)
 app.register_blueprint(appointments_bp)
+app.register_blueprint(game_prize_bp)
 
 # Password per Dev Tools (solo per Claude/manutenzione)
 DEV_TOOLS_PASSWORD = "dev_access_2024"
@@ -270,6 +272,93 @@ def init_db():
         )
     ''')
 
+    # ============== TABELLE GAME PRIZE ==============
+
+    # Tabella configurazione gioco a premi
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS game_prize_config (
+            id {id_type},
+            game_name {text_type} DEFAULT 'Premio di Compleanno',
+            start_date TIMESTAMP,
+            end_date TIMESTAMP,
+            total_challenges INTEGER DEFAULT 12,
+            description {text_type},
+            created_at TIMESTAMP {timestamp_default},
+            updated_at TIMESTAMP {timestamp_default}
+        )
+    ''')
+
+    # Tabella sfide del gioco
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS game_challenges (
+            id {id_type},
+            challenge_number INTEGER NOT NULL,
+            title {text_type} NOT NULL,
+            description {text_type},
+            points INTEGER DEFAULT 100,
+            start_date TIMESTAMP,
+            end_date TIMESTAMP,
+            location {text_type},
+            instructions {text_type},
+            created_at TIMESTAMP {timestamp_default},
+            updated_at TIMESTAMP {timestamp_default}
+        )
+    ''')
+
+    # Tabella indizi per le sfide
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS game_clues (
+            id {id_type},
+            challenge_id INTEGER NOT NULL,
+            clue_number INTEGER NOT NULL,
+            clue_text {text_type} NOT NULL,
+            revealed_date TIMESTAMP,
+            created_at TIMESTAMP {timestamp_default},
+            FOREIGN KEY (challenge_id) REFERENCES game_challenges (id)
+        )
+    ''')
+
+    # Tabella completamenti sfide da parte degli utenti
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS game_user_completions (
+            id {id_type},
+            user_id INTEGER NOT NULL,
+            challenge_id INTEGER NOT NULL,
+            completed_date TIMESTAMP {timestamp_default},
+            created_at TIMESTAMP {timestamp_default},
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (challenge_id) REFERENCES game_challenges (id),
+            UNIQUE (user_id, challenge_id)
+        )
+    ''')
+
+    # Tabella punti degli utenti
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS game_user_scores (
+            id {id_type},
+            user_id INTEGER NOT NULL,
+            challenge_id INTEGER NOT NULL,
+            points INTEGER NOT NULL,
+            awarded_date TIMESTAMP {timestamp_default},
+            created_at TIMESTAMP {timestamp_default},
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (challenge_id) REFERENCES game_challenges (id)
+        )
+    ''')
+
+    # Tabella per tracciare quando è stato rivelato il vincitore
+    cursor.execute(f'''
+        CREATE TABLE IF NOT EXISTS game_winner_reveal (
+            id {id_type},
+            revealed {bool_type} DEFAULT {'FALSE' if app.config['USE_POSTGRES'] else '0'},
+            revealed_date TIMESTAMP,
+            winner_user_id INTEGER,
+            created_at TIMESTAMP {timestamp_default},
+            updated_at TIMESTAMP {timestamp_default},
+            FOREIGN KEY (winner_user_id) REFERENCES users (id)
+        )
+    ''')
+
     conn.commit()
     cursor.close()
     conn.close()
@@ -332,6 +421,14 @@ def execute_query(conn, query, params=None, fetch_one=False, fetch_all=False):
         return result
     else:
         return cursor
+
+@app.context_processor
+def inject_game_prize_status():
+    """Inietta lo stato del Game Prize in tutti i template"""
+    from datetime import datetime
+    game_reveal_date = datetime(2026, 1, 24, 0, 0, 0)
+    is_game_revealed = datetime.now() >= game_reveal_date
+    return dict(is_game_prize_revealed=is_game_revealed)
 
 @app.context_processor
 def inject_user_preferences():
@@ -411,6 +508,11 @@ def index():
                          wishlist_items=wishlist_items,
                          current_location=current_location,
                          appointments=appointments)
+
+@app.route('/game-prize-reveal')
+def game_prize_reveal():
+    """Pagina pubblica con countdown per Game Prize - Visibile a tutti"""
+    return render_template('game_prize_countdown.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

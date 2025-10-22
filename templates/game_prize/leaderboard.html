@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Classifica - Game Prize{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <h1 class="display-4">📊 Classifica</h1>
+            <p class="lead">Vedi dove ti posizioni nel gioco</p>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ url_for('game_prize.dashboard') }}" class="btn btn-outline-primary">
+                ← Torna al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Reveal Winner Alert -->
+    {% if reveal_winner %}
+        <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+            <strong>⚠️ MILESTONE RAGGIUNTO!</strong>
+            <p class="mb-0">È stato completato il 50% del gioco ({{ completed_challenges }}/{{ total_challenges }} sfide)! Il vincitore verrà rivelato al termine del gioco.</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% else %}
+        <div class="alert alert-info mb-4">
+            Completa ancora <strong>{{ ((total_challenges//2) - completed_challenges) }}</strong> sfide per scoprire il vincitore!
+        </div>
+    {% endif %}
+
+    <!-- Leaderboard Table -->
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center" style="width: 60px;">Posizione</th>
+                            <th>Giocatore</th>
+                            <th class="text-center">Sfide Completate</th>
+                            <th class="text-center" style="width: 100px;">Punti Totali</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if leaderboard %}
+                            {% for entry in leaderboard %}
+                                <tr {% if entry.is_current_user %}class="table-primary fw-bold"{% endif %}>
+                                    <td class="text-center">
+                                        {% if entry.position == 1 %}
+                                            <span class="badge bg-warning text-dark fs-5">🥇</span>
+                                        {% elif entry.position == 2 %}
+                                            <span class="badge bg-secondary fs-5">🥈</span>
+                                        {% elif entry.position == 3 %}
+                                            <span class="badge bg-danger fs-5">🥉</span>
+                                        {% else %}
+                                            <strong class="fs-5">{{ entry.position }}</strong>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ entry.username }}
+                                        {% if entry.is_current_user %}
+                                            <span class="badge bg-primary">Tu</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info">{{ entry.completed_challenges }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong class="text-success fs-5">{{ entry.total_points }}</strong>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-5">
+                                    Nessun giocatore ancora...
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your Position Card -->
+    {% if user_position %}
+        <div class="row mt-5">
+            <div class="col-md-6 offset-md-3">
+                <div class="card border-primary">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">La Tua Posizione</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <h2 class="display-4 text-primary">{{ user_position }}</h2>
+                        <p class="text-muted">su {{ leaderboard|length }} giocatori</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Game Stats -->
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Sfide Completate</h6>
+                    <p class="display-5">{{ completed_challenges }}/{{ total_challenges }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Giocatori Attivi</h6>
+                    <p class="display-5">{{ leaderboard|length }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Progresso Gioco</h6>
+                    <p class="display-5">{{ ((completed_challenges/total_challenges*100)|round(0))|int }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,.02);
+    }
+
+    .table-primary {
+        background-color: rgba(13, 110, 253, 0.15) !important;
+    }
+</style>
+{% endblock %}

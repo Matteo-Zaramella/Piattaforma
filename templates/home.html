@@ -438,6 +438,103 @@
         </div>
     </div>
 
+    <!-- Game Prize Section (Visible after 24/01/2026 or as countdown before) -->
+    <div class="container mt-5">
+        {% if is_game_prize_revealed %}
+            <!-- Game Prize Active Section -->
+            <div class="section-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 3rem;">
+                <h2 class="section-title" style="color: white; margin-bottom: 1rem;">
+                    <i class="bi bi-star-fill"></i> Game Prize è Attivo!
+                </h2>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+                    Il gioco del tuo 25esimo compleanno è iniziato! Accedi e inizia a giocare per competere con i tuoi amici.
+                </p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <a href="{{ url_for('game_prize.dashboard') }}" class="btn btn-light btn-lg fw-bold">
+                        🎮 Accedi al Game Prize
+                    </a>
+                    <a href="{{ url_for('game_prize.leaderboard') }}" class="btn btn-outline-light btn-lg fw-bold">
+                        📊 Visualizza Classifica
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <!-- Game Prize Countdown Section -->
+            <div class="section-card" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; text-align: center; padding: 3rem; border-radius: 15px;">
+                <h2 class="section-title" style="color: white; margin-bottom: 2rem;">
+                    <i class="bi bi-hourglass-split"></i> Qualcosa di Speciale in Arrivo...
+                </h2>
+
+                <p style="font-size: 1.1rem; margin-bottom: 2rem;">
+                    Il Game Prize ti aspetta il <strong>24 Gennaio 2026</strong> per il tuo 25esimo compleanno!
+                </p>
+
+                <!-- Mini Countdown -->
+                <div class="row g-3 mb-3" style="max-width: 600px; margin: 0 auto;">
+                    <div class="col-6 col-md-3">
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; backdrop-filter: blur(10px);">
+                            <div style="font-size: 2rem; font-weight: bold; font-family: 'Courier New', monospace;" id="mini-days">000</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Giorni</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; backdrop-filter: blur(10px);">
+                            <div style="font-size: 2rem; font-weight: bold; font-family: 'Courier New', monospace;" id="mini-hours">00</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Ore</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; backdrop-filter: blur(10px);">
+                            <div style="font-size: 2rem; font-weight: bold; font-family: 'Courier New', monospace;" id="mini-minutes">00</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Minuti</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; backdrop-filter: blur(10px);">
+                            <div style="font-size: 2rem; font-weight: bold; font-family: 'Courier New', monospace;" id="mini-seconds">00</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Secondi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.95rem; opacity: 0.8; margin-bottom: 2rem;">
+                    Un gioco epico con 12 sfide, indizi settimanali, una classifica dal vivo e un vincitore che verrà rivelato a sorpresa!
+                </p>
+
+                <a href="{{ url_for('game_prize_reveal') }}" class="btn btn-primary btn-lg fw-bold">
+                    👀 Visualizza il Countdown Completo
+                </a>
+            </div>
+
+            <script>
+                // Mini countdown nella home
+                function updateMiniCountdown() {
+                    const targetDate = new Date('2026-01-24T00:00:00').getTime();
+                    const now = new Date().getTime();
+                    const timeRemaining = targetDate - now;
+
+                    if (timeRemaining > 0) {
+                        const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                        document.getElementById('mini-days').textContent = String(days).padStart(3, '0');
+                        document.getElementById('mini-hours').textContent = String(hours).padStart(2, '0');
+                        document.getElementById('mini-minutes').textContent = String(minutes).padStart(2, '0');
+                        document.getElementById('mini-seconds').textContent = String(seconds).padStart(2, '0');
+                    }
+                }
+
+                // Update on page load
+                document.addEventListener('DOMContentLoaded', updateMiniCountdown);
+
+                // Update every second
+                setInterval(updateMiniCountdown, 1000);
+            </script>
+        {% endif %}
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2025 Matteo Zaramella. Made with ☕ and a lot of procrastination.</p>

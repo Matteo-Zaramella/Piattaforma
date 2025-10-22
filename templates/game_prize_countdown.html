@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Game Prize - In Arrivo!{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="row w-100">
+        <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+            <!-- Main Card -->
+            <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <!-- Header -->
+                <div class="card-header bg-dark text-white text-center py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+                    <h1 class="display-3 mb-3">🎮</h1>
+                    <h2 class="mb-0">Game Prize</h2>
+                    <p class="text-warning mt-3 mb-0">Un gioco incredibile ti aspetta...</p>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-5 text-center">
+                    <h3 class="mb-4" id="countdownTitle">⏰ Countdown</h3>
+
+                    <!-- Timer Display -->
+                    <div id="timerContent" class="timer-display">
+                        <div class="row g-3 mb-5">
+                            <div class="col-6 col-md-3">
+                                <div class="timer-box">
+                                    <div class="timer-value" id="days">000</div>
+                                    <div class="timer-label">Giorni</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="timer-box">
+                                    <div class="timer-value" id="hours">00</div>
+                                    <div class="timer-label">Ore</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="timer-box">
+                                    <div class="timer-value" id="minutes">00</div>
+                                    <div class="timer-label">Minuti</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="timer-box">
+                                    <div class="timer-value" id="seconds">00</div>
+                                    <div class="timer-label">Secondi</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-muted mb-4">
+                            Ritorna il <strong>24 Gennaio 2026</strong> per scoprire il gioco!
+                        </p>
+                    </div>
+
+                    <!-- Revealed Content (Hidden until 24/01/2026 00:00) -->
+                    <div id="revealedContent" class="revealed-content" style="display: none;">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <h4 class="alert-heading">🎉 È ARRIVATO IL MOMENTO!</h4>
+                            <p class="mb-0">Il Game Prize è ora disponibile! Accedi per iniziare a giocare e competere con gli altri partecipanti.</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <div class="mt-4 mb-4">
+                            <h5>Che cosa è Game Prize?</h5>
+                            <p class="text-muted">
+                                Un esclusivo gioco a premi che dura un anno intero, con 12 sfide affascinanti,
+                                indizi settimanali, classifica in tempo reale e un vincitore che sarà rivelato
+                                al raggiungimento del 50% del gioco!
+                            </p>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="feature-box p-3 rounded bg-light">
+                                    <h6>🎯 12 Sfide</h6>
+                                    <small class="text-muted">Sfide affascinanti distribuite nel corso di un anno</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-box p-3 rounded bg-light">
+                                    <h6>💡 Indizi Settimanali</h6>
+                                    <small class="text-muted">Aiutati dagli indizi per trovare le prossime sfide</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-box p-3 rounded bg-light">
+                                    <h6>📊 Classifica Live</h6>
+                                    <small class="text-muted">Vedi in tempo reale dove ti posizioni</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-box p-3 rounded bg-light">
+                                    <h6>🏆 Un Vincitore</h6>
+                                    <small class="text-muted">Sorpresa al 50%! Il vincitore sarà rivelato a metà gioco</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            {% if current_user and current_user.is_authenticated %}
+                                <a href="{{ url_for('game_prize.dashboard') }}" class="btn btn-primary btn-lg">
+                                    🎮 Accedi al Game Prize
+                                </a>
+                                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                                    Torna al Dashboard
+                                </a>
+                            {% else %}
+                                <p class="text-muted mb-3">Devi essere loggato per giocare</p>
+                                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                                    🔑 Accedi
+                                </a>
+                                <p class="text-muted mt-3 mb-0">Non hai un account? <a href="{{ url_for('register') }}">Registrati qui</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer bg-light text-center py-3">
+                    <small class="text-muted">
+                        Preparati per il gioco del tuo 25esimo compleanno! 🎂
+                    </small>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="mt-4 card border-info" style="border-radius: 15px;">
+                <div class="card-body text-muted text-center small">
+                    <p class="mb-2">💬 Condividi con gli amici il countdown!</p>
+                    <p class="mb-0">Rimani sintonizzato sui social per aggiornamenti 📱</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timer-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 20px 10px;
+        color: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .timer-box:hover {
+        transform: scale(1.05);
+    }
+
+    .timer-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        display: block;
+        line-height: 1;
+        margin-bottom: 5px;
+        font-family: 'Courier New', monospace;
+    }
+
+    .timer-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .feature-box {
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+
+    .feature-box:hover {
+        transform: translateX(5px);
+        background-color: #f0f0ff !important;
+        border-left-color: #764ba2;
+    }
+
+    .revealed-content {
+        animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Pulse animation per il countdown */
+    .timer-display.pulsing .timer-value {
+        animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+</style>
+
+<script>
+// Data target: 24 Gennaio 2026, 00:00:00
+const targetDate = new Date('2026-01-24T00:00:00').getTime();
+
+function updateCountdown() {
+    const now = new Date().getTime();
+    const timeRemaining = targetDate - now;
+
+    // Se il tempo è scaduto, mostra il contenuto rivelato
+    if (timeRemaining <= 0) {
+        document.getElementById('timerContent').style.display = 'none';
+        document.getElementById('revealedContent').style.display = 'block';
+        document.getElementById('countdownTitle').innerHTML = '✅ Gioco Attivo!';
+        clearInterval(timerInterval);
+        return;
+    }
+
+    // Calcola giorni, ore, minuti, secondi
+    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+    // Formatta con zeri
+    document.getElementById('days').textContent = String(days).padStart(3, '0');
+    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+    document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+    // Pulse effect negli ultimi 10 secondi
+    if (timeRemaining < 10000) {
+        document.querySelector('.timer-display').classList.add('pulsing');
+    } else {
+        document.querySelector('.timer-display').classList.remove('pulsing');
+    }
+}
+
+// Aggiorna il countdown ogni secondo
+const timerInterval = setInterval(updateCountdown, 1000);
+
+// Aggiorna subito
+updateCountdown();
+
+// Fallback per refresh della pagina ogni minuto (per sincronizzazione più accurata)
+setTimeout(() => {
+    location.reload();
+}, 60000);
+</script>
+{% endblock %}

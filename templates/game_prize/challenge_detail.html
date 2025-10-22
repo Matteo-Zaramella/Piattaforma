@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge[2] }} - Game Prize{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{{ url_for('game_prize.dashboard') }}" class="btn btn-outline-secondary">
+            ← Torna al Dashboard
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        {% if user_completion %}
+                            ✅ {{ challenge[2] }}
+                        {% else %}
+                            🎯 {{ challenge[2] }}
+                        {% endif %}
+                    </h2>
+                </div>
+
+                <div class="card-body">
+                    {% if challenge[3] %}
+                        <h5>Descrizione</h5>
+                        <p>{{ challenge[3] }}</p>
+                    {% endif %}
+
+                    {% if challenge[8] %}
+                        <h5>Istruzioni</h5>
+                        <div class="alert alert-info">
+                            {{ challenge[8] }}
+                        </div>
+                    {% endif %}
+
+                    {% if challenge[7] %}
+                        <h5>📍 Luogo</h5>
+                        <p>{{ challenge[7] }}</p>
+                    {% endif %}
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h5>Punti Disponibili</h5>
+                            <p class="display-6 text-success">{{ challenge[4] }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Data Inizio</h5>
+                            <p>
+                                {% if challenge[5] %}
+                                    {{ challenge[5][:10] }}
+                                {% else %}
+                                    Non specificato
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clues Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">🔍 Indizi</h5>
+                </div>
+                <div class="card-body">
+                    {% if clues %}
+                        <div class="accordion" id="cluesAccordion">
+                            {% for clue in clues %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button {% if loop.first %}{% else %}collapsed{% endif %}"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#clue{{ clue[0] }}"
+                                                aria-expanded="{% if loop.first %}true{% else %}false{% endif %}">
+                                            Indizio {{ clue[1] }}
+                                            {% if clue[3] %}
+                                                <small class="text-muted ms-2">(Rivelato: {{ clue[3][:10] }})</small>
+                                            {% else %}
+                                                <small class="text-warning ms-2">(In arrivo)</small>
+                                            {% endif %}
+                                        </button>
+                                    </h2>
+                                    <div id="clue{{ clue[0] }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
+                                         data-bs-parent="#cluesAccordion">
+                                        <div class="accordion-body">
+                                            {% if clue[3] and clue[3] <= 'now'|safe %}
+                                                <p>{{ clue[2] }}</p>
+                                            {% else %}
+                                                <p class="text-muted"><em>Questo indizio sarà rivelato il {{ clue[3][:10] if clue[3] else 'prossimamente' }}</em></p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Nessun indizio disponibile al momento.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Complete Challenge Section -->
+            {% if not user_completion %}
+                <div class="card border-success mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Completa la Sfida</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Hai completato questa sfida? Clicca il pulsante qui sotto per registrare il completamento e guadagnare {{ challenge[4] }} punti!</p>
+                        <button class="btn btn-success btn-lg w-100"
+                                onclick="completeChallenge({{ challenge[0] }})">
+                            ✅ Segna come Completata
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading">🎉 Sfida Completata!</h4>
+                    <p>Hai guadagnato <strong>{{ challenge[4] }} punti</strong> per questa sfida.</p>
+                    <p class="mb-0">Data completamento: {{ user_completion[3] }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Card Info -->
+            <div class="card mb-4 sticky-top" style="top: 20px;">
+                <div class="card-header">
+                    <h5 class="mb-0">Info Sfida</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Numero Sfida</small>
+                        <strong class="display-6">{{ challenge[1] }}</strong>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Punti Disponibili</small>
+                        <strong class="text-success">{{ challenge[4] }}</strong>
+                    </div>
+
+                    {% if user_completion %}
+                        <div class="mb-3">
+                            <div class="badge bg-success">Completata</div>
+                        </div>
+                    {% else %}
+                        <div class="mb-3">
+                            <div class="badge bg-secondary">Non Completata</div>
+                        </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <a href="{{ url_for('game_prize.dashboard') }}" class="btn btn-outline-primary w-100">
+                        Torna al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function completeChallenge(challengeId) {
+    if (confirm('Sei sicuro di aver completato questa sfida?')) {
+        fetch(`/game-prize/complete-challenge/${challengeId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Errore: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Errore:', error);
+            alert('Errore nel completamento della sfida');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Aggiungi Indizio - Game Prize{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>💡 Aggiungi Indizio</h1>
+            <p class="text-muted">Sfida {{ challenge[1] }}: {{ challenge[2] }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="clue_number" class="form-label">Numero Indizio *</label>
+                            <input type="number" class="form-control" id="clue_number" name="clue_number"
+                                   min="1" required>
+                            <small class="text-muted">Es: 1° indizio, 2° indizio, ecc.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="clue_text" class="form-label">Testo dell'Indizio *</label>
+                            <textarea class="form-control" id="clue_text" name="clue_text" rows="5" required></textarea>
+                            <small class="text-muted">L'indizio che aiuterà i giocatori a trovare la sfida</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="revealed_date" class="form-label">Data e Ora di Rivelazione *</label>
+                            <input type="datetime-local" class="form-control" id="revealed_date" name="revealed_date" required>
+                            <small class="text-muted">Quando questo indizio verrà rivelato ai giocatori</small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>💡 Suggerimento:</strong> Puoi spalmare gli indizi nel corso della settimana per dare ai giocatori il tempo di cercare la sfida. Ad esempio:
+                            <ul class="mb-0 mt-2">
+                                <li>1° indizio: lunedì</li>
+                                <li>2° indizio: mercoledì</li>
+                                <li>3° indizio: venerdì</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                ➕ Aggiungi Indizio
+                            </button>
+                        </div>
+
+                        <div class="mt-3">
+                            <a href="{{ url_for('game_prize.admin_edit_challenge', challenge_id=challenge[0]) }}"
+                               class="btn btn-outline-secondary w-100">
+                                Torna alla Sfida
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="card mt-4 border-info">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">ℹ️ Informazioni su questa Sfida</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Titolo:</strong> {{ challenge[2] }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Punti:</strong> <span class="badge bg-success">{{ challenge[4] }}</span>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <strong>Data Inizio:</strong> {{ challenge[5] if challenge[5] else 'Non specificata' }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Data Fine:</strong> {{ challenge[6] if challenge[6] else 'Non specificata' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

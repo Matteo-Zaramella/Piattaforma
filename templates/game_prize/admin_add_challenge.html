@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Aggiungi Sfida - Game Prize{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>➕ Aggiungi Nuova Sfida</h1>
+            <p class="text-muted">Crea una nuova sfida per il gioco</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="challenge_number" class="form-label">Numero Sfida *</label>
+                            <input type="number" class="form-control" id="challenge_number" name="challenge_number"
+                                   min="1" max="12" required>
+                            <small class="text-muted">Es: 1, 2, 3, ... 12</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Titolo Sfida *</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descrizione</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="instructions" class="form-label">Istruzioni Dettagliate</label>
+                            <textarea class="form-control" id="instructions" name="instructions" rows="4"></textarea>
+                            <small class="text-muted">Come i giocatori devono completare la sfida</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="points" class="form-label">Punti *</label>
+                            <input type="number" class="form-control" id="points" name="points"
+                                   value="100" min="0" required>
+                            <small class="text-muted">Punti assegnati al completamento</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="start_date" class="form-label">Data Inizio</label>
+                                    <input type="datetime-local" class="form-control" id="start_date" name="start_date">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="end_date" class="form-label">Data Fine</label>
+                                    <input type="datetime-local" class="form-control" id="end_date" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Luogo (opzionale)</label>
+                            <input type="text" class="form-control" id="location" name="location">
+                            <small class="text-muted">Dove si svolge la sfida (es: Piazza del Duomo, Milano)</small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>💡 Suggerimento:</strong> Gli indizi potranno essere aggiunti dopo la creazione della sfida dal dashboard admin.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                ➕ Crea Sfida
+                            </button>
+                        </div>
+
+                        <div class="mt-3">
+                            <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-outline-secondary w-100">
+                                Torna a Dashboard Admin
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
