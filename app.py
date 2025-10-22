@@ -434,10 +434,12 @@ def inject_game_prize_status():
 
     is_game_revealed = now >= game_reveal_date
     is_game_closed = now > game_end_date
+    game_admin_authenticated = session.get('game_admin_authenticated', False)
 
     return dict(
         is_game_prize_revealed=is_game_revealed,
-        is_game_prize_closed=is_game_closed
+        is_game_prize_closed=is_game_closed,
+        game_admin_authenticated=game_admin_authenticated
     )
 
 @app.context_processor
@@ -703,6 +705,28 @@ def save_file():
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/verify-game-password', methods=['POST'])
+def verify_game_password():
+    """Verifica la password del Game Prize e imposta la sessione"""
+    password = request.form.get('game_password', '').strip()
+
+    # Password corretta: "The Game"
+    if password == "The Game":
+        session['game_admin_authenticated'] = True
+        flash('Accesso concesso al Game Prize!', 'success')
+        return redirect(url_for('index'))
+    else:
+        flash('Password non corretta. Riprova.', 'danger')
+        return redirect(url_for('index'))
+
+@app.route('/logout-game-admin')
+def logout_game_admin():
+    """Disconnette l'admin dal Game Prize"""
+    if 'game_admin_authenticated' in session:
+        del session['game_admin_authenticated']
+    flash('Sei stato disconnesso dal Game Prize.', 'info')
+    return redirect(url_for('index'))
 
 @app.errorhandler(500)
 def handle_500_error(error):

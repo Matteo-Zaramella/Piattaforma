@@ -195,13 +195,15 @@
         <p class="app-icon-label">Appuntamenti</p>
     </a>
 
-    <!-- Game Prize -->
+    <!-- Game Prize (Password Protected - Only visible if authenticated) -->
+    {% if game_admin_authenticated %}
     <a href="{{ url_for('game_prize.admin_welcome') }}" class="app-icon">
         <div class="app-icon-circle app-game-prize">
             <i class="bi bi-trophy-fill"></i>
         </div>
         <p class="app-icon-label">Game Prize</p>
     </a>
+    {% endif %}
 </div>
 
 <!-- Sezione Quick Stats (opzionale, minimale) -->

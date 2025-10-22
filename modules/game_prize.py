@@ -27,6 +27,16 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Decorator per proteggere Game Prize con password
+def game_prize_password_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('game_admin_authenticated', False):
+            flash('Accesso negato. Il Game Prize è protetto da password.', 'danger')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 def get_db():
     """Importa get_db dal modulo principale"""
     from app import get_db as main_get_db
@@ -36,6 +46,7 @@ def get_db():
 
 @bp.route('/admin/welcome')
 @login_required
+@game_prize_password_required
 def admin_welcome():
     """Pagina di benvenuto per l'admin con guida setup"""
     return render_template('game_prize/admin_welcome.html')
@@ -307,6 +318,8 @@ def complete_challenge(challenge_id):
 # ============== ROUTES ADMIN ==============
 
 @bp.route('/admin/setup', methods=['GET', 'POST'])
+@login_required
+@game_prize_password_required
 def admin_setup():
     """Setup iniziale del gioco (da proteggere con password admin)"""
     # TODO: Implementare protezione password
@@ -358,9 +371,10 @@ def admin_setup():
     return render_template('game_prize/admin_setup.html', config=config)
 
 @bp.route('/admin/dashboard')
+@login_required
+@game_prize_password_required
 def admin_dashboard():
     """Dashboard amministrativo del gioco"""
-    # TODO: Implementare protezione password
 
     conn = get_db()
     cursor = conn.cursor()
@@ -397,9 +411,10 @@ def admin_dashboard():
         return redirect(url_for('index'))
 
 @bp.route('/admin/challenge/add', methods=['GET', 'POST'])
+@login_required
+@game_prize_password_required
 def admin_add_challenge():
     """Aggiungi una nuova sfida"""
-    # TODO: Implementare protezione password
 
     if request.method == 'POST':
         conn = get_db()
@@ -435,9 +450,10 @@ def admin_add_challenge():
     return render_template('game_prize/admin_add_challenge.html')
 
 @bp.route('/admin/challenge/<int:challenge_id>/edit', methods=['GET', 'POST'])
+@login_required
+@game_prize_password_required
 def admin_edit_challenge(challenge_id):
     """Modifica una sfida"""
-    # TODO: Implementare protezione password
 
     conn = get_db()
     cursor = conn.cursor()
@@ -482,9 +498,10 @@ def admin_edit_challenge(challenge_id):
     return render_template('game_prize/admin_edit_challenge.html', challenge=challenge)
 
 @bp.route('/admin/clue/add/<int:challenge_id>', methods=['GET', 'POST'])
+@login_required
+@game_prize_password_required
 def admin_add_clue(challenge_id):
     """Aggiungi un indizio a una sfida"""
-    # TODO: Implementare protezione password
 
     conn = get_db()
     cursor = conn.cursor()
