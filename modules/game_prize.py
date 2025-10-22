@@ -34,6 +34,12 @@ def get_db():
 
 # ============== ROUTES PUBBLICHE ==============
 
+@bp.route('/admin/welcome')
+@login_required
+def admin_welcome():
+    """Pagina di benvenuto per l'admin con guida setup"""
+    return render_template('game_prize/admin_welcome.html')
+
 @bp.route('/dashboard')
 @login_required
 def dashboard():

@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Benvenuto - Game Prize Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-md-10 offset-md-1">
+            <!-- Hero Section -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-3">🎮 Benvenuto nel Game Prize Admin Panel</h1>
+                <p class="lead text-muted">Il tuo gioco a premi del 25esimo compleanno è pronto a partire!</p>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="row g-3 mb-5">
+                <div class="col-md-4">
+                    <div class="card border-success text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">💰 Premio</h5>
+                            <p class="display-6 text-success">€500</p>
+                            <small class="text-muted">Per il vincitore</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-primary text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">👥 Partecipanti</h5>
+                            <p class="display-6 text-primary">~50</p>
+                            <small class="text-muted">Giocatori attesi</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-warning text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">🎯 Sfide</h5>
+                            <p class="display-6 text-warning">12</p>
+                            <small class="text-muted">Da distribuire</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Setup Section -->
+            <div class="card mb-5">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🚀 Setup Rapido</h5>
+                </div>
+                <div class="card-body">
+                    <p>Puoi configurare il gioco in 3 step:</p>
+
+                    <div class="accordion" id="setupAccordion">
+                        <!-- Step 1 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#step1" aria-expanded="true">
+                                    <span class="badge bg-primary me-2">1</span> Configura il Gioco
+                                </button>
+                            </h2>
+                            <div id="step1" class="accordion-collapse collapse show" data-bs-parent="#setupAccordion">
+                                <div class="accordion-body">
+                                    <p>Vai a <code>/game-prize/admin/setup</code> e configura:</p>
+                                    <ul>
+                                        <li><strong>Nome:</strong> "Premio di Compleanno"</li>
+                                        <li><strong>Data Inizio:</strong> 24 Gennaio 2026</li>
+                                        <li><strong>Data Fine:</strong> 24 Gennaio 2027</li>
+                                        <li><strong>Sfide:</strong> 12</li>
+                                        <li><strong>Descrizione:</strong> "Gioco del mio 25esimo compleanno con €500 in palio!"</li>
+                                    </ul>
+                                    <a href="{{ url_for('game_prize.admin_setup') }}" class="btn btn-primary mt-3">
+                                        ⚙️ Vai al Setup
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#step2" aria-expanded="false">
+                                    <span class="badge bg-primary me-2">2</span> Crea le 12 Sfide
+                                </button>
+                            </h2>
+                            <div id="step2" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
+                                <div class="accordion-body">
+                                    <p>Nel dashboard admin, aggiungi 12 sfide:</p>
+                                    <ul>
+                                        <li><strong>Numero:</strong> 1-12</li>
+                                        <li><strong>Titolo:</strong> Es. "Sfida del Lago"</li>
+                                        <li><strong>Descrizione:</strong> Dettagli della sfida</li>
+                                        <li><strong>Punti:</strong> 100 per sfida (totale 1200)</li>
+                                        <li><strong>Istruzioni:</strong> Come completare</li>
+                                        <li><strong>Location:</strong> (Opzionale)</li>
+                                    </ul>
+                                    <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-primary mt-3">
+                                        📋 Vai al Dashboard Admin
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#step3" aria-expanded="false">
+                                    <span class="badge bg-primary me-2">3</span> Aggiungi Indizi
+                                </button>
+                            </h2>
+                            <div id="step3" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
+                                <div class="accordion-body">
+                                    <p>Per ogni sfida, aggiungi 3-5 indizi settimanali:</p>
+                                    <ul>
+                                        <li><strong>Numero:</strong> 1°, 2°, 3° indizio</li>
+                                        <li><strong>Testo:</strong> L'indizio per trovare la sfida</li>
+                                        <li><strong>Rivelazione:</strong> Lunedì, Mercoledì, Venerdì</li>
+                                    </ul>
+                                    <p class="mt-3"><small class="text-muted">Tip: Crea gli indizi dopo aver creato le sfide dal dashboard admin</small></p>
+                                    <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-primary mt-3">
+                                        💡 Aggiungi Indizi
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="row g-3 mb-5">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">📊 Statistiche Gioco</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><strong>Durata:</strong> 1 anno (24 Gen 2026 - 24 Gen 2027)</li>
+                                <li class="mb-2"><strong>Sfide:</strong> 12 (una al mese)</li>
+                                <li class="mb-2"><strong>Indizi:</strong> 3-5 per sfida (settimanali)</li>
+                                <li class="mb-2"><strong>Partecipanti:</strong> ~50 persone</li>
+                                <li class="mb-2"><strong>Vincitore:</strong> Rivelato al 50% del gioco (6 sfide)</li>
+                                <li><strong>Premio:</strong> €500 al vincitore</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">🎯 Punti Sistema</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><strong>Per sfida:</strong> 100 punti</li>
+                                <li class="mb-2"><strong>Totale:</strong> 1200 punti disponibili</li>
+                                <li class="mb-2"><strong>Calcolo:</strong> Somma punti completamenti</li>
+                                <li class="mb-2"><strong>Classifica:</strong> Ordinata per punti totali</li>
+                                <li class="mb-2"><strong>Uguaglianza:</strong> Chi ha completato più sfide?</li>
+                                <li><strong>Sorpresa:</strong> Bonus punti per alcuni (opzionale)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">⚠️ Note Importanti</h5>
+                <ul class="mb-0">
+                    <li><strong>Countdown:</strong> Automatico dal 24 Gennaio 2026 00:00 - nessun intervento necessario</li>
+                    <li><strong>Giocatori:</strong> Non vedranno nulla prima del 24 Gennaio - rimane segreto!</li>
+                    <li><strong>Homepage:</strong> Mostrerà countdown fino al 24 Gennaio, poi Game Prize attivo</li>
+                    <li><strong>Backup:</strong> Assicurati di fare backup del database prima di gennaio</li>
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="row g-2 mb-4">
+                <div class="col-md-4">
+                    <a href="{{ url_for('game_prize.admin_setup') }}" class="btn btn-success btn-lg w-100">
+                        ⚙️ Setup Gioco
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-primary btn-lg w-100">
+                        📋 Dashboard Admin
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{{ url_for('game_prize.dashboard') }}" class="btn btn-info btn-lg w-100">
+                        👁️ Anteprima Giocatore
+                    </a>
+                </div>
+            </div>
+
+            <!-- Back Link -->
+            <div class="text-center">
+                <a href="{{ url_for('dashboard') }}" class="text-muted">← Torna alla Dashboard Principale</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        background-color: #f0f0ff;
+        color: #0d6efd;
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .badge {
+        min-width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
