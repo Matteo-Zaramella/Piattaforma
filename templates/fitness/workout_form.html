@@ -252,6 +252,27 @@
         max-height: calc(100vh - 120px);
     }
 
+    /* Su mobile: riduce l'altezza e rende il footer sticky */
+    @media (max-width: 768px) {
+        .exercise-card {
+            min-height: auto;
+            max-height: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .exercise-body {
+            max-height: calc(100vh - 280px);
+        }
+
+        .exercise-footer {
+            position: sticky;
+            bottom: 0;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: 50;
+        }
+    }
+
     .exercise-header {
         color: white;
         padding: 1rem;

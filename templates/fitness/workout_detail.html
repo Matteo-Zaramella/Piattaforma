@@ -97,4 +97,16 @@
         </div>
     </div>
 </div>
+
+<!-- Azioni -->
+<div class="row mt-4">
+    <div class="col-12">
+        <form method="POST" action="{{ url_for('fitness.delete_workout', session_id=session.id) }}"
+              onsubmit="return confirm('Sei sicuro di voler eliminare questo workout?');" style="display: inline;">
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash"></i> Elimina Workout
+            </button>
+        </form>
+    </div>
+</div>
 {% endblock %}

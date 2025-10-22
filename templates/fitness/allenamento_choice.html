@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Nuovo Allenamento - Piattaforma{% endblock %}
+
+{% block extra_css %}
+<style>
+    .choice-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+    }
+
+    .choice-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .choice-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .choice-header p {
+        color: var(--bs-secondary);
+        font-size: 1.1rem;
+    }
+
+    .choices-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .choice-card {
+        background: var(--bs-body-bg);
+        border: 2px solid var(--bs-border-color);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .choice-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border-color: var(--bs-primary);
+    }
+
+    .choice-icon {
+        font-size: 3rem;
+        line-height: 1;
+    }
+
+    .choice-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .choice-description {
+        color: var(--bs-secondary);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .choice-features {
+        text-align: left;
+        background: rgba(0,0,0,0.02);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .choice-features li {
+        margin-bottom: 0.5rem;
+    }
+
+    .choice-features li:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Colori per ogni opzione */
+    .choice-free {
+        border-color: #667eea;
+    }
+
+    .choice-free:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .choice-template {
+        border-color: #764ba2;
+    }
+
+    .choice-template:hover {
+        border-color: #764ba2;
+        background: rgba(118, 75, 162, 0.05);
+    }
+
+    .back-button {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .back-button a {
+        color: var(--bs-secondary);
+        text-decoration: none;
+        font-size: 0.95rem;
+    }
+
+    .back-button a:hover {
+        color: var(--bs-primary);
+    }
+
+    @media (max-width: 768px) {
+        .choice-container {
+            padding: 0.5rem;
+        }
+
+        .choice-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .choice-card {
+            padding: 1.5rem;
+        }
+
+        .choice-icon {
+            font-size: 2.5rem;
+        }
+
+        .choice-title {
+            font-size: 1.15rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="choice-container">
+    <div class="choice-header">
+        <h1>Nuovo Allenamento</h1>
+        <p>Come vuoi registrare il tuo allenamento oggi?</p>
+    </div>
+
+    <div class="choices-grid">
+        <!-- Opzione 1: Esercizio Libero -->
+        <a href="{{ url_for('fitness.add_allenamento') }}" class="choice-card choice-free">
+            <div class="choice-icon">🏋️</div>
+            <h2 class="choice-title">Esercizio Libero</h2>
+            <p class="choice-description">Registra quello che hai fatto</p>
+            <ul class="choice-features">
+                <li>✓ Aggiungi esercizi singoli</li>
+                <li>✓ Personalizza completamente</li>
+                <li>✓ Perfetto per allenamenti improvvisati</li>
+                <li>✓ Modifica/Elimina in qualsiasi momento</li>
+            </ul>
+        </a>
+
+        <!-- Opzione 2: Scheda Strutturata -->
+        <a href="{{ url_for('fitness.scheda_workout') }}" class="choice-card choice-template">
+            <div class="choice-icon">📋</div>
+            <h2 class="choice-title">Scheda Strutturata</h2>
+            <p class="choice-description">Scegli una scheda (A/B/C)</p>
+            <ul class="choice-features">
+                <li>✓ Schede predefinite A/B/C</li>
+                <li>✓ Esercizi programmati</li>
+                <li>✓ Tracking completo delle serie</li>
+                <li>✓ Progresso strutturato</li>
+            </ul>
+        </a>
+    </div>
+
+    <!-- Link Torna Indietro -->
+    <div class="back-button">
+        <a href="{{ url_for('fitness.index') }}">← Torna al Fitness</a>
+    </div>
+</div>
+{% endblock %}

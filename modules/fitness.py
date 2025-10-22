@@ -193,6 +193,11 @@ def export_pasti():
 
 # ===== ALLENAMENTI =====
 
+@bp.route('/allenamenti/nuovo')
+def allenamento_choice():
+    """Scelta tipo allenamento: libero o scheda"""
+    return render_template('fitness/allenamento_choice.html')
+
 @bp.route('/allenamenti')
 def allenamenti():
     """Lista allenamenti"""
@@ -488,6 +493,41 @@ def workout_detail(session_id):
     return render_template('fitness/workout_detail.html',
                          session=session_data,
                          exercises_grouped=exercises_grouped)
+
+@bp.route('/scheda-workout/delete/<int:session_id>', methods=['POST'])
+def delete_workout(session_id):
+    """Elimina una sessione di workout"""
+    conn = get_db()
+    user_id = session['user_id']
+
+    # Verifica che l'utente possiede il workout
+    workout = execute_query(conn, '''
+        SELECT id FROM workout_sessions
+        WHERE id = ? AND user_id = ?
+    ''', (session_id, user_id), fetch_one=True)
+
+    if not workout:
+        flash('Workout non trovato', 'error')
+        conn.close()
+        return redirect(url_for('fitness.workout_history'))
+
+    # Elimina gli esercizi associati
+    execute_query(conn, '''
+        DELETE FROM workout_exercises
+        WHERE session_id = ?
+    ''', (session_id,))
+
+    # Elimina la sessione
+    execute_query(conn, '''
+        DELETE FROM workout_sessions
+        WHERE id = ? AND user_id = ?
+    ''', (session_id, user_id))
+
+    conn.commit()
+    conn.close()
+
+    flash('Workout eliminato', 'success')
+    return redirect(url_for('fitness.workout_history'))
 
 @bp.route('/allenamenti/export')
 def export_allenamenti():
