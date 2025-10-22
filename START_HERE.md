@@ -8,7 +8,7 @@ Scorri fino a questa sezione:
 ┌─────────────────────────────────────────┐
 │  "Qualcosa di Speciale in Arrivo..."   │
 │                                         │
-│     📅 24 Gennaio 2026                 │
+│     📅 25 Gennaio 2026 (Domenica)      │
 │     ⏱️  [Countdown aggiornato ogni sec]│
 │                                         │
 │  Giorni: 092  |  Ore: 14               │
@@ -61,9 +61,9 @@ Una pagina di **benvenuto con guida setup** che mostra:
 
 #### Step 2: Configura il Gioco (2 minuti)
 ```
-1. Nome: "Premio di Compleanno"
-2. Data Inizio: 24/01/2026
-3. Data Fine: 24/01/2027
+1. Nome: "Premio di Compleanno - 24→25 Anni"
+2. Data Inizio: 25/01/2026 00:00 (Domenica)
+3. Data Fine: 25/01/2027 00:00 (Lunedì)
 4. Sfide: 12
 5. Clicca "💾 Salva Configurazione"
 ```
@@ -101,7 +101,7 @@ Per ogni sfida:
 ## ⏰ TIMELINE AUTOMATICA
 
 ```
-ORA ─────────────────────→ 23 GENNAIO 2026 23:59:59
+ORA ─────────────────────→ 24 GENNAIO 2026 23:59:59
 │
 ├─ Home pubblica: COUNTDOWN VISIBILE ✅
 ├─ Countdown page: VISIBILE ✅
@@ -110,7 +110,7 @@ ORA ─────────────────────→ 23 GENNAI
 
         ↓ MEZZANOTTE ↓
 
-24 GENNAIO 2026 00:00:00 🎉
+25 GENNAIO 2026 00:00:00 🎉 (Domenica)
 │
 ├─ Home pubblica: "Game Prize è Attivo!" ✅
 ├─ Countdown: SCOMPARE ✅
@@ -119,18 +119,26 @@ ORA ─────────────────────→ 23 GENNAI
 
         ↓ INIZIO GIOCO ↓
 
-24 GEN 2026 - 24 GEN 2027
+25 GEN 2026 - 25 GEN 2027 00:00:00
 │
-├─ 12 sfide distribuite
+├─ 12 sfide distribuite nel corso dell'anno
 ├─ Indizi rivelati settimanalmente
 ├─ Classifica aggiornata in tempo reale
 └─ Al 50%: Rivelazione vincitore (sorpresa!)
 
-        ↓ FESTA ↓
+        ↓ TERMINE GIOCO ↓
 
-24 GENNAIO 2027
+25 GENNAIO 2027 00:00:00 (Lunedì)
 │
-├─ 12ª sfida finale
+├─ Il gioco si chiude automaticamente
+├─ Classifica FINALE bloccata
+└─ Nessuno può più completare sfide
+
+        ↓ FESTA DI PREMIAZIONE ↓
+
+30 GENNAIO 2027 (Venerdì sera)
+│
+├─ Celebrazione ufficiale
 ├─ Annuncio vincitore
 └─ €500 al vincitore! 🏆
 ```
@@ -160,17 +168,18 @@ Premio: €500
 Partecipanti: ~50 persone
 Sfide: 12
 Punti per Sfida: 100 (totale 1200)
-Durata: 1 anno
+Durata: 1 anno esatto
 Rivelazione Vincitore: Al 50% (6 sfide)
-Data Inizio: 24 Gennaio 2026
-Data Fine: 24 Gennaio 2027
+Data Inizio: 25 Gennaio 2026 00:00 (Domenica)
+Data Fine: 25 Gennaio 2027 00:00 (Lunedì)
+Festa di Premiazione: 30 Gennaio 2027 (Venerdì)
 ```
 
 ---
 
 ## 📱 COSA VEDRAI SULLA HOME
 
-### ADESSO (Prima del 24 Gennaio 2026)
+### ADESSO (Prima del 25 Gennaio 2026)
 ```
 Home pubblica
 ┌─────────────────────────────────────────┐
@@ -182,15 +191,15 @@ Home pubblica
 │        [COUNTDOWN VISIBILE]            │
 │                                         │
 │  Il Game Prize ti aspetta il            │
-│  24 Gennaio 2026!                       │
+│  25 Gennaio 2026 a mezzanotte!         │
 │                                         │
-│  Giorni: 092  Ore: 14  Min: 32 Sec: 15 │
+│  Giorni: 093  Ore: 05  Min: 32 Sec: 15 │
 │                                         │
 │  [👀 Visualizza il Countdown Completo] │
 └─────────────────────────────────────────┘
 ```
 
-### IL 24 GENNAIO 2026
+### IL 25 GENNAIO 2026 00:00 (Domenica - Mezzanotte)
 ```
 Home pubblica
 ┌─────────────────────────────────────────┐
@@ -203,6 +212,8 @@ Home pubblica
 │  Il gioco del tuo 25esimo compleanno   │
 │  è iniziato! Accedi e inizia a         │
 │  competere con i tuoi amici.           │
+│  Termine: 25 Gennaio 2027 00:00        │
+│  Festa: 30 Gennaio 2027                │
 │                                         │
 │  [🎮 Accedi al Game Prize]             │
 │  [📊 Visualizza Classifica]            │
@@ -242,7 +253,7 @@ Se vuoi i dettagli:
 - [x] Link al Game Prize nella dashboard privata
 - [x] Pagina di benvenuto admin con guida setup
 - [x] Parametri preimpostati (€500, 50 persone, 12 sfide)
-- [x] Timer automatico che si attiva il 24 gennaio
+- [x] Timer automatico che si attiva il 25 gennaio 2026
 - [x] Sistema completamente funzionante
 - [ ] Tu crei le 12 sfide (quando sei pronto)
 - [ ] Tu aggiungi gli indizi settimanali
@@ -256,26 +267,36 @@ Se vuoi i dettagli:
 ✅ Vedere il countdown nella home pubblica
 ✅ Accedere al Game Prize dalla dashboard
 ✅ Leggere la guida di setup
-✅ Prepararti per gennaio 2026
+✅ Prepararti per il 25 gennaio 2026
 
-**IL 24 GENNAIO 2026:**
+**IL 25 GENNAIO 2026 00:00 (Domenica - Mezzanotte):**
 🎮 Il gioco si attiva AUTOMATICAMENTE
 🎯 Nessun intervento manuale necessario
-🏆 Inizia il tuo game prize!
+🏆 Inizia il tuo game prize per il 25esimo compleanno!
+
+**IL 25 GENNAIO 2027 00:00 (Lunedì - Mezzanotte):**
+🔒 Il gioco si chiude AUTOMATICAMENTE
+📊 Classifica finale bloccata
+
+**30 GENNAIO 2027 (Venerdì sera):**
+🎊 Festa di premiazione
+💰 Annuncio vincitore - €500 in palio!
 
 ---
 
-**Buon gioco del tuo 25esimo compleanno!** 🎊
+**Buon gioco del tuo 25esimo compleanno!** 🎂🎮🏆
 
 ```
-   ╔════════════════════════════════╗
-   ║   GAME PRIZE - PRONTO AL 24   ║
-   ║         GENNAIO 2026           ║
-   ║                                ║
-   ║   €500  |  12 Sfide  | ~50 Gente ║
-   ║                                ║
-   ║   Countdown: VISIBILE ✅       ║
-   ║   Link Admin: VISIBILE ✅      ║
-   ║   Timer Automatico: ATTIVO ✅  ║
-   ╚════════════════════════════════╝
+   ╔═══════════════════════════════════════╗
+   ║    GAME PRIZE - PRONTO AL 25         ║
+   ║         GENNAIO 2026 00:00            ║
+   ║                                       ║
+   ║  €500  |  12 Sfide  | ~50 Persone   ║
+   ║  1 Anno Esatto | 25/01/2026→2027   ║
+   ║                                       ║
+   ║  Countdown: VISIBILE ✅              ║
+   ║  Link Admin: VISIBILE ✅             ║
+   ║  Timer Automatico: ATTIVO ✅         ║
+   ║  Festa Premiazione: 30/01/2027 ✅   ║
+   ╚═══════════════════════════════════════╝
 ```

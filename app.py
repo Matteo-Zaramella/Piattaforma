@@ -426,9 +426,19 @@ def execute_query(conn, query, params=None, fetch_one=False, fetch_all=False):
 def inject_game_prize_status():
     """Inietta lo stato del Game Prize in tutti i template"""
     from datetime import datetime
-    game_reveal_date = datetime(2026, 1, 24, 0, 0, 0)
-    is_game_revealed = datetime.now() >= game_reveal_date
-    return dict(is_game_prize_revealed=is_game_revealed)
+    # Inizio gioco: 25 Gennaio 2026 00:00 (Domenica)
+    # Fine gioco: 25 Gennaio 2027 23:59:59 (Lunedì)
+    game_reveal_date = datetime(2026, 1, 25, 0, 0, 0)
+    game_end_date = datetime(2027, 1, 25, 23, 59, 59)
+    now = datetime.now()
+
+    is_game_revealed = now >= game_reveal_date
+    is_game_closed = now > game_end_date
+
+    return dict(
+        is_game_prize_revealed=is_game_revealed,
+        is_game_prize_closed=is_game_closed
+    )
 
 @app.context_processor
 def inject_user_preferences():
