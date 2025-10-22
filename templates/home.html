@@ -320,35 +320,77 @@
 
     <!-- Sezioni Principali -->
     <div class="sections-container">
-        <!-- Sezione Appuntamenti (Sinistra) -->
+        <!-- Sezione Appuntamenti/Sfida (Sinistra) -->
         <div class="section-card">
-            <h2 class="section-title">
-                <i class="bi bi-calendar-check"></i>
-                Prossimi Impegni
-            </h2>
+            {% if is_game_prize_revealed %}
+                <!-- Sezione Prossima Sfida (quando Game Prize è attivo) -->
+                <h2 class="section-title">
+                    <i class="bi bi-target"></i>
+                    Prossima Sfida
+                </h2>
 
-            {% if appointments %}
-                {% for app in appointments %}
-                <div class="appointment-item">
-                    <div class="appointment-date">
-                        <i class="bi bi-clock"></i> {{ app.data_ora }}
+                {% if game_challenges %}
+                    {% for challenge in game_challenges %}
+                    <div class="appointment-item">
+                        <div class="appointment-date">
+                            <i class="bi bi-lightning-charge-fill" style="color: #ffc107;"></i>
+                            Sfida {{ challenge.challenge_number }}
+                        </div>
+                        <div class="appointment-title">{{ challenge.title }}</div>
+                        {% if challenge.description %}
+                        <div class="text-muted small">{{ challenge.description }}</div>
+                        {% endif %}
+                        {% if challenge.start_date and challenge.end_date %}
+                        <div class="appointment-location" style="margin-top: 0.5rem; font-size: 0.85rem;">
+                            <i class="bi bi-hourglass-split"></i>
+                            {% if challenge.end_date < now|default(now()) %}
+                                Completata
+                            {% else %}
+                                In corso
+                            {% endif %}
+                        </div>
+                        {% endif %}
                     </div>
-                    <div class="appointment-title">{{ app.titolo }}</div>
-                    {% if app.descrizione %}
-                    <div class="text-muted small">{{ app.descrizione }}</div>
-                    {% endif %}
-                    {% if app.luogo %}
-                    <div class="appointment-location">
-                        <i class="bi bi-geo-alt"></i> {{ app.luogo }}
+                    {% endfor %}
+                    <a href="{{ url_for('game_prize.dashboard') }}" class="btn btn-sm btn-primary mt-2 w-100">
+                        Vedi tutte le sfide
+                    </a>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-hourglass-top"></i>
+                        <p>Nessuna sfida ancora disponibile</p>
                     </div>
-                    {% endif %}
-                </div>
-                {% endfor %}
+                {% endif %}
             {% else %}
-                <div class="empty-state">
-                    <i class="bi bi-calendar-x"></i>
-                    <p>Nessun impegno in programma</p>
-                </div>
+                <!-- Sezione Prossimi Impegni (prima del Game Prize) -->
+                <h2 class="section-title">
+                    <i class="bi bi-calendar-check"></i>
+                    Prossimi Impegni
+                </h2>
+
+                {% if appointments %}
+                    {% for app in appointments %}
+                    <div class="appointment-item">
+                        <div class="appointment-date">
+                            <i class="bi bi-clock"></i> {{ app.data_ora }}
+                        </div>
+                        <div class="appointment-title">{{ app.titolo }}</div>
+                        {% if app.descrizione %}
+                        <div class="text-muted small">{{ app.descrizione }}</div>
+                        {% endif %}
+                        {% if app.luogo %}
+                        <div class="appointment-location">
+                            <i class="bi bi-geo-alt"></i> {{ app.luogo }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-x"></i>
+                        <p>Nessun impegno in programma</p>
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
 
@@ -386,7 +428,8 @@
             {% endif %}
         </div>
 
-        <!-- Sezione Dove Sono (Destra) -->
+        <!-- Sezione Dove Sono (Destra) - Nascosta fino a Game Prize -->
+        {% if is_game_prize_revealed %}
         <div class="section-card">
             <h2 class="section-title">
                 <i class="bi bi-geo-alt-fill text-warning"></i>
@@ -436,6 +479,7 @@
                 </div>
             {% endif %}
         </div>
+        {% endif %}
     </div>
 
     <!-- Game Prize Section (Password Protected) -->

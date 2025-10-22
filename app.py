@@ -508,18 +508,35 @@ def index():
             LIMIT 5
         ''', (True if app.config['USE_POSTGRES'] else 1, False if app.config['USE_POSTGRES'] else 0), fetch_all=True)
 
+        # Carica sfide del Game Prize (solo sfide in corso e passate, non future)
+        game_challenges = []
+        if app.config['USE_POSTGRES']:
+            challenges_check = "start_date <= CURRENT_TIMESTAMP"  # Sfide già iniziate
+        else:
+            challenges_check = "datetime(start_date) <= datetime('now')"
+
+        game_challenges = execute_query(conn, f'''
+            SELECT id, challenge_number, title, description, start_date, end_date
+            FROM game_challenges
+            WHERE {challenges_check}
+            ORDER BY challenge_number ASC
+            LIMIT 5
+        ''', fetch_all=True)
+
     except Exception as e:
         print(f"Errore caricamento home: {e}")
         wishlist_items = []
         current_location = None
         appointments = []
+        game_challenges = []
     finally:
         conn.close()
 
     return render_template('home.html',
                          wishlist_items=wishlist_items,
                          current_location=current_location,
-                         appointments=appointments)
+                         appointments=appointments,
+                         game_challenges=game_challenges)
 
 @app.route('/game-prize-reveal')
 def game_prize_reveal():
