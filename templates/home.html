@@ -320,7 +320,8 @@
 
     <!-- Sezioni Principali -->
     <div class="sections-container">
-        <!-- Sezione Appuntamenti/Sfida (Sinistra) -->
+        <!-- Sezione Appuntamenti/Sfida (Sinistra) - Nascosta finché Game Prize non inizia -->
+        {% if is_game_prize_revealed %}
         <div class="section-card">
             {% if is_game_prize_revealed %}
                 <!-- Sezione Prossima Sfida (quando Game Prize è attivo) -->
@@ -393,6 +394,7 @@
                 {% endif %}
             {% endif %}
         </div>
+        {% endif %}
 
         <!-- Sezione Wishlist (Centro) -->
         <div class="section-card">

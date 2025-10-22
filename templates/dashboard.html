@@ -195,16 +195,53 @@
         <p class="app-icon-label">Appuntamenti</p>
     </a>
 
-    <!-- Game Prize (Password Protected - Only visible if authenticated) -->
-    {% if game_admin_authenticated %}
-    <a href="{{ url_for('game_prize.admin_welcome') }}" class="app-icon">
+    <!-- Game Prize (Always visible, but click behavior depends on auth) -->
+    <div onclick="
+        {% if game_admin_authenticated %}
+            window.location.href='{{ url_for('game_prize.admin_welcome') }}';
+        {% else %}
+            document.getElementById('gamePrizeModal').style.display='block';
+        {% endif %}
+    " class="app-icon" style="cursor: pointer;">
         <div class="app-icon-circle app-game-prize">
             <i class="bi bi-trophy-fill"></i>
         </div>
         <p class="app-icon-label">Game Prize</p>
-    </a>
-    {% endif %}
+    </div>
 </div>
+
+<!-- Modal Password Game Prize -->
+<div id="gamePrizeModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div style="background-color: #2d2d2d; margin: 5% auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; color: white;">
+        <h2 style="margin-bottom: 20px; text-align: center;">🎮 Game Prize</h2>
+        <p style="text-align: center; margin-bottom: 20px; color: #aaa;">Inserisci la password per accedere</p>
+
+        <form method="POST" action="{{ url_for('verify_game_password') }}" style="display: flex; flex-direction: column; gap: 15px;">
+            <input type="password"
+                   name="game_password"
+                   placeholder="Password..."
+                   required
+                   style="padding: 12px; border-radius: 8px; border: none; font-size: 1rem; background: #3a3a3a; color: white;">
+            <button type="submit" style="padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem;">
+                Accedi
+            </button>
+        </form>
+
+        <button onclick="document.getElementById('gamePrizeModal').style.display='none';" style="display: block; margin-top: 15px; background: #444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%;">
+            Chiudi
+        </button>
+    </div>
+</div>
+
+<script>
+    // Chiudi modal se clicchi fuori
+    var modal = document.getElementById('gamePrizeModal');
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
 
 <!-- Sezione Quick Stats (opzionale, minimale) -->
 <div class="row mt-5" style="max-width: 600px; margin: 0 auto;">
