@@ -727,13 +727,18 @@ def save_file():
 def verify_game_password():
     """Verifica la password del Game Prize e imposta la sessione"""
     password = request.form.get('game_password', '').strip()
+    print(f"[DEBUG] Password ricevuta: '{password}' (lunghezza: {len(password)})")
+    print(f"[DEBUG] Confronto con: 'The Game' (lunghezza: {len('The Game')})")
 
     # Password corretta: "The Game"
     if password == "The Game":
         session['game_admin_authenticated'] = True
+        session.modified = True  # Forza il salvataggio della sessione
+        print(f"[DEBUG] Password corretta! Sessione impostata.")
         flash('Accesso concesso al Game Prize!', 'success')
         return redirect(url_for('index'))
     else:
+        print(f"[DEBUG] Password non corretta!")
         flash('Password non corretta. Riprova.', 'danger')
         return redirect(url_for('index'))
 
