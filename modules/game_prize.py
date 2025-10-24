@@ -27,12 +27,12 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Decorator per proteggere Game Prize con password
+# Decorator per proteggere The Game con password
 def game_prize_password_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('game_admin_authenticated', False):
-            flash('Accesso negato. Il Game Prize è protetto da password.', 'danger')
+            flash('Accesso negato. The Game è protetto da password.', 'danger')
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
@@ -333,6 +333,7 @@ def admin_setup():
             start_date = request.form.get('start_date')
             end_date = request.form.get('end_date')
             total_challenges = int(request.form.get('total_challenges', 12))
+            max_participants = int(request.form.get('max_participants', 100))
             description = request.form.get('description', '')
 
             # Verifica se config esiste già
@@ -341,14 +342,14 @@ def admin_setup():
                 cursor.execute('''
                     UPDATE game_prize_config
                     SET game_name = %s, start_date = %s, end_date = %s,
-                        total_challenges = %s, description = %s, updated_at = CURRENT_TIMESTAMP
+                        total_challenges = %s, max_participants = %s, description = %s, updated_at = CURRENT_TIMESTAMP
                     WHERE id = 1
-                ''', (game_name, start_date, end_date, total_challenges, description))
+                ''', (game_name, start_date, end_date, total_challenges, max_participants, description))
             else:
                 cursor.execute('''
-                    INSERT INTO game_prize_config (game_name, start_date, end_date, total_challenges, description)
-                    VALUES (%s, %s, %s, %s, %s)
-                ''', (game_name, start_date, end_date, total_challenges, description))
+                    INSERT INTO game_prize_config (game_name, start_date, end_date, total_challenges, max_participants, description)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                ''', (game_name, start_date, end_date, total_challenges, max_participants, description))
 
             conn.commit()
             conn.close()
@@ -538,3 +539,148 @@ def admin_add_clue(challenge_id):
         return redirect(url_for('game_prize.admin_dashboard'))
 
     return render_template('game_prize/admin_add_clue.html', challenge=challenge)
+
+
+# ============== NUOVO GESTORE SFIDE E INDIZI ==============
+
+@bp.route('/admin/challenges-manager')
+@login_required
+@game_prize_password_required
+def challenges_manager():
+    """Gestore centralizzato per tutte le 12 sfide e indizi"""
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        # Ottieni tutte le sfide
+        cursor.execute('SELECT * FROM game_challenges ORDER BY challenge_number ASC')
+        challenges = cursor.fetchall()
+        challenges_count = len(challenges)
+
+        # Conta indizi totali
+        cursor.execute('SELECT COUNT(*) FROM game_clues')
+        total_clues = cursor.fetchone()[0]
+
+        # Crea un dizionario di sfide per accesso rapido
+        challenges_dict = {}
+        for challenge in challenges:
+            challenges_dict[f'challenge_{challenge[1]}'] = {
+                'id': challenge[0],
+                'title': challenge[2],
+                'description': challenge[3],
+                'points': challenge[4],
+                'location': challenge[7]
+            }
+
+        conn.close()
+
+        return render_template(
+            'game_prize/admin_challenges_manager.html',
+            challenges_count=challenges_count,
+            total_clues=total_clues,
+            **challenges_dict
+        )
+
+    except Exception as e:
+        conn.close()
+        flash(f'Errore: {str(e)}', 'danger')
+        return redirect(url_for('game_prize.admin_dashboard'))
+
+
+@bp.route('/admin/save-challenge', methods=['POST'])
+@login_required
+@game_prize_password_required
+def admin_save_challenge():
+    """Salva una sfida nel database"""
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        challenge_number = int(request.form.get('challenge_number'))
+        title = request.form.get('title')
+        description = request.form.get('description')
+        points = int(request.form.get('points', 100))
+        location = request.form.get('location', '')
+        instructions = request.form.get('instructions', '')
+        start_date = request.form.get('challenge_date')
+
+        # Verifica se la sfida esiste già
+        cursor.execute('SELECT id FROM game_challenges WHERE challenge_number = %s', (challenge_number,))
+        existing = cursor.fetchone()
+
+        if existing:
+            # UPDATE
+            cursor.execute('''
+                UPDATE game_challenges
+                SET title = %s, description = %s, points = %s,
+                    location = %s, instructions = %s, start_date = %s,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE challenge_number = %s
+            ''', (title, description, points, location, instructions, start_date, challenge_number))
+            flash(f'Sfida {challenge_number} aggiornata!', 'success')
+        else:
+            # INSERT
+            cursor.execute('''
+                INSERT INTO game_challenges
+                (challenge_number, title, description, points, location, instructions, start_date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            ''', (challenge_number, title, description, points, location, instructions, start_date))
+            flash(f'Sfida {challenge_number} creata!', 'success')
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('game_prize.challenges_manager'))
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        flash(f'Errore nel salvataggio: {str(e)}', 'danger')
+        return redirect(url_for('game_prize.challenges_manager'))
+
+
+@bp.route('/admin/save-clue', methods=['POST'])
+@login_required
+@game_prize_password_required
+def admin_save_clue():
+    """Salva un indizio nel database"""
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        challenge_id = int(request.form.get('challenge_id'))
+        clue_number = int(request.form.get('clue_number'))
+        clue_text = request.form.get('clue_text')
+        revealed_date = request.form.get('clue_date')
+
+        # Verifica se l'indizio esiste già
+        cursor.execute(
+            'SELECT id FROM game_clues WHERE challenge_id = %s AND clue_number = %s',
+            (challenge_id, clue_number)
+        )
+        existing = cursor.fetchone()
+
+        if existing:
+            # UPDATE
+            cursor.execute('''
+                UPDATE game_clues
+                SET clue_text = %s, revealed_date = %s
+                WHERE challenge_id = %s AND clue_number = %s
+            ''', (clue_text, revealed_date, challenge_id, clue_number))
+            flash(f'Indizio {clue_number} aggiornato!', 'success')
+        else:
+            # INSERT
+            cursor.execute('''
+                INSERT INTO game_clues (challenge_id, clue_number, clue_text, revealed_date)
+                VALUES (%s, %s, %s, %s)
+            ''', (challenge_id, clue_number, clue_text, revealed_date))
+            flash(f'Indizio {clue_number} creato!', 'success')
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('game_prize.challenges_manager'))
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        flash(f'Errore nel salvataggio indizio: {str(e)}', 'danger')
+        return redirect(url_for('game_prize.challenges_manager'))

@@ -20,6 +20,10 @@ app = Flask(__name__)
 # Production: usa variabile ambiente per secret key, altrimenti genera una casuale
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
+# Configurazione timeout sessione: 1 ora (3600 secondi)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
+app.config['SESSION_REFRESH_EACH_REQUEST'] = True  # Rinfresca il timer ad ogni request
+
 # Configurazione database: usa PostgreSQL se DATABASE_URL è presente, altrimenti SQLite
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
@@ -282,6 +286,7 @@ def init_db():
             start_date TIMESTAMP,
             end_date TIMESTAMP,
             total_challenges INTEGER DEFAULT 12,
+            max_participants INTEGER DEFAULT 100,
             description {text_type},
             created_at TIMESTAMP {timestamp_default},
             updated_at TIMESTAMP {timestamp_default}
@@ -556,6 +561,7 @@ def login():
         conn.close()
 
         if user and check_password_hash(user['password'], password):
+            session.permanent = True  # Attiva la sessione permanente con timeout di 1 ora
             session['user_id'] = user['id']
             session['username'] = user['username']
             return redirect(url_for('dashboard'))

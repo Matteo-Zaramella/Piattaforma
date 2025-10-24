@@ -1,74 +1,336 @@
 {% extends "base.html" %}
 
-{% block title %}Benvenuto - Game Prize Admin{% endblock %}
+{% block title %}Benvenuto - The Game Admin Panel{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container-fluid mt-5">
     <div class="row mb-5">
-        <div class="col-md-10 offset-md-1">
+        <div class="col-lg-12">
             <!-- Hero Section -->
             <div class="text-center mb-5">
-                <h1 class="display-4 mb-3">🎮 Benvenuto nel Game Prize Admin Panel</h1>
-                <p class="lead text-muted">Il tuo gioco a premi del 25esimo compleanno è pronto a partire!</p>
+                <h1 class="display-3 mb-3">🎮 The Game - Admin Panel</h1>
+                <p class="lead text-muted">Gestisci il gioco del tuo 25esimo compleanno (25 Gennaio 2026 - 24 Gennaio 2027)</p>
+                <hr class="my-4">
             </div>
 
-            <!-- Info Cards -->
+            <!-- Key Info Cards -->
             <div class="row g-3 mb-5">
                 <div class="col-md-4">
-                    <div class="card border-success text-center">
+                    <div class="card border-success text-center h-100">
                         <div class="card-body">
-                            <h5 class="card-title">💰 Premio</h5>
-                            <p class="display-6 text-success">€500</p>
-                            <small class="text-muted">Per il vincitore</small>
+                            <h5 class="card-title">🏆 Premio</h5>
+                            <p class="display-6 text-success fw-bold">€500</p>
+                            <small class="text-muted">Per il vincitore finale</small>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card border-primary text-center">
+                    <div class="card border-primary text-center h-100">
                         <div class="card-body">
                             <h5 class="card-title">👥 Partecipanti</h5>
-                            <p class="display-6 text-primary">~50</p>
-                            <small class="text-muted">Giocatori attesi</small>
+                            <p class="display-6 text-primary fw-bold">~100</p>
+                            <small class="text-muted">Invitati al gioco</small>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card border-warning text-center">
+                    <div class="card border-warning text-center h-100">
                         <div class="card-body">
-                            <h5 class="card-title">🎯 Sfide</h5>
-                            <p class="display-6 text-warning">12</p>
-                            <small class="text-muted">Da distribuire</small>
+                            <h5 class="card-title">🎯 Sfide Totali</h5>
+                            <p class="display-6 text-warning fw-bold">12</p>
+                            <small class="text-muted">Una al mese + indizi weekend</small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Setup Section -->
+            <!-- Timeline Section -->
             <div class="card mb-5">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">🚀 Setup Rapido</h5>
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">📅 Calendario Completo (12 Mesi)</h5>
                 </div>
                 <div class="card-body">
-                    <p>Puoi configurare il gioco in 3 step:</p>
+                    <p class="text-muted mb-4">
+                        <strong>Orario pubblicazione:</strong> Tutti gli eventi escono <strong>sabato a mezzanotte (00:00)</strong>
+                    </p>
 
+                    <div class="row">
+                        <!-- GENNAIO 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 GENNAIO 2026 - INIZIO GIOCO</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 25/01 - SFIDA 1 🚀</strong>
+                                            <br><small class="text-success">Lancio ufficiale del gioco</small>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FEBBRAIO 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 FEBBRAIO 2026 - Indizi Sfida 1</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">Sab 01/02 - 💡 Indizio 1/4 Sfida 1</li>
+                                        <li class="mb-2">Sab 08/02 - 💡 Indizio 2/4 Sfida 1</li>
+                                        <li class="mb-2">Sab 15/02 - 💡 Indizio 3/4 Sfida 1</li>
+                                        <li>Sab 22/02 - 💡 Indizio 4/4 Sfida 1</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MARZO 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 MARZO 2026</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 01/03 - SFIDA 2</strong>
+                                            <br><small class="text-muted">Settimana 5</small>
+                                        </li>
+                                        <li class="mb-2">Sab 08/03 - 💡 Indizio 1/3 Sfida 2</li>
+                                        <li class="mb-2">Sab 15/03 - 💡 Indizio 2/3 Sfida 2</li>
+                                        <li class="mb-3 pb-3 border-bottom">Sab 22/03 - 💡 Indizio 3/3 Sfida 2</li>
+                                        <li><strong>Sab 29/03 - SFIDA 3</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- APRILE 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 APRILE 2026 - Indizi Sfida 3</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">Sab 05/04 - 💡 Indizio 1/4 Sfida 3</li>
+                                        <li class="mb-2">Sab 12/04 - 💡 Indizio 2/4 Sfida 3</li>
+                                        <li class="mb-2">Sab 19/04 - 💡 Indizio 3/4 Sfida 3</li>
+                                        <li>Sab 26/04 - 💡 Indizio 4/4 Sfida 3</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MAGGIO 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 MAGGIO 2026</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 03/05 - SFIDA 4</strong>
+                                            <br><small class="text-muted">Settimana 10</small>
+                                        </li>
+                                        <li class="mb-2">Sab 10/05 - 💡 Indizio 1/3 Sfida 4</li>
+                                        <li class="mb-2">Sab 17/05 - 💡 Indizio 2/3 Sfida 4</li>
+                                        <li class="mb-3 pb-3 border-bottom">Sab 24/05 - 💡 Indizio 3/3 Sfida 4</li>
+                                        <li><strong>Sab 31/05 - SFIDA 5</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GIUGNO 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 GIUGNO 2026 - Indizi Sfida 5</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">Sab 07/06 - 💡 Indizio 1/4 Sfida 5</li>
+                                        <li class="mb-2">Sab 14/06 - 💡 Indizio 2/4 Sfida 5</li>
+                                        <li class="mb-2">Sab 21/06 - 💡 Indizio 3/4 Sfida 5</li>
+                                        <li>Sab 28/06 - 💡 Indizio 4/4 Sfida 5</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LUGLIO 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 LUGLIO 2026</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 05/07 - SFIDA 6</strong>
+                                            <br><small class="text-success">50% DEL GIOCO - Vincitore rivelato!</small>
+                                        </li>
+                                        <li class="mb-2">Sab 12/07 - 💡 Indizio 1/3 Sfida 6</li>
+                                        <li class="mb-2">Sab 19/07 - 💡 Indizio 2/3 Sfida 6</li>
+                                        <li>Sab 26/07 - 💡 Indizio 3/3 Sfida 6</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AGOSTO 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 AGOSTO 2026</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 02/08 - SFIDA 7</strong>
+                                        </li>
+                                        <li class="mb-2">Sab 09/08 - 💡 Indizio 1/4 Sfida 7</li>
+                                        <li class="mb-2">Sab 16/08 - 💡 Indizio 2/4 Sfida 7</li>
+                                        <li class="mb-2">Sab 23/08 - 💡 Indizio 3/4 Sfida 7</li>
+                                        <li>Sab 30/08 - 💡 Indizio 4/4 Sfida 7</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SETTEMBRE 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 SETTEMBRE 2026</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 06/09 - SFIDA 8</strong>
+                                        </li>
+                                        <li class="mb-2">Sab 13/09 - 💡 Indizio 1/3 Sfida 8</li>
+                                        <li class="mb-2">Sab 20/09 - 💡 Indizio 2/3 Sfida 8</li>
+                                        <li>Sab 27/09 - 💡 Indizio 3/3 Sfida 8</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- OTTOBRE 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 OTTOBRE 2026</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 04/10 - SFIDA 9</strong>
+                                        </li>
+                                        <li class="mb-2">Sab 11/10 - 💡 Indizio 1/4 Sfida 9</li>
+                                        <li class="mb-2">Sab 18/10 - 💡 Indizio 2/4 Sfida 9</li>
+                                        <li>Sab 25/10 - 💡 Indizio 3/4 Sfida 9</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NOVEMBRE 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 NOVEMBRE 2026</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            Sab 01/11 - 💡 Indizio 4/4 Sfida 9
+                                        </li>
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 08/11 - SFIDA 10</strong>
+                                        </li>
+                                        <li class="mb-2">Sab 15/11 - 💡 Indizio 1/3 Sfida 10</li>
+                                        <li class="mb-2">Sab 22/11 - 💡 Indizio 2/3 Sfida 10</li>
+                                        <li>Sab 29/11 - 💡 Indizio 3/3 Sfida 10</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DICEMBRE 2026 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">📍 DICEMBRE 2026</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 pb-3 border-bottom">
+                                            <strong>Sab 06/12 - SFIDA 11</strong>
+                                        </li>
+                                        <li class="mb-2">Sab 13/12 - 💡 Indizio 1/6 Sfida 11</li>
+                                        <li class="mb-2">Sab 20/12 - 💡 Indizio 2/6 Sfida 11</li>
+                                        <li>Sab 27/12 - 💡 Indizio 3/6 Sfida 11</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GENNAIO 2027 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-danger">
+                                <div class="card-header bg-dark text-white">
+                                    <h6 class="mb-0">📍 GENNAIO 2027 - FINALE</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">Sab 03/01 - 💡 Indizio 4/6 Sfida 11</li>
+                                        <li class="mb-2">Sab 10/01 - 💡 Indizio 5/6 Sfida 11</li>
+                                        <li class="mb-3 pb-3 border-bottom">Sab 17/01 - 💡 Indizio 6/6 Sfida 11</li>
+                                        <li>
+                                            <strong class="text-danger">Sab 24/01/2027 - SFIDA 12 FINALE 🏁</strong>
+                                            <br><small class="text-danger fw-bold">FESTA DI COMPLEANNO - PREMIO €500</small>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Setup Instructions -->
+            <div class="card mb-5">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🚀 Come Iniziare</h5>
+                </div>
+                <div class="card-body">
                     <div class="accordion" id="setupAccordion">
                         <!-- Step 1 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#step1" aria-expanded="true">
-                                    <span class="badge bg-primary me-2">1</span> Configura il Gioco
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#step1">
+                                    <span class="badge bg-primary me-3">1</span> Configura il Gioco
                                 </button>
                             </h2>
                             <div id="step1" class="accordion-collapse collapse show" data-bs-parent="#setupAccordion">
                                 <div class="accordion-body">
                                     <p>Vai a <code>/game-prize/admin/setup</code> e configura:</p>
                                     <ul>
-                                        <li><strong>Nome:</strong> "Premio di Compleanno - 24→25 Anni"</li>
-                                        <li><strong>Data Inizio:</strong> 25 Gennaio 2026 00:00 (Domenica)</li>
-                                        <li><strong>Data Fine:</strong> 25 Gennaio 2027 23:59:59 (Lunedì)</li>
-                                        <li><strong>Sfide:</strong> 12</li>
-                                        <li><strong>Descrizione:</strong> "Gioco del mio 25esimo compleanno con €500 in palio! Festa: 30 Gennaio 2027"</li>
+                                        <li><strong>Nome Gioco:</strong> "The Game" (password protected)</li>
+                                        <li><strong>Data Inizio:</strong> 25 Gennaio 2026 00:00 (Sabato)</li>
+                                        <li><strong>Data Fine:</strong> 24 Gennaio 2027 23:59 (Sabato)</li>
+                                        <li><strong>Sfide Totali:</strong> 12</li>
+                                        <li><strong>Partecipanti Invitati:</strong> ~100</li>
+                                        <li><strong>Descrizione:</strong> "The Game - Un anno di sfide per il 25esimo compleanno con €500 in palio!"</li>
                                     </ul>
                                     <a href="{{ url_for('game_prize.admin_setup') }}" class="btn btn-primary mt-3">
                                         ⚙️ Vai al Setup
@@ -80,21 +342,23 @@
                         <!-- Step 2 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#step2" aria-expanded="false">
-                                    <span class="badge bg-primary me-2">2</span> Crea le 12 Sfide
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step2">
+                                    <span class="badge bg-primary me-3">2</span> Crea le 12 Sfide
                                 </button>
                             </h2>
                             <div id="step2" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
                                 <div class="accordion-body">
-                                    <p>Nel dashboard admin, aggiungi 12 sfide:</p>
+                                    <p><strong>Segui il calendario:</strong> Una sfida al mese nei sabati indicati sopra.</p>
+                                    <p>Per ogni sfida aggiungi:</p>
                                     <ul>
-                                        <li><strong>Numero:</strong> 1-12</li>
-                                        <li><strong>Titolo:</strong> Es. "Sfida del Lago"</li>
+                                        <li><strong>Numero:</strong> 1-12 (vedi calendario)</li>
+                                        <li><strong>Titolo:</strong> Es. "La Sfida del Lago", "La Ricerca Misteriosa", etc.</li>
                                         <li><strong>Descrizione:</strong> Dettagli della sfida</li>
                                         <li><strong>Punti:</strong> 100 per sfida (totale 1200)</li>
-                                        <li><strong>Istruzioni:</strong> Come completare</li>
-                                        <li><strong>Location:</strong> (Opzionale)</li>
+                                        <li><strong>Data Inizio:</strong> Sabato a mezzanotte (secondo calendario)</li>
+                                        <li><strong>Data Fine:</strong> Sabato della sfida successiva</li>
+                                        <li><strong>Istruzioni:</strong> Come completare la sfida</li>
+                                        <li><strong>Location:</strong> Dove si svolge (opzionale)</li>
                                     </ul>
                                     <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-primary mt-3">
                                         📋 Vai al Dashboard Admin
@@ -106,20 +370,20 @@
                         <!-- Step 3 -->
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#step3" aria-expanded="false">
-                                    <span class="badge bg-primary me-2">3</span> Aggiungi Indizi
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#step3">
+                                    <span class="badge bg-primary me-3">3</span> Aggiungi Indizi Settimanali
                                 </button>
                             </h2>
                             <div id="step3" class="accordion-collapse collapse" data-bs-parent="#setupAccordion">
                                 <div class="accordion-body">
-                                    <p>Per ogni sfida, aggiungi 3-5 indizi settimanali:</p>
+                                    <p><strong>Per ogni sfida, aggiungi 3-6 indizi nei weekend successivi.</strong></p>
+                                    <p>Segui il calendario sopra per le date di pubblicazione (tutti i sabati a mezzanotte).</p>
                                     <ul>
-                                        <li><strong>Numero:</strong> 1°, 2°, 3° indizio</li>
-                                        <li><strong>Testo:</strong> L'indizio per trovare la sfida</li>
-                                        <li><strong>Rivelazione:</strong> Lunedì, Mercoledì, Venerdì</li>
+                                        <li><strong>Numero:</strong> 1°, 2°, 3° indizio (e oltre)</li>
+                                        <li><strong>Testo:</strong> L'indizio che aiuta a trovare/completare la sfida</li>
+                                        <li><strong>Data Rivelazione:</strong> Sabato a mezzanotte (secondo calendario)</li>
                                     </ul>
-                                    <p class="mt-3"><small class="text-muted">Tip: Crea gli indizi dopo aver creato le sfide dal dashboard admin</small></p>
+                                    <p class="mt-3"><small class="text-muted"><strong>Tip:</strong> Usa indizi progressivi - primo generico, ultimi più specifici.</small></p>
                                     <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-primary mt-3">
                                         💡 Aggiungi Indizi
                                     </a>
@@ -130,39 +394,41 @@
                 </div>
             </div>
 
-            <!-- Stats Section -->
+            <!-- Statistics -->
             <div class="row g-3 mb-5">
-                <div class="col-md-6">
+                <div class="col-lg-6">
                     <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">📊 Statistiche Gioco</h6>
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">📊 Statistiche The Game</h6>
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled">
-                                <li class="mb-2"><strong>Durata:</strong> 1 anno (24 Gen 2026 - 24 Gen 2027)</li>
+                                <li class="mb-2"><strong>Durata:</strong> 52 settimane (1 anno esatto)</li>
                                 <li class="mb-2"><strong>Sfide:</strong> 12 (una al mese)</li>
-                                <li class="mb-2"><strong>Indizi:</strong> 3-5 per sfida (settimanali)</li>
-                                <li class="mb-2"><strong>Partecipanti:</strong> ~50 persone</li>
-                                <li class="mb-2"><strong>Vincitore:</strong> Rivelato al 50% del gioco (6 sfide)</li>
-                                <li><strong>Premio:</strong> €500 al vincitore</li>
+                                <li class="mb-2"><strong>Indizi totali:</strong> 43 indizi distribuiti</li>
+                                <li class="mb-2"><strong>Partecipanti Invitati:</strong> ~100</li>
+                                <li class="mb-2"><strong>Partecipanti Attivi:</strong> Da determinare</li>
+                                <li class="mb-2"><strong>Revelazione Vincitore:</strong> Al 50% (Sfida 6 - Luglio 2026)</li>
+                                <li><strong>Premio Finale:</strong> €500</li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-lg-6">
                     <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">🎯 Punti Sistema</h6>
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">🎯 Sistema Punti</h6>
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled">
                                 <li class="mb-2"><strong>Per sfida:</strong> 100 punti</li>
-                                <li class="mb-2"><strong>Totale:</strong> 1200 punti disponibili</li>
-                                <li class="mb-2"><strong>Calcolo:</strong> Somma punti completamenti</li>
-                                <li class="mb-2"><strong>Classifica:</strong> Ordinata per punti totali</li>
-                                <li class="mb-2"><strong>Uguaglianza:</strong> Chi ha completato più sfide?</li>
-                                <li><strong>Sorpresa:</strong> Bonus punti per alcuni (opzionale)</li>
+                                <li class="mb-2"><strong>Massimo totale:</strong> 1200 punti (12 sfide × 100)</li>
+                                <li class="mb-2"><strong>Calcolo classifica:</strong> Somma punti completamenti</li>
+                                <li class="mb-2"><strong>Tiebreaker:</strong> Chi ha completato più sfide</li>
+                                <li class="mb-2"><strong>Bonus:</strong> Opzionali per milestone speciali</li>
+                                <li class="mb-2"><strong>Finale:</strong> Vincitore annunciato durante festa (24/01/2027)</li>
+                                <li><strong>Pagamento:</strong> €500 cash nella sera della festa</li>
                             </ul>
                         </div>
                     </div>
@@ -173,15 +439,17 @@
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <h5 class="alert-heading">⚠️ Note Importanti</h5>
                 <ul class="mb-0">
-                    <li><strong>Countdown:</strong> Automatico dal 24 Gennaio 2026 00:00 - nessun intervento necessario</li>
-                    <li><strong>Giocatori:</strong> Non vedranno nulla prima del 24 Gennaio - rimane segreto!</li>
-                    <li><strong>Homepage:</strong> Mostrerà countdown fino al 24 Gennaio, poi Game Prize attivo</li>
-                    <li><strong>Backup:</strong> Assicurati di fare backup del database prima di gennaio</li>
+                    <li><strong>Password:</strong> "The Game" - Solo tu la conosci!</li>
+                    <li><strong>Orario:</strong> Tutti gli eventi (sfide + indizi) escono <strong>sabato a mezzanotte (00:00)</strong></li>
+                    <li><strong>Segreto:</strong> I giocatori non vedranno nulla prima del 25 gennaio 2026</li>
+                    <li><strong>Database:</strong> Backup prima di ogni evento importante</li>
+                    <li><strong>Classifica:</strong> Visibile a tutti i giocatori (competizione trasparente)</li>
+                    <li><strong>Vincitore:</strong> Rivelato pubblicamente il 24 gennaio 2027 durante la festa</li>
                 </ul>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <!-- Navigation Buttons -->
+            <!-- Navigation -->
             <div class="row g-2 mb-4">
                 <div class="col-md-4">
                     <a href="{{ url_for('game_prize.admin_setup') }}" class="btn btn-success btn-lg w-100">
@@ -200,7 +468,7 @@
                 </div>
             </div>
 
-            <!-- Back Link -->
+            <!-- Back -->
             <div class="text-center">
                 <a href="{{ url_for('dashboard') }}" class="text-muted">← Torna alla Dashboard Principale</a>
             </div>
@@ -212,6 +480,7 @@
     .accordion-button:not(.collapsed) {
         background-color: #f0f0ff;
         color: #0d6efd;
+        font-weight: 600;
     }
 
     .card {
@@ -232,6 +501,19 @@
         align-items: center;
         justify-content: center;
         border-radius: 50%;
+        font-weight: bold;
+    }
+
+    .border-primary {
+        border-left: 5px solid #0d6efd !important;
+    }
+
+    .border-secondary {
+        border-left: 5px solid #6c757d !important;
+    }
+
+    .border-danger {
+        border-left: 5px solid #dc3545 !important;
     }
 </style>
 {% endblock %}

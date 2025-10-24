@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Configurazione Game Prize - Admin{% endblock %}
+{% block title %}Configurazione The Game - Admin{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1>⚙️ Configurazione Game Prize</h1>
+            <h1>⚙️ Configurazione The Game</h1>
             <p class="text-muted">Configura i parametri del gioco a premi</p>
         </div>
     </div>
@@ -39,16 +39,28 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="total_challenges" class="form-label">Numero Totale di Sfide</label>
-                            <input type="number" class="form-control" id="total_challenges" name="total_challenges"
-                                   value="{{ config[4] if config else 12 }}" min="1" required>
-                            <small class="text-muted">Default: 12 sfide</small>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="total_challenges" class="form-label">Numero Totale di Sfide</label>
+                                    <input type="number" class="form-control" id="total_challenges" name="total_challenges"
+                                           value="{{ config[4] if config else 12 }}" min="1" required>
+                                    <small class="text-muted">Default: 12 sfide</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="max_participants" class="form-label">Numero di Partecipanti Invitati</label>
+                                    <input type="number" class="form-control" id="max_participants" name="max_participants"
+                                           value="{{ config[5] if config else 100 }}" min="1" required>
+                                    <small class="text-muted">Default: ~100 invitati</small>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Descrizione del Gioco</label>
-                            <textarea class="form-control" id="description" name="description" rows="4">{{ config[5] if config else '' }}</textarea>
+                            <textarea class="form-control" id="description" name="description" rows="4">{{ config[6] if config else '' }}</textarea>
                             <small class="text-muted">Descrizione che apparirà nel dashboard</small>
                         </div>
 
@@ -78,6 +90,7 @@
                     <li><strong>Data Inizio:</strong> Quando cominciano le sfide</li>
                     <li><strong>Data Fine:</strong> Il giorno della festa di compleanno (quando il vincitore verrà rivelato)</li>
                     <li><strong>Numero Sfide:</strong> Il numero totale di sfide da creare</li>
+                    <li><strong>Numero Partecipanti:</strong> Numero di invitati (ognuno libero di accettare)</li>
                     <li><strong>Milestone:</strong> La finale della sfida avverrà quando il 50% delle sfide sarà completato</li>
                 </ul>
             </div>

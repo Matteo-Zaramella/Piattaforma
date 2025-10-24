@@ -1,0 +1,1285 @@
+{% extends "base.html" %}
+
+{% block title %}Gestisci Sfide - The Game Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">⚙️ Gestore Sfide - The Game</h1>
+            <p class="text-muted">Crea e modifica le 12 sfide con i relativi indizi</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-secondary">
+                ← Torna al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiche Rapide -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Sfide Create</h6>
+                    <p class="display-6">{{ challenges_count }}/12</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Indizi Totali</h6>
+                    <p class="display-6">{{ total_clues }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Partecipanti</h6>
+                    <p class="display-6">~100</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Punti Totali</h6>
+                    <p class="display-6">1200</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accordion con 12 Sfide -->
+    <div class="accordion" id="challengesAccordion">
+
+        <!-- SFIDA 1 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge1">
+                    <span class="badge bg-primary me-2">1</span>
+                    <strong>Sfida 1</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 25 Gen 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-01-25T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge1" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="1">
+                        <input type="hidden" name="challenge_date" value="2026-01-25T00:00:00">
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_1.title or '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_1.description or '' }}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_1.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_1.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_1.instructions or '' }}</textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 25 Gennaio 2026 ore 00:00 (mezzanotte)
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 1</button>
+                    </form>
+
+                    <hr>
+
+                    <!-- Indizi per Sfida 1 -->
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 1 (4 indizi)</h5>
+
+                    {% for i in range(1, 5) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/4
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}01 Feb 2026
+                                    {% elif i == 2 %}08 Feb 2026
+                                    {% elif i == 3 %}15 Feb 2026
+                                    {% elif i == 4 %}22 Feb 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="1">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-02-{% if i == 1 %}01{% elif i == 2 %}08{% elif i == 3 %}15{% elif i == 4 %}22{% endif %}T00:00:00">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}01 Febbraio 2026 ore 00:00
+                                            {% elif i == 2 %}08 Febbraio 2026 ore 00:00
+                                            {% elif i == 3 %}15 Febbraio 2026 ore 00:00
+                                            {% elif i == 4 %}22 Febbraio 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 2 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge2">
+                    <span class="badge bg-primary me-2">2</span>
+                    <strong>Sfida 2</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 01 Mar 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-03-01T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge2" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="2">
+                        <input type="hidden" name="challenge_date" value="2026-03-01T00:00:00">
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_2.title or '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_2.description or '' }}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_2.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_2.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_2.instructions or '' }}</textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 01 Marzo 2026 ore 00:00 (mezzanotte)
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 2</button>
+                    </form>
+
+                    <hr>
+
+                    <!-- Indizi per Sfida 2 -->
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 2 (3 indizi)</h5>
+
+                    {% for i in range(1, 4) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/3
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}08 Mar 2026
+                                    {% elif i == 2 %}15 Mar 2026
+                                    {% elif i == 3 %}22 Mar 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="2">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-03-{% if i == 1 %}08{% elif i == 2 %}15{% elif i == 3 %}22{% endif %}T00:00:00">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}08 Marzo 2026 ore 00:00
+                                            {% elif i == 2 %}15 Marzo 2026 ore 00:00
+                                            {% elif i == 3 %}22 Marzo 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 3 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge3">
+                    <span class="badge bg-primary me-2">3</span>
+                    <strong>Sfida 3</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 29 Mar 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-03-29T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge3" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="3">
+                        <input type="hidden" name="challenge_date" value="2026-03-29T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_3.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_3.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_3.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_3.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_3.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 29 Marzo 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 3</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 3 (4 indizi)</h5>
+                    {% for i in range(1, 5) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/4
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}05 Apr 2026
+                                    {% elif i == 2 %}12 Apr 2026
+                                    {% elif i == 3 %}19 Apr 2026
+                                    {% elif i == 4 %}26 Apr 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="3">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-04-{% if i == 1 %}05{% elif i == 2 %}12{% elif i == 3 %}19{% elif i == 4 %}26{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}05 Aprile 2026 ore 00:00
+                                            {% elif i == 2 %}12 Aprile 2026 ore 00:00
+                                            {% elif i == 3 %}19 Aprile 2026 ore 00:00
+                                            {% elif i == 4 %}26 Aprile 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 4 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge4">
+                    <span class="badge bg-primary me-2">4</span>
+                    <strong>Sfida 4</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 03 Mag 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-05-03T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge4" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="4">
+                        <input type="hidden" name="challenge_date" value="2026-05-03T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_4.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_4.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_4.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_4.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_4.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 03 Maggio 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 4</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 4 (3 indizi)</h5>
+                    {% for i in range(1, 4) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/3
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}10 Mag 2026
+                                    {% elif i == 2 %}17 Mag 2026
+                                    {% elif i == 3 %}24 Mag 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="4">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-05-{% if i == 1 %}10{% elif i == 2 %}17{% elif i == 3 %}24{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}10 Maggio 2026 ore 00:00
+                                            {% elif i == 2 %}17 Maggio 2026 ore 00:00
+                                            {% elif i == 3 %}24 Maggio 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 5 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge5">
+                    <span class="badge bg-primary me-2">5</span>
+                    <strong>Sfida 5</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 31 Mag 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-05-31T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge5" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="5">
+                        <input type="hidden" name="challenge_date" value="2026-05-31T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_5.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_5.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_5.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_5.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_5.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 31 Maggio 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 5</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 5 (4 indizi)</h5>
+                    {% for i in range(1, 5) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/4
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}07 Giu 2026
+                                    {% elif i == 2 %}14 Giu 2026
+                                    {% elif i == 3 %}21 Giu 2026
+                                    {% elif i == 4 %}28 Giu 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="5">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-06-{% if i == 1 %}07{% elif i == 2 %}14{% elif i == 3 %}21{% elif i == 4 %}28{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}07 Giugno 2026 ore 00:00
+                                            {% elif i == 2 %}14 Giugno 2026 ore 00:00
+                                            {% elif i == 3 %}21 Giugno 2026 ore 00:00
+                                            {% elif i == 4 %}28 Giugno 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 6 - 50% DEL GIOCO (VINCITORE RIVELATO!) -->
+        <div class="accordion-item" style="background-color: #fff8e1;">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge6" style="background-color: #fff8e1;">
+                    <span class="badge bg-warning me-2">6</span>
+                    <strong>Sfida 6 - 50% DEL GIOCO</strong>
+                    <span class="badge bg-danger ms-2">🏅 VINCITORE RIVELATO!</span>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 05 Lug 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-07-05T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge6" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <div class="alert alert-warning mb-4">
+                        <strong>⭐ Questa è la Sfida 6!</strong> Al completamento di questa sfida, il vincitore sarà rivelato agli altri partecipanti. È il punto di mezzo del gioco!
+                    </div>
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="6">
+                        <input type="hidden" name="challenge_date" value="2026-07-05T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_6.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_6.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_6.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_6.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_6.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 05 Luglio 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 6</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 6 (3 indizi)</h5>
+                    {% for i in range(1, 4) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/3
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}12 Lug 2026
+                                    {% elif i == 2 %}19 Lug 2026
+                                    {% elif i == 3 %}26 Lug 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="6">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-07-{% if i == 1 %}12{% elif i == 2 %}19{% elif i == 3 %}26{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}12 Luglio 2026 ore 00:00
+                                            {% elif i == 2 %}19 Luglio 2026 ore 00:00
+                                            {% elif i == 3 %}26 Luglio 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 7 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge7">
+                    <span class="badge bg-primary me-2">7</span>
+                    <strong>Sfida 7</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 02 Ago 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-08-02T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge7" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="7">
+                        <input type="hidden" name="challenge_date" value="2026-08-02T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_7.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_7.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_7.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_7.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_7.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 02 Agosto 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 7</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 7 (4 indizi)</h5>
+                    {% for i in range(1, 5) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/4
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}09 Ago 2026
+                                    {% elif i == 2 %}16 Ago 2026
+                                    {% elif i == 3 %}23 Ago 2026
+                                    {% elif i == 4 %}30 Ago 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="7">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-08-{% if i == 1 %}09{% elif i == 2 %}16{% elif i == 3 %}23{% elif i == 4 %}30{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}09 Agosto 2026 ore 00:00
+                                            {% elif i == 2 %}16 Agosto 2026 ore 00:00
+                                            {% elif i == 3 %}23 Agosto 2026 ore 00:00
+                                            {% elif i == 4 %}30 Agosto 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 8 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge8">
+                    <span class="badge bg-primary me-2">8</span>
+                    <strong>Sfida 8</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 06 Set 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-09-06T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge8" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="8">
+                        <input type="hidden" name="challenge_date" value="2026-09-06T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_8.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_8.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_8.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_8.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_8.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 06 Settembre 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 8</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 8 (3 indizi)</h5>
+                    {% for i in range(1, 4) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/3
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}13 Set 2026
+                                    {% elif i == 2 %}20 Set 2026
+                                    {% elif i == 3 %}27 Set 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="8">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-09-{% if i == 1 %}13{% elif i == 2 %}20{% elif i == 3 %}27{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}13 Settembre 2026 ore 00:00
+                                            {% elif i == 2 %}20 Settembre 2026 ore 00:00
+                                            {% elif i == 3 %}27 Settembre 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 9 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge9">
+                    <span class="badge bg-primary me-2">9</span>
+                    <strong>Sfida 9</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 04 Ott 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-10-04T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge9" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="9">
+                        <input type="hidden" name="challenge_date" value="2026-10-04T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_9.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_9.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_9.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_9.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_9.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 04 Ottobre 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 9</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 9 (4 indizi)</h5>
+                    {% for i in range(1, 5) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/4
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}11 Ott 2026
+                                    {% elif i == 2 %}18 Ott 2026
+                                    {% elif i == 3 %}25 Ott 2026
+                                    {% elif i == 4 %}01 Nov 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="9">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-{% if i == 4 %}11-01{% else %}10-{% if i == 1 %}11{% elif i == 2 %}18{% elif i == 3 %}25{% endif %}{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}11 Ottobre 2026 ore 00:00
+                                            {% elif i == 2 %}18 Ottobre 2026 ore 00:00
+                                            {% elif i == 3 %}25 Ottobre 2026 ore 00:00
+                                            {% elif i == 4 %}01 Novembre 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 10 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge10">
+                    <span class="badge bg-primary me-2">10</span>
+                    <strong>Sfida 10</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 08 Nov 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-11-08T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge10" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="10">
+                        <input type="hidden" name="challenge_date" value="2026-11-08T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_10.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_10.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_10.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_10.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_10.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 08 Novembre 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 10</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 10 (3 indizi)</h5>
+                    {% for i in range(1, 4) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/3
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}15 Nov 2026
+                                    {% elif i == 2 %}22 Nov 2026
+                                    {% elif i == 3 %}29 Nov 2026
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="10">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-11-{% if i == 1 %}15{% elif i == 2 %}22{% elif i == 3 %}29{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}15 Novembre 2026 ore 00:00
+                                            {% elif i == 2 %}22 Novembre 2026 ore 00:00
+                                            {% elif i == 3 %}29 Novembre 2026 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 11 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge11">
+                    <span class="badge bg-primary me-2">11</span>
+                    <strong>Sfida 11</strong>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 06 Dic 2026</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2026-12-06T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge11" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <div class="alert alert-info mb-4">
+                        <strong>❄️ Pausa Natalizia:</strong> Questa sfida comprende 6 indizi (pausa per le festività)
+                    </div>
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="11">
+                        <input type="hidden" name="challenge_date" value="2026-12-06T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida del Lago" value="{{ challenge_11.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida...">{{ challenge_11.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_11.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Lago Como" value="{{ challenge_11.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida...">{{ challenge_11.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>📅 Data Rilascio:</strong> Sabato 06 Dicembre 2026 ore 00:00 (mezzanotte)
+                        </div>
+                        <button type="submit" class="btn btn-primary">💾 Salva Sfida 11</button>
+                    </form>
+                    <hr>
+                    <h5 class="mt-4 mb-3">💡 Indizi per Sfida 11 (6 indizi - Pausa Natalizia)</h5>
+                    {% for i in range(1, 7) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                Indizio {{ i }}/6
+                                <span class="float-end" style="font-size: 0.85rem; color: #666;">
+                                    📅
+                                    {% if i == 1 %}13 Dic 2026
+                                    {% elif i == 2 %}20 Dic 2026
+                                    {% elif i == 3 %}27 Dic 2026
+                                    {% elif i == 4 %}03 Gen 2027
+                                    {% elif i == 5 %}10 Gen 2027
+                                    {% elif i == 6 %}17 Gen 2027
+                                    {% endif %}
+                                </span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('game_prize.admin_save_clue') }}" class="mb-0">
+                                <input type="hidden" name="challenge_id" value="11">
+                                <input type="hidden" name="clue_number" value="{{ i }}">
+                                <input type="hidden" name="clue_date" value="2026-{% if i <= 3 %}12-{% if i == 1 %}13{% elif i == 2 %}20{% elif i == 3 %}27{% endif %}{% else %}01-{% if i == 4 %}03{% elif i == 5 %}10{% elif i == 6 %}17{% endif %}{% endif %}{% if i > 3 %}-2027{% endif %}T00:00:00">
+                                <div class="mb-3">
+                                    <label class="form-label">Testo Indizio {{ i }}</label>
+                                    <textarea class="form-control" name="clue_text" rows="2" placeholder="Scrivi l'indizio..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <small class="text-muted">
+                                            📅 Pubblicate: {% if i == 1 %}13 Dicembre 2026 ore 00:00
+                                            {% elif i == 2 %}20 Dicembre 2026 ore 00:00
+                                            {% elif i == 3 %}27 Dicembre 2026 ore 00:00
+                                            {% elif i == 4 %}03 Gennaio 2027 ore 00:00
+                                            {% elif i == 5 %}10 Gennaio 2027 ore 00:00
+                                            {% elif i == 6 %}17 Gennaio 2027 ore 00:00
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button type="submit" class="btn btn-sm btn-success">💾 Salva</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDA 12 - FINALE -->
+        <div class="accordion-item" style="background-color: #ffe6e6; border-left: 4px solid #dc3545;">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challenge12" style="background-color: #ffe6e6;">
+                    <span class="badge bg-danger me-2">12 🏁</span>
+                    <strong>Sfida 12 - FINALE</strong>
+                    <span class="badge bg-success ms-2">🎉 €500 IN PALIO!</span>
+                    <span class="ms-auto me-3">
+                        <small class="text-muted">📅 24 Gen 2027</small>
+                    </span>
+                    <div class="countdown-container ms-2" data-date="2027-01-24T00:00:00" style="font-size: 0.85rem; white-space: nowrap;"></div>
+                </button>
+            </h2>
+            <div id="challenge12" class="accordion-collapse collapse" data-bs-parent="#challengesAccordion">
+                <div class="accordion-body">
+                    <div class="alert alert-danger mb-4">
+                        <strong>🏆 ULTIMA SFIDA!</strong> Questa è la sfida finale del gioco.
+                        <ul class="mb-0 mt-2">
+                            <li>Completamento: 24 Gennaio 2027 a mezzanotte</li>
+                            <li>Festa di compleanno: 25 Gennaio 2027</li>
+                            <li>Premio: €500 al vincitore!</li>
+                        </ul>
+                    </div>
+                    <form method="POST" action="{{ url_for('game_prize.admin_save_challenge') }}" class="mb-4">
+                        <input type="hidden" name="challenge_number" value="12">
+                        <input type="hidden" name="challenge_date" value="2027-01-24T00:00:00">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Titolo Sfida Finale</strong></label>
+                            <input type="text" class="form-control" name="title" placeholder="Es. La Sfida Finale" value="{{ challenge_12.title or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Descrizione</strong></label>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Descrivi la sfida finale...">{{ challenge_12.description or '' }}</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Punti</strong></label>
+                                    <input type="number" class="form-control" name="points" value="{{ challenge_12.points or 100 }}" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Luogo (opzionale)</strong></label>
+                                    <input type="text" class="form-control" name="location" placeholder="Es. Festa di Compleanno" value="{{ challenge_12.location or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Istruzioni</strong></label>
+                            <textarea class="form-control" name="instructions" rows="2" placeholder="Come completare la sfida finale...">{{ challenge_12.instructions or '' }}</textarea>
+                        </div>
+                        <div class="alert alert-danger">
+                            <strong>📅 Data Rilascio:</strong> Sabato 24 Gennaio 2027 ore 00:00 (mezzanotte)
+                            <br><strong>🎉 Festa:</strong> Domenica 25 Gennaio 2027
+                            <br><strong>💰 Premio:</strong> €500 al vincitore!
+                        </div>
+                        <button type="submit" class="btn btn-danger btn-lg">💾 Salva Sfida 12 (FINALE)</button>
+                    </form>
+                    <hr>
+                    <div class="alert alert-info">
+                        <strong>ℹ️ Nota:</strong> La sfida 12 non ha indizi (è la sfida finale). I giocatori dovranno completarla basandosi solo sulla descrizione e sulle istruzioni.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottone di ritorno -->
+    <div class="mt-5 text-center">
+        <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-secondary">
+            ← Torna al Dashboard Admin
+        </a>
+    </div>
+</div>
+
+<style>
+    .countdown-container {
+        background: #fff3cd;
+        padding: 2px 8px;
+        border-radius: 5px;
+        color: #856404;
+        font-weight: 500;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #f0f0ff;
+        color: #0d6efd;
+    }
+
+    .accordion-item {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .accordion-item:last-child {
+        border-bottom: none;
+    }
+
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge {
+        font-weight: bold;
+        min-width: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<script>
+    // Funzione per mostrare countdown
+    function updateCountdowns() {
+        document.querySelectorAll('.countdown-container').forEach(element => {
+            const targetDate = new Date(element.getAttribute('data-date')).getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                element.textContent = '✓ Rilasciato';
+                element.style.background = '#d4edda';
+                element.style.color = '#155724';
+            } else {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+                if (days > 0) {
+                    element.textContent = `⏳ ${days}g ${hours}h`;
+                } else if (hours > 0) {
+                    element.textContent = `⏳ ${hours}h ${minutes}m`;
+                } else {
+                    element.textContent = `⏳ ${minutes}m`;
+                }
+            }
+        });
+    }
+
+    // Aggiorna i countdown ogni minuto
+    updateCountdowns();
+    setInterval(updateCountdowns, 60000);
+</script>
+
+{% endblock %}
