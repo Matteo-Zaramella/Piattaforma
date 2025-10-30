@@ -278,6 +278,39 @@
             margin-top: 4rem;
         }
 
+        /* Login Icon */
+        .login-icon {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-icon i {
+            font-size: 1.5rem;
+        }
+
         @media (max-width: 992px) {
             .sections-container {
                 grid-template-columns: 1fr;
@@ -286,10 +319,26 @@
             .hero-title {
                 font-size: 2rem;
             }
+
+            .login-icon {
+                width: 45px;
+                height: 45px;
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .login-icon i {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Login Icon -->
+    <a href="{{ url_for('login') }}" class="login-icon" title="Accedi">
+        <i class="bi bi-box-arrow-in-right"></i>
+    </a>
+
     <!-- Video Background -->
     <div class="video-background">
         <!-- YouTube Video Embed -->
