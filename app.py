@@ -742,11 +742,11 @@ def verify_game_password():
         session.modified = True  # Forza il salvataggio della sessione
         print(f"[DEBUG] Password corretta! Sessione impostata.")
         flash('Accesso concesso al Game Prize!', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('game_prize.admin_welcome'))
     else:
         print(f"[DEBUG] Password non corretta!")
         flash('Password non corretta. Riprova.', 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('dashboard'))
 
 @app.route('/logout-game-admin')
 def logout_game_admin():
