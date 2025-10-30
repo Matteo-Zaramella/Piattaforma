@@ -1,239 +1,398 @@
 {% extends "base.html" %}
 
-{% block title %}Home - Piattaforma{% endblock %}
+{% block title %}Dashboard - Piattaforma{% endblock %}
 
 {% block extra_css %}
 <style>
-    .app-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 2rem;
-        padding: 2rem 0;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .app-icon {
+    .dashboard-container {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        color: inherit;
-        transition: all 0.3s ease;
-        padding: 1.5rem;
-        border-radius: 20px;
-        background: var(--bs-body-bg);
-        position: relative;
+        min-height: calc(100vh - 60px);
+        margin: -1.5rem;
     }
 
-    .app-icon:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    .sidebar {
+        width: 260px;
+        background: var(--bg-card);
+        border-right: 1px solid var(--border-color);
+        padding: 1.5rem 0;
+        position: sticky;
+        top: 60px;
+        height: calc(100vh - 60px);
+        overflow-y: auto;
     }
 
-    .app-icon-circle {
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 0.75rem;
-        font-size: 2.5rem;
-        color: white;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    .sidebar-header {
+        padding: 0 1.5rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 1rem;
     }
 
-    .app-icon-label {
+    .sidebar-header h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .sidebar-header .user-info {
         font-size: 0.9rem;
-        font-weight: 500;
-        text-align: center;
-        margin-bottom: 0;
-        color: var(--bs-body-color);
+        color: var(--text-muted);
+        margin-top: 0.25rem;
     }
 
-    .app-badge {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background: #dc3545;
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-menu-item {
+        margin: 0;
+    }
+
+    .sidebar-menu-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.75rem 1.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-menu-link:hover {
+        background: rgba(102, 126, 234, 0.1);
+        border-left-color: #667eea;
+    }
+
+    .sidebar-menu-link.active {
+        background: rgba(102, 126, 234, 0.15);
+        border-left-color: #667eea;
+        font-weight: 600;
+    }
+
+    .sidebar-menu-link i {
+        font-size: 1.2rem;
+        width: 24px;
+        text-align: center;
+    }
+
+    .sidebar-menu-label {
+        flex: 1;
+    }
+
+    .sidebar-badge {
+        background: #667eea;
         color: white;
-        border-radius: 12px;
+        border-radius: 10px;
         padding: 2px 8px;
         font-size: 0.75rem;
-        font-weight: bold;
-        min-width: 20px;
-        text-align: center;
-        box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
-    }
-
-    .welcome-section {
-        text-align: center;
-        padding: 2rem 0 1rem;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .welcome-section h1 {
-        font-size: 2rem;
         font-weight: 600;
+    }
+
+    .sidebar-section-title {
+        padding: 1rem 1.5rem 0.5rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        background: var(--bg-color);
+        overflow-y: auto;
+    }
+
+    .welcome-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .welcome-card h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
         margin-bottom: 0.5rem;
     }
 
-    .welcome-section .lead {
-        color: var(--bs-secondary);
-        font-size: 1rem;
+    .welcome-card p {
+        opacity: 0.9;
+        margin: 0;
     }
 
-    /* Colori specifici per ogni app */
-    .app-allenamenti { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .app-pasti { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .app-workout { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    .app-stats { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    .app-wishlist { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-    .app-home { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
-    .app-location { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
-    .app-appointments { background: linear-gradient(135deg, #f77062 0%, #fe5196 100%); }
-    .app-game-prize { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
 
-    @media (max-width: 576px) {
-        .app-grid {
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 1.5rem;
+    .stat-card {
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .stat-card-title {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-card-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #667eea;
+        margin: 0;
+    }
+
+    /* Modal Game Prize */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+    }
+
+    .modal-content-custom {
+        background: var(--bg-card);
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .modal-content-custom h2 {
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .modal-content-custom form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .modal-content-custom input {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        font-size: 1rem;
+        background: var(--bg-color);
+        color: var(--text-color);
+    }
+
+    .modal-content-custom button {
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+
+    .modal-content-custom .btn-primary-custom {
+        background: #667eea;
+        color: white;
+    }
+
+    .modal-content-custom .btn-primary-custom:hover {
+        background: #5568d3;
+    }
+
+    .modal-content-custom .btn-secondary-custom {
+        background: var(--border-color);
+        color: var(--text-color);
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            flex-direction: column;
         }
 
-        .app-icon-circle {
-            width: 70px;
-            height: 70px;
-            font-size: 2rem;
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+            border-right: none;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .welcome-section h1 {
-            font-size: 1.5rem;
+        .main-content {
+            padding: 1rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="welcome-section">
-    <h1>Ciao, {{ session.username }}! 👋</h1>
-    <p class="lead">Cosa vuoi fare oggi?</p>
-</div>
-
-<div class="app-grid">
-    <!-- Home Pubblica -->
-    <a href="{{ url_for('index') }}" class="app-icon">
-        <div class="app-icon-circle app-home">
-            <i class="bi bi-house-door"></i>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+            <div class="user-info">Ciao, {{ session.username }}!</div>
         </div>
-        <p class="app-icon-label">Home</p>
-    </a>
 
-    <!-- Wishlist -->
-    <a href="{{ url_for('wishlist.index') }}" class="app-icon">
-        <div class="app-icon-circle app-wishlist">
-            <i class="bi bi-gift-fill"></i>
-        </div>
-        <p class="app-icon-label">Wishlist</p>
-    </a>
+        <ul class="sidebar-menu">
+            <!-- Home -->
+            <li class="sidebar-menu-item">
+                <a href="{{ url_for('index') }}" class="sidebar-menu-link">
+                    <i class="bi bi-house-door"></i>
+                    <span class="sidebar-menu-label">Home Pubblica</span>
+                </a>
+            </li>
 
-    <!-- Allenamenti -->
-    <a href="{{ url_for('fitness.allenamenti') }}" class="app-icon">
-        <div class="app-icon-circle app-allenamenti">
-            <i class="bi bi-heart-pulse"></i>
-            {% if stats.allenamenti_settimana > 0 %}
-            <span class="app-badge">{{ stats.allenamenti_settimana }}</span>
-            {% endif %}
-        </div>
-        <p class="app-icon-label">Allenamenti</p>
-    </a>
+            <div class="sidebar-section-title">Fitness & Salute</div>
 
-    <!-- Pasti -->
-    <a href="{{ url_for('fitness.pasti') }}" class="app-icon">
-        <div class="app-icon-circle app-pasti">
-            <i class="bi bi-egg-fried"></i>
-            {% if stats.pasti_oggi > 0 %}
-            <span class="app-badge">{{ stats.pasti_oggi }}</span>
-            {% endif %}
-        </div>
-        <p class="app-icon-label">Alimentazione</p>
-    </a>
+            <!-- Allenamenti -->
+            <li class="sidebar-menu-item">
+                <a href="{{ url_for('fitness.allenamenti') }}" class="sidebar-menu-link">
+                    <i class="bi bi-heart-pulse"></i>
+                    <span class="sidebar-menu-label">Allenamenti</span>
+                    {% if stats.allenamenti_settimana > 0 %}
+                    <span class="sidebar-badge">{{ stats.allenamenti_settimana }}</span>
+                    {% endif %}
+                </a>
+            </li>
 
-    <!-- Scheda Workout -->
-    <a href="{{ url_for('fitness.scheda_workout') }}" class="app-icon">
-        <div class="app-icon-circle app-workout">
-            <i class="bi bi-dumbbell"></i>
-        </div>
-        <p class="app-icon-label">Workout</p>
-    </a>
+            <!-- Pasti -->
+            <li class="sidebar-menu-item">
+                <a href="{{ url_for('fitness.pasti') }}" class="sidebar-menu-link">
+                    <i class="bi bi-egg-fried"></i>
+                    <span class="sidebar-menu-label">Alimentazione</span>
+                    {% if stats.pasti_oggi > 0 %}
+                    <span class="sidebar-badge">{{ stats.pasti_oggi }}</span>
+                    {% endif %}
+                </a>
+            </li>
 
-    <!-- Statistiche -->
-    <a href="{{ url_for('fitness.stats') }}" class="app-icon">
-        <div class="app-icon-circle app-stats">
-            <i class="bi bi-bar-chart-line"></i>
-        </div>
-        <p class="app-icon-label">Statistiche</p>
-    </a>
+            <!-- Workout -->
+            <li class="sidebar-menu-item">
+                <a href="{{ url_for('fitness.scheda_workout') }}" class="sidebar-menu-link">
+                    <i class="bi bi-dumbbell"></i>
+                    <span class="sidebar-menu-label">Scheda Workout</span>
+                </a>
+            </li>
 
-    <!-- Dove Sono -->
-    <a href="{{ url_for('location.index') }}" class="app-icon">
-        <div class="app-icon-circle app-location">
-            <i class="bi bi-geo-alt-fill"></i>
-        </div>
-        <p class="app-icon-label">Dove Sono</p>
-    </a>
+            <!-- Statistiche -->
+            <li class="sidebar-menu-item">
+                <a href="{{ url_for('fitness.stats') }}" class="sidebar-menu-link">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span class="sidebar-menu-label">Statistiche</span>
+                </a>
+            </li>
 
-    <!-- Appuntamenti -->
-    <a href="{{ url_for('appointments.index') }}" class="app-icon">
-        <div class="app-icon-circle app-appointments">
-            <i class="bi bi-calendar-check"></i>
-        </div>
-        <p class="app-icon-label">Appuntamenti</p>
-    </a>
+            <div class="sidebar-section-title">Personale</div>
 
-    <!-- Game Prize (Always visible, but click behavior depends on auth) -->
-    <div onclick="
-        {% if game_admin_authenticated %}
-            window.location.href='{{ url_for('game_prize.admin_welcome') }}';
-        {% else %}
-            document.getElementById('gamePrizeModal').style.display='block';
-        {% endif %}
-    " class="app-icon" style="cursor: pointer;">
-        <div class="app-icon-circle app-game-prize">
-            <i class="bi bi-trophy-fill"></i>
+            <!-- Wishlist -->
+            <li class="sidebar-menu-item">
+                <a href="{{ url_for('wishlist.index') }}" class="sidebar-menu-link">
+                    <i class="bi bi-gift-fill"></i>
+                    <span class="sidebar-menu-label">Wishlist</span>
+                </a>
+            </li>
+
+            <div class="sidebar-section-title">Game Prize</div>
+
+            <!-- Game Prize -->
+            <li class="sidebar-menu-item">
+                <a href="#" onclick="openGamePrize(event)" class="sidebar-menu-link">
+                    <i class="bi bi-trophy-fill" style="color: #ffc107;"></i>
+                    <span class="sidebar-menu-label">Game Prize</span>
+                </a>
+            </li>
+
+            <!-- Note: Dove Sono e Appuntamenti sono ora dentro Game Prize Admin Dashboard -->
+
+            <!-- Impostazioni -->
+            <div class="sidebar-section-title">Sistema</div>
+            <li class="sidebar-menu-item">
+                <a href="{{ url_for('settings.index') }}" class="sidebar-menu-link">
+                    <i class="bi bi-gear"></i>
+                    <span class="sidebar-menu-label">Impostazioni</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="welcome-card">
+            <h1>👋 Benvenuto, {{ session.username }}!</h1>
+            <p>Cosa vuoi fare oggi?</p>
         </div>
-        <p class="app-icon-label">Game Prize</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-title">Allenamenti Settimana</div>
+                <div class="stat-card-value">{{ stats.allenamenti_settimana }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-title">Pasti Oggi</div>
+                <div class="stat-card-value">{{ stats.pasti_oggi }}</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Accesso Rapido</h5>
+                <p class="text-muted">Utilizza il menu laterale per navigare tra le sezioni</p>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Modal Password Game Prize -->
-<div id="gamePrizeModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-    <div style="background-color: #2d2d2d; margin: 5% auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; color: white;">
-        <h2 style="margin-bottom: 20px; text-align: center;">🎮 Game Prize</h2>
-        <p style="text-align: center; margin-bottom: 20px; color: #aaa;">Inserisci la password per accedere</p>
+<div id="gamePrizeModal" class="modal-overlay">
+    <div class="modal-content-custom">
+        <h2>🎮 Game Prize</h2>
+        <p style="text-align: center; margin-bottom: 1rem; color: var(--text-muted);">Inserisci la password per accedere</p>
 
-        <form method="POST" action="{{ url_for('verify_game_password') }}" style="display: flex; flex-direction: column; gap: 15px;">
+        <form method="POST" action="{{ url_for('verify_game_password') }}">
             <input type="password"
                    name="game_password"
                    placeholder="Password..."
-                   required
-                   style="padding: 12px; border-radius: 8px; border: none; font-size: 1rem; background: #3a3a3a; color: white;">
-            <button type="submit" style="padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem;">
+                   required>
+            <button type="submit" class="btn-primary-custom">
                 Accedi
             </button>
         </form>
 
-        <button onclick="document.getElementById('gamePrizeModal').style.display='none';" style="display: block; margin-top: 15px; background: #444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%;">
+        <button onclick="document.getElementById('gamePrizeModal').style.display='none';" class="btn-secondary-custom">
             Chiudi
         </button>
     </div>
 </div>
 
 <script>
+    function openGamePrize(event) {
+        event.preventDefault();
+        {% if game_admin_authenticated %}
+            window.location.href='{{ url_for("game_prize.admin_welcome") }}';
+        {% else %}
+            document.getElementById('gamePrizeModal').style.display='block';
+        {% endif %}
+    }
+
     // Chiudi modal se clicchi fuori
     var modal = document.getElementById('gamePrizeModal');
     window.onclick = function(event) {
@@ -242,20 +401,4 @@
         }
     }
 </script>
-
-<!-- Sezione Quick Stats (opzionale, minimale) -->
-<div class="row mt-5" style="max-width: 600px; margin: 0 auto;">
-    <div class="col-6 text-center">
-        <div class="p-3">
-            <h3 class="mb-0" style="color: #667eea;">{{ stats.allenamenti_settimana }}</h3>
-            <small class="text-muted">allenamenti questa settimana</small>
-        </div>
-    </div>
-    <div class="col-6 text-center">
-        <div class="p-3">
-            <h3 class="mb-0" style="color: #f5576c;">{{ stats.pasti_oggi }}</h3>
-            <small class="text-muted">pasti registrati oggi</small>
-        </div>
-    </div>
-</div>
 {% endblock %}

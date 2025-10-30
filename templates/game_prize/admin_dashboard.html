@@ -73,9 +73,31 @@
         </div>
     </div>
 
-    <!-- Sfide Management -->
-    <div class="row">
-        <div class="col-md-12">
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="gamePrizeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="sfide-tab" data-bs-toggle="tab" data-bs-target="#sfide" type="button" role="tab">
+                📋 Sfide
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab">
+                📍 Dove Sono
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab">
+                📅 Appuntamenti
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="gamePrizeTabsContent">
+        <!-- Sfide Tab -->
+        <div class="tab-pane fade show active" id="sfide" role="tabpanel">
+            <div class="row">
+                <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">📋 Gestione Sfide</h5>
@@ -141,6 +163,40 @@
                             Nessuna sfida creata. <a href="{{ url_for('game_prize.admin_add_challenge') }}">Aggiungi la prima sfida</a>
                         </div>
                     {% endif %}
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dove Sono Tab -->
+        <div class="tab-pane fade" id="location" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📍 Gestione Posizione</h5>
+                    <a href="{{ url_for('location.index') }}" class="btn btn-sm btn-primary">
+                        Vai a Dove Sono
+                    </a>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Gestisci la tua posizione attuale da qui. Questa informazione sarà visibile ai giocatori del Game Prize.</p>
+                    <iframe src="{{ url_for('location.index') }}" style="width: 100%; height: 600px; border: 1px solid #dee2e6; border-radius: 8px;"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appuntamenti Tab -->
+        <div class="tab-pane fade" id="appointments" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📅 Gestione Appuntamenti</h5>
+                    <a href="{{ url_for('appointments.index') }}" class="btn btn-sm btn-primary">
+                        Vai ad Appuntamenti
+                    </a>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Gestisci gli appuntamenti pubblici del Game Prize da qui.</p>
+                    <iframe src="{{ url_for('appointments.index') }}" style="width: 100%; height: 600px; border: 1px solid #dee2e6; border-radius: 8px;"></iframe>
                 </div>
             </div>
         </div>
