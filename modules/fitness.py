@@ -566,6 +566,77 @@ def delete_workout(session_id):
     flash('Workout eliminato', 'success')
     return redirect(url_for('fitness.workout_history'))
 
+@bp.route('/scheda-workout/edit/<int:session_id>', methods=['GET', 'POST'])
+def edit_workout_session(session_id):
+    """Modifica una sessione di workout"""
+    conn = get_db()
+    user_id = session['user_id']
+
+    # Verifica che l'utente possiede il workout
+    session_data = execute_query(conn, '''
+        SELECT * FROM workout_sessions
+        WHERE id = ? AND user_id = ?
+    ''', (session_id, user_id), fetch_one=True)
+
+    if not session_data:
+        flash('Workout non trovato', 'error')
+        conn.close()
+        return redirect(url_for('fitness.workout_history'))
+
+    if request.method == 'POST':
+        # Aggiorna data workout se modificata
+        new_date = request.form.get('data')
+        if new_date and new_date != session_data['data']:
+            execute_query(conn, '''
+                UPDATE workout_sessions
+                SET data = ?
+                WHERE id = ?
+            ''', (new_date, session_id))
+
+        # Aggiorna esercizi
+        for key in request.form:
+            if key.startswith('exercise_'):
+                # Format: exercise_{exercise_id}_{field}
+                parts = key.split('_')
+                if len(parts) == 3:
+                    exercise_id = parts[1]
+                    field = parts[2]  # ripetizioni o peso
+                    value = request.form[key]
+
+                    # Aggiorna il campo
+                    if field in ['ripetizioni', 'peso']:
+                        execute_query(conn, f'''
+                            UPDATE workout_exercises
+                            SET {field} = ?
+                            WHERE id = ?
+                        ''', (value if value else None, exercise_id))
+
+        conn.commit()
+        conn.close()
+        flash('Workout aggiornato con successo', 'success')
+        return redirect(url_for('fitness.workout_detail', session_id=session_id))
+
+    # GET: mostra form di modifica
+    # Ottieni esercizi
+    exercises = execute_query(conn, '''
+        SELECT * FROM workout_exercises
+        WHERE session_id = ?
+        ORDER BY id
+    ''', (session_id,), fetch_all=True)
+
+    conn.close()
+
+    # Raggruppa per esercizio
+    exercises_grouped = {}
+    for ex in exercises:
+        if ex['nome_esercizio'] not in exercises_grouped:
+            exercises_grouped[ex['nome_esercizio']] = []
+        exercises_grouped[ex['nome_esercizio']].append(ex)
+
+    return render_template('fitness/edit_workout_session.html',
+                         session=session_data,
+                         exercises_grouped=exercises_grouped)
+
 @bp.route('/allenamenti/export')
 def export_allenamenti():
     """Esporta tutti gli allenamenti in formato CSV"""

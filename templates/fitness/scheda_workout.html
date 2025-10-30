@@ -95,9 +95,15 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a href="{{ url_for('fitness.workout_detail', session_id=workout.id) }}" class="btn btn-sm btn-info">
-                                        <i class="bi bi-eye"></i> Dettagli
+                                    <a href="{{ url_for('fitness.workout_detail', session_id=workout.id) }}" class="btn btn-sm btn-info" title="Visualizza dettagli">
+                                        <i class="bi bi-eye"></i>
                                     </a>
+                                    <a href="{{ url_for('fitness.edit_workout_session', session_id=workout.id) }}" class="btn btn-sm btn-warning" title="Modifica workout">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button onclick="confirmDeleteWorkout({{ workout.id }}, '{{ workout.data }}', '{{ workout.workout_type }}')" class="btn btn-sm btn-danger" title="Elimina workout">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -116,4 +122,30 @@
     </div>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDeleteWorkout(sessionId, data, workoutType) {
+    if (confirm(`Sei sicuro di voler eliminare il workout ${workoutType} del ${data}?\n\nQuesta azione è irreversibile e cancellerà tutti gli esercizi associati.`)) {
+        // Crea un form nascosto per inviare la richiesta DELETE
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/fitness/scheda-workout/delete/${sessionId}`;
+
+        // Aggiungi CSRF token se presente
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = csrfToken.content;
+            form.appendChild(csrfInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 {% endblock %}
