@@ -572,33 +572,9 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """Pagina di registrazione"""
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        conn = get_db()
-
-        # Verifica se username esiste già
-        existing_user = execute_query(conn, 'SELECT id FROM users WHERE username = ?',
-                                     (username,), fetch_one=True)
-        if existing_user:
-            flash('Username già esistente', 'error')
-            conn.close()
-            return render_template('register.html')
-
-        # Crea nuovo utente
-        hashed_password = generate_password_hash(password)
-        cursor = execute_query(conn, 'INSERT INTO users (username, password) VALUES (?, ?)',
-                              (username, hashed_password))
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        flash('Registrazione completata! Effettua il login.', 'success')
-        return redirect(url_for('login'))
-
-    return render_template('register.html')
+    """Pagina di registrazione - DISABILITATA per sicurezza"""
+    flash('La registrazione è disabilitata. Contatta l\'amministratore.', 'warning')
+    return redirect(url_for('login'))
 
 @app.route('/logout')
 def logout():
