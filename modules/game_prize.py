@@ -2,8 +2,12 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from functools import wraps
 from datetime import datetime
 import json
+import os
 
 bp = Blueprint('game_prize', __name__, url_prefix='/game-prize')
+
+# Determina se usare PostgreSQL o SQLite
+USE_POSTGRES = os.getenv('DATABASE_URL') is not None
 
 # Decorator per verificare login
 def login_required(f):
@@ -684,3 +688,319 @@ def admin_save_clue():
         conn.close()
         flash(f'Errore nel salvataggio indizio: {str(e)}', 'danger')
         return redirect(url_for('game_prize.challenges_manager'))
+
+
+# ============== GAME PRIZE V2.0 - NUOVO SISTEMA ==============
+
+def calculate_clue_points(position):
+    """Calcola punti per indizio basato sulla posizione"""
+    points_map = {
+        1: 50, 2: 40, 3: 30, 4: 20, 5: 10, 6: 5
+    }
+    return points_map.get(position, 1)  # Dal 7° in poi: 1 punto
+
+
+def calculate_challenge_points(position):
+    """Calcola punti per sfida basato sulla posizione"""
+    points_map = {
+        1: 500, 2: 450, 3: 400, 4: 350, 5: 300,
+        6: 250, 7: 200, 8: 150, 9: 100, 10: 50
+    }
+    return points_map.get(position, 5)  # Dall'11° in poi: 5 punti
+
+
+def get_client_ip():
+    """Ottiene IP del client (per logging anti-cheat)"""
+    if request.environ.get('HTTP_X_FORWARDED_FOR'):
+        return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[0]
+    return request.environ.get('REMOTE_ADDR', 'unknown')
+
+
+@bp.route('/api/validate-clue', methods=['POST'])
+@login_required
+def api_validate_clue():
+    """
+    Valida la parola inserita per un indizio.
+
+    Richiede:
+    - clue_id: ID dell'indizio
+    - word: Parola da validare
+
+    Ritorna:
+    - success: True/False
+    - message: Messaggio descrittivo
+    - points: Punti guadagnati (se corretta)
+    - position: Posizione nella classifica per questo indizio
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    user_id = session['user_id']
+
+    try:
+        clue_id = request.json.get('clue_id')
+        submitted_word = request.json.get('word', '').strip()
+
+        if not clue_id or not submitted_word:
+            return jsonify({'success': False, 'message': 'Dati mancanti'}), 400
+
+        # Ottieni participant_id per questo user_id
+        cursor.execute('SELECT id FROM game_participants WHERE user_id = ?', (user_id,))
+        participant = cursor.fetchone()
+
+        if not participant:
+            return jsonify({
+                'success': False,
+                'message': 'Devi registrarti al gioco prima di partecipare'
+            }), 403
+
+        participant_id = participant[0]
+
+        # Verifica se l'utente ha già completato questo indizio
+        cursor.execute('''
+            SELECT id FROM game_clue_completions
+            WHERE clue_id = ? AND participant_id = ?
+        ''', (clue_id, participant_id))
+
+        if cursor.fetchone():
+            return jsonify({
+                'success': False,
+                'message': 'Hai già risolto questo indizio!'
+            }), 400
+
+        # Ottieni la soluzione corretta (case insensitive)
+        cursor.execute('''
+            SELECT solution_word FROM game_clue_solutions
+            WHERE clue_id = ?
+        ''', (clue_id,))
+
+        solution = cursor.fetchone()
+
+        if not solution:
+            return jsonify({
+                'success': False,
+                'message': 'Indizio non trovato o soluzione non configurata'
+            }), 404
+
+        correct_word = solution[0].lower()
+        submitted_lower = submitted_word.lower()
+
+        # Log del tentativo (anti-cheat)
+        is_correct = (submitted_lower == correct_word)
+        cursor.execute('''
+            INSERT INTO game_attempt_logs
+            (participant_id, clue_id, attempted_word, is_correct, ip_address)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (participant_id, clue_id, submitted_word, 1 if is_correct else 0, get_client_ip()))
+
+        if not is_correct:
+            conn.commit()
+            conn.close()
+            return jsonify({
+                'success': False,
+                'message': 'Parola errata. Riprova!'
+            }), 200
+
+        # Parola corretta! Calcola la posizione
+        cursor.execute('''
+            SELECT COUNT(*) + 1 FROM game_clue_completions
+            WHERE clue_id = ?
+        ''', (clue_id,))
+
+        position = cursor.fetchone()[0]
+        points = calculate_clue_points(position)
+
+        # Registra il completamento
+        cursor.execute('''
+            INSERT INTO game_clue_completions
+            (clue_id, participant_id, position, points_earned, submitted_word)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (clue_id, participant_id, position, points, submitted_word))
+
+        # Aggiorna i punteggi dettagliati
+        cursor.execute('''
+            SELECT points_from_clues, points_from_challenges
+            FROM game_detailed_scores
+            WHERE participant_id = ?
+        ''', (participant_id,))
+
+        scores = cursor.fetchone()
+
+        if scores:
+            new_clue_points = (scores[0] or 0) + points
+            cursor.execute('''
+                UPDATE game_detailed_scores
+                SET points_from_clues = ?,
+                    total_points = ? + ?,
+                    last_updated = CURRENT_TIMESTAMP
+                WHERE participant_id = ?
+            ''', (new_clue_points, new_clue_points, scores[1] or 0, participant_id))
+        else:
+            cursor.execute('''
+                INSERT INTO game_detailed_scores
+                (participant_id, points_from_clues, points_from_challenges, total_points)
+                VALUES (?, ?, 0, ?)
+            ''', (participant_id, points, points))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            'success': True,
+            'message': f'Corretto! Sei arrivato {position}°',
+            'points': points,
+            'position': position
+        }), 200
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({'success': False, 'message': f'Errore: {str(e)}'}), 500
+
+
+@bp.route('/api/register-participant', methods=['POST'])
+@login_required
+def api_register_participant():
+    """
+    Registra un partecipante al gioco assegnando un codice univoco.
+
+    Richiede:
+    - nome: Nome del partecipante
+    - cognome: Cognome del partecipante
+    - email: Email (opzionale)
+
+    Ritorna:
+    - success: True/False
+    - unique_code: Codice univoco assegnato
+    - message: Messaggio descrittivo
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    user_id = session['user_id']
+
+    try:
+        nome = request.json.get('nome', '').strip()
+        cognome = request.json.get('cognome', '').strip()
+        email = request.json.get('email', '').strip() or None
+
+        if not nome or not cognome:
+            return jsonify({
+                'success': False,
+                'message': 'Nome e cognome sono obbligatori'
+            }), 400
+
+        # Verifica se l'utente è già registrato
+        cursor.execute('SELECT unique_code FROM game_participants WHERE user_id = ?', (user_id,))
+        existing = cursor.fetchone()
+
+        if existing:
+            return jsonify({
+                'success': True,
+                'message': 'Sei già registrato al gioco!',
+                'unique_code': existing[0]
+            }), 200
+
+        # Trova il primo codice univoco disponibile (non assegnato)
+        cursor.execute('''
+            SELECT unique_code FROM game_participants
+            WHERE user_id IS NULL AND is_active = 1
+            ORDER BY unique_code ASC
+            LIMIT 1
+        ''')
+
+        available = cursor.fetchone()
+
+        if not available:
+            return jsonify({
+                'success': False,
+                'message': 'Nessun codice disponibile. Contatta l\'amministratore.'
+            }), 503
+
+        unique_code = available[0]
+
+        # Assegna il codice all'utente
+        cursor.execute('''
+            UPDATE game_participants
+            SET user_id = ?,
+                email = ?,
+                nome = ?,
+                cognome = ?,
+                registered_at = CURRENT_TIMESTAMP
+            WHERE unique_code = ?
+        ''', (user_id, email, nome, cognome, unique_code))
+
+        # Crea anche un record nei punteggi dettagliati
+        cursor.execute('''
+            INSERT INTO game_detailed_scores (participant_id, points_from_clues, points_from_challenges, total_points)
+            SELECT id, 0, 0, 0 FROM game_participants WHERE unique_code = ?
+        ''', (unique_code,))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            'success': True,
+            'message': f'Registrazione completata! Il tuo codice è {unique_code}',
+            'unique_code': unique_code
+        }), 200
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({'success': False, 'message': f'Errore: {str(e)}'}), 500
+
+
+@bp.route('/api/add-clue-solution', methods=['POST'])
+@login_required
+@game_prize_password_required
+def api_add_clue_solution():
+    """
+    ADMIN ONLY - Aggiunge la soluzione (parola corretta) per un indizio.
+
+    Richiede:
+    - clue_id: ID dell'indizio
+    - solution_word: Parola corretta (salvata lowercase)
+    - points_base: Punti base (default 50)
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        clue_id = request.json.get('clue_id')
+        solution_word = request.json.get('solution_word', '').strip().lower()
+        points_base = request.json.get('points_base', 50)
+
+        if not clue_id or not solution_word:
+            return jsonify({'success': False, 'message': 'Dati mancanti'}), 400
+
+        # Verifica se esiste già una soluzione per questo indizio
+        cursor.execute('SELECT id FROM game_clue_solutions WHERE clue_id = ?', (clue_id,))
+        existing = cursor.fetchone()
+
+        if existing:
+            # Aggiorna
+            cursor.execute('''
+                UPDATE game_clue_solutions
+                SET solution_word = ?, points_base = ?
+                WHERE clue_id = ?
+            ''', (solution_word, points_base, clue_id))
+            message = 'Soluzione aggiornata'
+        else:
+            # Inserisci
+            cursor.execute('''
+                INSERT INTO game_clue_solutions (clue_id, solution_word, points_base)
+                VALUES (?, ?, ?)
+            ''', (clue_id, solution_word, points_base))
+            message = 'Soluzione aggiunta'
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            'success': True,
+            'message': message
+        }), 200
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({'success': False, 'message': f'Errore: {str(e)}'}), 500
