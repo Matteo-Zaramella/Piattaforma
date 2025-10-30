@@ -296,15 +296,17 @@ def delete_allenamento(allenamento_id):
 
 @bp.route('/stats')
 def stats():
-    """Statistiche fitness"""
+    """Statistiche fitness basate su workout sessions"""
     conn = get_db()
     user_id = session['user_id']
 
-    # Allenamenti per mese
+    # Workout per mese (da workout_sessions)
     if USE_POSTGRES:
         workouts_by_month = execute_query(conn, '''
-            SELECT TO_CHAR(data, 'YYYY-MM') as month, COUNT(DISTINCT data) as days, COUNT(*) as exercises
-            FROM allenamenti
+            SELECT TO_CHAR(data, 'YYYY-MM') as month,
+                   COUNT(DISTINCT data) as days,
+                   COUNT(*) as exercises
+            FROM workout_sessions
             WHERE user_id = ?
             GROUP BY TO_CHAR(data, 'YYYY-MM')
             ORDER BY month DESC
@@ -312,31 +314,40 @@ def stats():
         ''', (user_id,), fetch_all=True)
     else:
         workouts_by_month = execute_query(conn, '''
-            SELECT strftime('%Y-%m', data) as month, COUNT(DISTINCT data) as days, COUNT(*) as exercises
-            FROM allenamenti
+            SELECT strftime('%Y-%m', data) as month,
+                   COUNT(DISTINCT data) as days,
+                   COUNT(*) as exercises
+            FROM workout_sessions
             WHERE user_id = ?
             GROUP BY month
             ORDER BY month DESC
             LIMIT 12
         ''', (user_id,), fetch_all=True)
 
-    # Esercizi più frequenti
+    # Esercizi più frequenti (da workout_exercises)
     top_exercises = execute_query(conn, '''
-        SELECT esercizio, COUNT(*) as count, AVG(peso) as avg_peso, MAX(peso) as max_peso
-        FROM allenamenti
-        WHERE user_id = ? AND peso IS NOT NULL
-        GROUP BY esercizio
+        SELECT we.nome_esercizio as esercizio,
+               COUNT(*) as count,
+               AVG(CAST(we.peso_s1 AS FLOAT)) as avg_peso,
+               MAX(CAST(we.peso_s1 AS FLOAT)) as max_peso
+        FROM workout_exercises we
+        JOIN workout_sessions ws ON we.session_id = ws.id
+        WHERE ws.user_id = ? AND we.peso_s1 IS NOT NULL AND we.peso_s1 != ''
+        GROUP BY we.nome_esercizio
         ORDER BY count DESC
         LIMIT 10
     ''', (user_id,), fetch_all=True)
 
-    # Progressi (ultimi record per esercizio)
+    # Progressi (record per esercizio)
     progress = execute_query(conn, '''
-        SELECT esercizio, MAX(peso) as record_peso, MAX(ripetizioni) as record_rip
-        FROM allenamenti
-        WHERE user_id = ?
-        GROUP BY esercizio
-        ORDER BY esercizio
+        SELECT we.nome_esercizio as esercizio,
+               MAX(CAST(we.peso_s1 AS FLOAT)) as record_peso,
+               MAX(CAST(we.rip_s1 AS INTEGER)) as record_rip
+        FROM workout_exercises we
+        JOIN workout_sessions ws ON we.session_id = ws.id
+        WHERE ws.user_id = ?
+        GROUP BY we.nome_esercizio
+        ORDER BY we.nome_esercizio
     ''', (user_id,), fetch_all=True)
 
     conn.close()

@@ -262,14 +262,11 @@
 
             <div class="sidebar-section-title">Fitness & Salute</div>
 
-            <!-- Allenamenti -->
+            <!-- Allenamenti (ex Scheda Workout) -->
             <li class="sidebar-menu-item">
-                <a href="{{ url_for('fitness.allenamenti') }}" class="sidebar-menu-link">
-                    <i class="bi bi-heart-pulse"></i>
+                <a href="{{ url_for('fitness.scheda_workout') }}" class="sidebar-menu-link">
+                    <i class="bi bi-dumbbell"></i>
                     <span class="sidebar-menu-label">Allenamenti</span>
-                    {% if stats.allenamenti_settimana > 0 %}
-                    <span class="sidebar-badge">{{ stats.allenamenti_settimana }}</span>
-                    {% endif %}
                 </a>
             </li>
 
@@ -284,15 +281,7 @@
                 </a>
             </li>
 
-            <!-- Workout -->
-            <li class="sidebar-menu-item">
-                <a href="{{ url_for('fitness.scheda_workout') }}" class="sidebar-menu-link">
-                    <i class="bi bi-dumbbell"></i>
-                    <span class="sidebar-menu-label">Scheda Workout</span>
-                </a>
-            </li>
-
-            <!-- Statistiche -->
+            <!-- Statistiche (basate su workout sessions) -->
             <li class="sidebar-menu-item">
                 <a href="{{ url_for('fitness.stats') }}" class="sidebar-menu-link">
                     <i class="bi bi-bar-chart-line"></i>
@@ -342,13 +331,13 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-card-title">Allenamenti Settimana</div>
-                <div class="stat-card-value">{{ stats.allenamenti_settimana }}</div>
+                <div class="stat-card-title">Pasti Oggi</div>
+                <div class="stat-card-value">{{ stats.pasti_oggi }}</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-card-title">Pasti Oggi</div>
-                <div class="stat-card-value">{{ stats.pasti_oggi }}</div>
+                <div class="stat-card-title">Workout Questa Settimana</div>
+                <div class="stat-card-value">{{ stats.workout_settimana if stats.workout_settimana else 0 }}</div>
             </div>
         </div>
 
