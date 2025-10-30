@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<form id="workout-form" method="POST" action="{{ url_for('fitness.save_workout') }}">
+<form id="workout-form" method="POST" action="{{ url_for('fitness.save_workout') }}" data-autosave="workout-{{ workout_type }}-{{ data }}">
     <input type="hidden" name="workout_type" value="{{ workout_type }}">
     <input type="hidden" name="data" value="{{ data }}">
 

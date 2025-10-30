@@ -20,8 +20,8 @@ app = Flask(__name__)
 # Production: usa variabile ambiente per secret key, altrimenti genera una casuale
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
-# Configurazione timeout sessione: 1 ora (3600 secondi)
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
+# Configurazione timeout sessione: 3 ore (10800 secondi) per workout lunghi
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=3)
 app.config['SESSION_REFRESH_EACH_REQUEST'] = True  # Rinfresca il timer ad ogni request
 
 # Configurazione database: usa PostgreSQL se DATABASE_URL è presente, altrimenti SQLite
@@ -755,6 +755,16 @@ def logout_game_admin():
         del session['game_admin_authenticated']
     flash('Sei stato disconnesso dal Game Prize.', 'info')
     return redirect(url_for('index'))
+
+@app.route('/api/ping')
+@login_required
+def api_ping():
+    """Endpoint per keep-alive della sessione - risponde solo se l'utente è loggato"""
+    return jsonify({
+        'status': 'ok',
+        'message': 'Session alive',
+        'user': session.get('username')
+    }), 200
 
 @app.errorhandler(500)
 def handle_500_error(error):
