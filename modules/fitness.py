@@ -329,11 +329,11 @@ def stats():
         top_exercises = execute_query(conn, '''
             SELECT we.nome_esercizio as esercizio,
                    COUNT(*) as count,
-                   AVG(NULLIF(we.peso_s1, '')::NUMERIC) as avg_peso,
-                   MAX(NULLIF(we.peso_s1, '')::NUMERIC) as max_peso
+                   AVG(we.peso) as avg_peso,
+                   MAX(we.peso) as max_peso
             FROM workout_exercises we
             JOIN workout_sessions ws ON we.session_id = ws.id
-            WHERE ws.user_id = ? AND we.peso_s1 IS NOT NULL AND we.peso_s1 != ''
+            WHERE ws.user_id = ? AND we.peso IS NOT NULL
             GROUP BY we.nome_esercizio
             ORDER BY count DESC
             LIMIT 10
@@ -342,11 +342,11 @@ def stats():
         top_exercises = execute_query(conn, '''
             SELECT we.nome_esercizio as esercizio,
                    COUNT(*) as count,
-                   AVG(CAST(we.peso_s1 AS REAL)) as avg_peso,
-                   MAX(CAST(we.peso_s1 AS REAL)) as max_peso
+                   AVG(we.peso) as avg_peso,
+                   MAX(we.peso) as max_peso
             FROM workout_exercises we
             JOIN workout_sessions ws ON we.session_id = ws.id
-            WHERE ws.user_id = ? AND we.peso_s1 IS NOT NULL AND we.peso_s1 != ''
+            WHERE ws.user_id = ? AND we.peso IS NOT NULL
             GROUP BY we.nome_esercizio
             ORDER BY count DESC
             LIMIT 10
@@ -356,8 +356,8 @@ def stats():
     if USE_POSTGRES:
         progress = execute_query(conn, '''
             SELECT we.nome_esercizio as esercizio,
-                   MAX(NULLIF(we.peso_s1, '')::NUMERIC) as record_peso,
-                   MAX(NULLIF(we.rip_s1, '')::INTEGER) as record_rip
+                   MAX(we.peso) as record_peso,
+                   MAX(we.ripetizioni) as record_rip
             FROM workout_exercises we
             JOIN workout_sessions ws ON we.session_id = ws.id
             WHERE ws.user_id = ?
@@ -367,8 +367,8 @@ def stats():
     else:
         progress = execute_query(conn, '''
             SELECT we.nome_esercizio as esercizio,
-                   MAX(CAST(we.peso_s1 AS REAL)) as record_peso,
-                   MAX(CAST(we.rip_s1 AS INTEGER)) as record_rip
+                   MAX(we.peso) as record_peso,
+                   MAX(we.ripetizioni) as record_rip
             FROM workout_exercises we
             JOIN workout_sessions ws ON we.session_id = ws.id
             WHERE ws.user_id = ?
