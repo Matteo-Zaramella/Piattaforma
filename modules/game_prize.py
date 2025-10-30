@@ -393,6 +393,33 @@ def admin_dashboard():
         cursor.execute('SELECT * FROM game_challenges ORDER BY challenge_number ASC')
         challenges = cursor.fetchall()
 
+        # Per ogni sfida, recupera i suoi indizi
+        challenges_with_clues = []
+        for challenge in challenges:
+            challenge_id = challenge[0]
+
+            # Recupera gli indizi di questa sfida
+            cursor.execute('''
+                SELECT * FROM game_clues
+                WHERE challenge_id = %s
+                ORDER BY clue_number ASC
+            ''', (challenge_id,))
+            clues = cursor.fetchall()
+
+            # Recupera le soluzioni degli indizi
+            cursor.execute('''
+                SELECT * FROM game_clue_solutions
+                WHERE challenge_id = %s
+                ORDER BY clue_number ASC
+            ''', (challenge_id,))
+            solutions = cursor.fetchall()
+
+            challenges_with_clues.append({
+                'challenge': challenge,
+                'clues': clues,
+                'solutions': solutions
+            })
+
         # Statistiche
         cursor.execute('SELECT COUNT(DISTINCT user_id) FROM game_user_completions')
         total_players = cursor.fetchone()[0]
@@ -403,6 +430,7 @@ def admin_dashboard():
         context = {
             'config': config,
             'challenges': challenges,
+            'challenges_with_clues': challenges_with_clues,
             'total_players': total_players,
             'total_completions': total_completions
         }

@@ -9,54 +9,10 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0a;
+            background: #000000;
             color: #ffffff;
             min-height: 100vh;
             padding: 2rem 0;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Video Background */
-        .video-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .video-background::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1;
-        }
-
-        .video-background iframe {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100vw;
-            height: 100vh;
-            transform: translate(-50%, -50%) scale(1.1);
-            pointer-events: none;
-            border: none;
-        }
-
-        /* Rendi il contenuto sopra lo sfondo */
-        .hero-section,
-        .sections-container,
-        .footer {
-            position: relative;
-            z-index: 2;
         }
 
         .hero-section {
@@ -338,18 +294,6 @@
     <a href="{{ url_for('login') }}" class="login-icon" title="Accedi">
         <i class="bi bi-box-arrow-in-right"></i>
     </a>
-
-    <!-- Video Background -->
-    <div class="video-background">
-        <!-- YouTube Video Embed -->
-        <iframe
-            src="https://www.youtube.com/embed/77qqprzUEW8?autoplay=1&mute=1&loop=1&playlist=77qqprzUEW8&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
-            frameborder="0"
-            allow="autoplay; encrypted-media"
-            allowfullscreen
-            style="position: absolute; top: 50%; left: 50%; width: 100vw; height: 100vh; transform: translate(-50%, -50%) scale(1.1); pointer-events: none;">
-        </iframe>
-    </div>
 
     <!-- Hero Section -->
     <section class="hero-section">

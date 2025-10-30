@@ -18,25 +18,6 @@
         </div>
     </div>
 
-    <!-- Banner Gestore Sfide -->
-    <div class="alert alert-primary alert-dismissible fade show mb-4" role="alert">
-        <div class="row align-items-center">
-            <div class="col-md-9">
-                <h5 class="alert-heading mb-2">📝 Gestore Sfide e Indizi</h5>
-                <p class="mb-0">
-                    Accedi al nuovo gestore centralizzato per creare e modificare tutte le 12 sfide con i relativi indizi,
-                    countdown, e date di rilascio. Tutto in un'unica interfaccia organizzata.
-                </p>
-            </div>
-            <div class="col-md-3 text-end">
-                <a href="{{ url_for('game_prize.challenges_manager') }}" class="btn btn-primary btn-lg">
-                    Apri Gestore 📋
-                </a>
-            </div>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
     <!-- Statistics -->
     <div class="row mb-4">
         <div class="col-md-6 col-lg-3">
@@ -73,130 +54,174 @@
         </div>
     </div>
 
-    <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-4" id="gamePrizeTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="sfide-tab" data-bs-toggle="tab" data-bs-target="#sfide" type="button" role="tab">
-                📋 Sfide
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab">
-                📍 Dove Sono
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab">
-                📅 Appuntamenti
-            </button>
-        </li>
-    </ul>
-
-    <!-- Tab Content -->
-    <div class="tab-content" id="gamePrizeTabsContent">
-        <!-- Sfide Tab -->
-        <div class="tab-pane fade show active" id="sfide" role="tabpanel">
-            <div class="row">
-                <div class="col-md-12">
+    <!-- Gestione Sfide con Accordion -->
+    <div class="row">
+        <div class="col-12">
             <div class="card">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">📋 Gestione Sfide</h5>
-                    <a href="{{ url_for('game_prize.admin_add_challenge') }}" class="btn btn-sm btn-success">
-                        ➕ Aggiungi Sfida
+                    <a href="{{ url_for('game_prize.admin_add_challenge') }}" class="btn btn-sm btn-light">
+                        ➕ Aggiungi Nuova Sfida
                     </a>
                 </div>
-                <div class="card-body">
-                    {% if challenges %}
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Numero</th>
-                                        <th>Titolo</th>
-                                        <th>Punti</th>
-                                        <th>Data Inizio</th>
-                                        <th>Data Fine</th>
-                                        <th>Azioni</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for challenge in challenges %}
-                                        <tr>
-                                            <td><strong>{{ challenge[1] }}</strong></td>
-                                            <td>{{ challenge[2] }}</td>
-                                            <td>
-                                                <span class="badge bg-success">{{ challenge[4] }}</span>
-                                            </td>
-                                            <td>
-                                                {% if challenge[5] %}
-                                                    {{ challenge[5][:10] }}
-                                                {% else %}
-                                                    <em class="text-muted">Non impostato</em>
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {% if challenge[6] %}
-                                                    {{ challenge[6][:10] }}
-                                                {% else %}
-                                                    <em class="text-muted">Non impostato</em>
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <a href="{{ url_for('game_prize.admin_edit_challenge', challenge_id=challenge[0]) }}"
-                                                       class="btn btn-sm btn-primary">
-                                                        ✏️ Modifica
-                                                    </a>
-                                                    <a href="{{ url_for('game_prize.admin_add_clue', challenge_id=challenge[0]) }}"
-                                                       class="btn btn-sm btn-info">
-                                                        💡 Aggiungi Indizio
-                                                    </a>
+                <div class="card-body p-0">
+                    {% if challenges_with_clues %}
+                        <div class="accordion" id="challengesAccordion">
+                            {% for item in challenges_with_clues %}
+                                {% set challenge = item.challenge %}
+                                {% set clues = item.clues %}
+                                {% set solutions = item.solutions %}
+                                {% set challenge_id = challenge[0] %}
+                                {% set challenge_number = challenge[1] %}
+                                {% set challenge_title = challenge[2] %}
+                                {% set challenge_description = challenge[3] %}
+                                {% set challenge_points = challenge[4] %}
+                                {% set start_date = challenge[5] %}
+                                {% set end_date = challenge[6] %}
+
+                                {# Determina se la sfida è iniziata #}
+                                {% set now = None %}  {# Will be set by JavaScript #}
+                                {% set is_started = start_date and start_date[:10] <= '2025-10-30' %}
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ challenge_id }}">
+                                        <button class="accordion-button collapsed challenge-header challenge-{{ loop.index % 6 }}" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#collapse{{ challenge_id }}"
+                                                aria-expanded="false" aria-controls="collapse{{ challenge_id }}">
+                                            <div class="d-flex w-100 justify-content-between align-items-center pe-3">
+                                                <div>
+                                                    <span class="badge bg-dark me-2" style="font-size: 1rem;">{{ challenge_number }}</span>
+                                                    <strong>{{ challenge_title }}</strong>
+                                                    <span class="ms-3 text-muted" style="font-size: 0.9rem;">
+                                                        {% if start_date %}
+                                                            📅 {{ start_date[:10] }}
+                                                        {% else %}
+                                                            📅 Data non impostata
+                                                        {% endif %}
+                                                    </span>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                                <div>
+                                                    <span class="badge bg-success" style="font-size: 0.9rem;">{{ challenge_points }} punti</span>
+                                                    <span class="badge bg-info ms-2" style="font-size: 0.9rem;">{{ clues|length }} indizi</span>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ challenge_id }}" class="accordion-collapse collapse"
+                                         aria-labelledby="heading{{ challenge_id }}" data-bs-parent="#challengesAccordion">
+                                        <div class="accordion-body">
+
+                                            {# Descrizione e Azioni #}
+                                            <div class="row mb-4">
+                                                <div class="col-md-8">
+                                                    <h6 class="text-primary">📝 Descrizione</h6>
+                                                    <p class="mb-2">{{ challenge_description if challenge_description else 'Nessuna descrizione impostata' }}</p>
+
+                                                    <h6 class="text-primary mt-3">📍 Location</h6>
+                                                    <p class="mb-2">{{ challenge[7] if challenge[7] else 'Non specificata' }}</p>
+
+                                                    <h6 class="text-primary mt-3">📋 Istruzioni</h6>
+                                                    <p class="mb-0">{{ challenge[8] if challenge[8] else 'Nessuna istruzione' }}</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="d-grid gap-2">
+                                                        <button class="btn btn-primary" onclick="showChallengeInfo({{ challenge_id }})">
+                                                            ℹ️ Mostra Descrizione
+                                                        </button>
+                                                        <button class="btn btn-success" onclick="showLeaderboard({{ challenge_id }})">
+                                                            🏆 Mostra Classifica
+                                                        </button>
+                                                        <a href="{{ url_for('game_prize.admin_edit_challenge', challenge_id=challenge_id) }}"
+                                                           class="btn btn-warning">
+                                                            ✏️ Modifica Sfida
+                                                        </a>
+                                                        <a href="{{ url_for('game_prize.admin_add_clue', challenge_id=challenge_id) }}"
+                                                           class="btn btn-info">
+                                                            💡 Aggiungi Indizio
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <hr>
+
+                                            {# Indizi #}
+                                            <h6 class="text-primary mb-3">💡 Indizi ({{ clues|length }})</h6>
+                                            {% if clues %}
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm table-hover">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th style="width: 80px;">Numero</th>
+                                                                <th>Testo Indizio</th>
+                                                                <th style="width: 150px;">Punti</th>
+                                                                <th style="width: 150px;">Data Rilascio</th>
+                                                                <th style="width: 150px;">Soluzione</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for clue in clues %}
+                                                                {% set clue_id = clue[0] %}
+                                                                {% set clue_number = clue[2] %}
+                                                                {% set clue_text = clue[3] %}
+                                                                {% set clue_points = clue[4] %}
+                                                                {% set revealed_date = clue[5] %}
+
+                                                                {# Trova la soluzione corrispondente #}
+                                                                {% set solution_text = '' %}
+                                                                {% for solution in solutions %}
+                                                                    {% if solution[2] == clue_number %}
+                                                                        {% set solution_text = solution[3] %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+
+                                                                <tr>
+                                                                    <td class="text-center">
+                                                                        <span class="badge bg-secondary">{{ clue_number }}</span>
+                                                                    </td>
+                                                                    <td>{{ clue_text }}</td>
+                                                                    <td class="text-center">
+                                                                        <span class="badge bg-success">{{ clue_points }}</span>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        {% if revealed_date %}
+                                                                            <small>{{ revealed_date[:10] }}</small>
+                                                                        {% else %}
+                                                                            <em class="text-muted">Non impostata</em>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        {% if solution_text %}
+                                                                            <code class="bg-light px-2 py-1 rounded">{{ solution_text }}</code>
+                                                                        {% else %}
+                                                                            <em class="text-danger">Nessuna</em>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% else %}
+                                                <div class="alert alert-warning">
+                                                    <i class="bi bi-exclamation-triangle"></i> Nessun indizio creato per questa sfida.
+                                                    <a href="{{ url_for('game_prize.admin_add_clue', challenge_id=challenge_id) }}" class="alert-link">Aggiungi il primo indizio</a>
+                                                </div>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
                     {% else %}
-                        <div class="alert alert-info mb-0">
-                            Nessuna sfida creata. <a href="{{ url_for('game_prize.admin_add_challenge') }}">Aggiungi la prima sfida</a>
+                        <div class="p-5 text-center">
+                            <div class="alert alert-info mb-0">
+                                <i class="bi bi-info-circle"></i> Nessuna sfida creata.
+                                <a href="{{ url_for('game_prize.admin_add_challenge') }}" class="alert-link">Crea la prima sfida</a>
+                            </div>
                         </div>
                     {% endif %}
-                </div>
-            </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dove Sono Tab -->
-        <div class="tab-pane fade" id="location" role="tabpanel">
-            <div class="card">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">📍 Gestione Posizione</h5>
-                    <a href="{{ url_for('location.index') }}" class="btn btn-sm btn-primary">
-                        Vai a Dove Sono
-                    </a>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">Gestisci la tua posizione attuale da qui. Questa informazione sarà visibile ai giocatori del Game Prize.</p>
-                    <iframe src="{{ url_for('location.index') }}" style="width: 100%; height: 600px; border: 1px solid #dee2e6; border-radius: 8px;"></iframe>
-                </div>
-            </div>
-        </div>
-
-        <!-- Appuntamenti Tab -->
-        <div class="tab-pane fade" id="appointments" role="tabpanel">
-            <div class="card">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">📅 Gestione Appuntamenti</h5>
-                    <a href="{{ url_for('appointments.index') }}" class="btn btn-sm btn-primary">
-                        Vai ad Appuntamenti
-                    </a>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">Gestisci gli appuntamenti pubblici del Game Prize da qui.</p>
-                    <iframe src="{{ url_for('appointments.index') }}" style="width: 100%; height: 600px; border: 1px solid #dee2e6; border-radius: 8px;"></iframe>
                 </div>
             </div>
         </div>
@@ -232,4 +257,67 @@
         </div>
     {% endif %}
 </div>
+
+<style>
+    /* Colori diversi per ogni sfida */
+    .challenge-0 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; color: white !important; }
+    .challenge-1 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important; color: white !important; }
+    .challenge-2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important; color: white !important; }
+    .challenge-3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important; color: white !important; }
+    .challenge-4 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important; color: white !important; }
+    .challenge-5 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%) !important; color: white !important; }
+
+    .challenge-header:not(.collapsed) {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0,0,0,.125);
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        filter: brightness(0) invert(1);
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .accordion-item {
+        border: none;
+        margin-bottom: 10px;
+        border-radius: 8px !important;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .accordion-button {
+        font-size: 1.1rem;
+        padding: 1.2rem 1.5rem;
+        border-radius: 8px !important;
+    }
+
+    .accordion-body {
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+    }
+</style>
+
+<script>
+function showChallengeInfo(challengeId) {
+    alert('Questa funzione mostrerà i dettagli della sfida ' + challengeId + ' ai partecipanti.');
+    // TODO: Implementare modale con descrizione completa
+}
+
+function showLeaderboard(challengeId) {
+    alert('Questa funzione mostrerà la classifica della sfida ' + challengeId);
+    // TODO: Implementare chiamata AJAX per recuperare e mostrare classifica
+}
+</script>
 {% endblock %}
