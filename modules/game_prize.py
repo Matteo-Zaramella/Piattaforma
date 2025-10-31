@@ -82,8 +82,7 @@ def admin_welcome():
                 challenge_id = challenge[0]
 
             cursor.execute(f'''
-                SELECT id, challenge_id, clue_number, clue_text,
-                       clue_points, revealed_date
+                SELECT id, challenge_id, clue_number, clue_text, revealed_date
                 FROM game_clues
                 WHERE challenge_id = {placeholder}
                 ORDER BY clue_number ASC
@@ -98,7 +97,7 @@ def admin_welcome():
                                  challenge['end_date'], challenge['location'],
                                  challenge['instructions'])
                 clues_list = [(c['id'], c['challenge_id'], c['clue_number'],
-                              c['clue_text'], c['clue_points'], c['revealed_date'])
+                              c['clue_text'], 0, c['revealed_date'])  # 0 punti placeholder
                              for c in clues]
             else:
                 challenge_tuple = challenge
