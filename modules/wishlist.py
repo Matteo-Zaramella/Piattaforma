@@ -1,13 +1,16 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from functools import wraps
-import sys
 import os
 
-# Importa funzioni database dal parent
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from db_utils import get_db, execute_query
-
 bp = Blueprint('wishlist', __name__, url_prefix='/wishlist')
+
+# Determina se usare PostgreSQL o SQLite
+USE_POSTGRES = os.getenv('DATABASE_URL') is not None
+
+def get_db():
+    """Importa get_db dal modulo principale"""
+    from app import get_db as main_get_db
+    return main_get_db()
 
 def login_required(f):
     """Decorator per proteggere le route"""
@@ -23,49 +26,84 @@ def login_required(f):
 def index():
     """Visualizza tutti gli item della wishlist"""
     conn = get_db()
+    cursor = conn.cursor()
     user_id = session['user_id']
 
-    items = execute_query(conn, '''
-        SELECT id, nome, descrizione, link, priorita, pubblico, created_at
-        FROM wishlist
-        WHERE user_id = ?
-        ORDER BY
-            CASE priorita
-                WHEN 'alta' THEN 1
-                WHEN 'media' THEN 2
-                ELSE 3
-            END,
-            created_at DESC
-    ''', (user_id,), fetch_all=True)
+    try:
+        if USE_POSTGRES:
+            from psycopg2.extras import RealDictCursor
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            placeholder = '%s'
+        else:
+            placeholder = '?'
 
-    conn.close()
-    return render_template('wishlist/index.html', items=items)
+        cursor.execute(f'''
+            SELECT id, titolo, descrizione, prezzo, link, priorita, acquistato, created_at
+            FROM wishlist
+            WHERE user_id = {placeholder}
+            ORDER BY
+                CASE priorita
+                    WHEN 'alta' THEN 1
+                    WHEN 'media' THEN 2
+                    ELSE 3
+                END,
+                created_at DESC
+        ''', (user_id,))
+        items = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+        return render_template('wishlist/index.html', items=items)
+
+    except Exception as e:
+        print(f"Errore wishlist index: {e}")
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+        flash(f'Errore caricamento wishlist: {str(e)}', 'danger')
+        return redirect(url_for('dashboard'))
 
 @bp.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_item():
     """Aggiungi nuovo item alla wishlist"""
     if request.method == 'POST':
-        nome = request.form['nome']
+        titolo = request.form['titolo']
         descrizione = request.form.get('descrizione', '')
+        prezzo = request.form.get('prezzo', 0)
         link = request.form.get('link', '')
         priorita = request.form.get('priorita', 'media')
-        pubblico = 'pubblico' in request.form
 
         conn = get_db()
+        cursor = conn.cursor()
         user_id = session['user_id']
 
-        cursor = execute_query(conn, '''
-            INSERT INTO wishlist (user_id, nome, descrizione, link, priorita, pubblico)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (user_id, nome, descrizione, link, priorita, pubblico))
+        try:
+            if USE_POSTGRES:
+                placeholder = '%s'
+            else:
+                placeholder = '?'
 
-        conn.commit()
-        cursor.close()
-        conn.close()
+            cursor.execute(f'''
+                INSERT INTO wishlist (user_id, titolo, descrizione, prezzo, link, priorita, acquistato)
+                VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
+            ''', (user_id, titolo, descrizione, prezzo, link, priorita, False))
 
-        flash('Item aggiunto alla wishlist!', 'success')
-        return redirect(url_for('wishlist.index'))
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            flash('Item aggiunto alla wishlist!', 'success')
+            return redirect(url_for('wishlist.index'))
+
+        except Exception as e:
+            print(f"Errore wishlist add: {e}")
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            flash(f'Errore aggiunta item: {str(e)}', 'danger')
+            return redirect(url_for('wishlist.add_item'))
 
     return render_template('wishlist/add_item.html')
 
@@ -74,57 +112,133 @@ def add_item():
 def edit_item(item_id):
     """Modifica item esistente"""
     conn = get_db()
+    cursor = conn.cursor()
     user_id = session['user_id']
 
-    if request.method == 'POST':
-        nome = request.form['nome']
-        descrizione = request.form.get('descrizione', '')
-        link = request.form.get('link', '')
-        priorita = request.form.get('priorita', 'media')
-        pubblico = 'pubblico' in request.form
+    try:
+        if USE_POSTGRES:
+            from psycopg2.extras import RealDictCursor
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            placeholder = '%s'
+        else:
+            placeholder = '?'
 
-        cursor = execute_query(conn, '''
-            UPDATE wishlist
-            SET nome = ?, descrizione = ?, link = ?, priorita = ?, pubblico = ?
-            WHERE id = ? AND user_id = ?
-        ''', (nome, descrizione, link, priorita, pubblico, item_id, user_id))
+        if request.method == 'POST':
+            titolo = request.form['titolo']
+            descrizione = request.form.get('descrizione', '')
+            prezzo = request.form.get('prezzo', 0)
+            link = request.form.get('link', '')
+            priorita = request.form.get('priorita', 'media')
+
+            cursor.execute(f'''
+                UPDATE wishlist
+                SET titolo = {placeholder}, descrizione = {placeholder}, prezzo = {placeholder},
+                    link = {placeholder}, priorita = {placeholder}
+                WHERE id = {placeholder} AND user_id = {placeholder}
+            ''', (titolo, descrizione, prezzo, link, priorita, item_id, user_id))
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            flash('Item aggiornato!', 'success')
+            return redirect(url_for('wishlist.index'))
+
+        # GET request
+        cursor.execute(f'''
+            SELECT id, titolo, descrizione, prezzo, link, priorita, acquistato
+            FROM wishlist
+            WHERE id = {placeholder} AND user_id = {placeholder}
+        ''', (item_id, user_id))
+        item = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if not item:
+            flash('Item non trovato', 'warning')
+            return redirect(url_for('wishlist.index'))
+
+        return render_template('wishlist/edit_item.html', item=item)
+
+    except Exception as e:
+        print(f"Errore wishlist edit: {e}")
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+        flash(f'Errore modifica item: {str(e)}', 'danger')
+        return redirect(url_for('wishlist.index'))
+
+@bp.route('/delete/<int:item_id>')
+@login_required
+def delete_item(item_id):
+    """Elimina item dalla wishlist"""
+    conn = get_db()
+    cursor = conn.cursor()
+    user_id = session['user_id']
+
+    try:
+        if USE_POSTGRES:
+            placeholder = '%s'
+        else:
+            placeholder = '?'
+
+        cursor.execute(f'''
+            DELETE FROM wishlist
+            WHERE id = {placeholder} AND user_id = {placeholder}
+        ''', (item_id, user_id))
 
         conn.commit()
         cursor.close()
         conn.close()
 
-        flash('Item aggiornato!', 'success')
+        flash('Item eliminato!', 'success')
         return redirect(url_for('wishlist.index'))
 
-    item = execute_query(conn, '''
-        SELECT id, nome, descrizione, link, priorita, pubblico
-        FROM wishlist
-        WHERE id = ? AND user_id = ?
-    ''', (item_id, user_id), fetch_one=True)
-
-    conn.close()
-
-    if not item:
-        flash('Item non trovato', 'error')
+    except Exception as e:
+        print(f"Errore wishlist delete: {e}")
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+        flash(f'Errore eliminazione item: {str(e)}', 'danger')
         return redirect(url_for('wishlist.index'))
 
-    return render_template('wishlist/edit_item.html', item=item)
-
-@bp.route('/delete/<int:item_id>', methods=['POST'])
+@bp.route('/toggle/<int:item_id>')
 @login_required
-def delete_item(item_id):
-    """Elimina item"""
+def toggle_acquistato(item_id):
+    """Segna come acquistato/non acquistato"""
     conn = get_db()
+    cursor = conn.cursor()
     user_id = session['user_id']
 
-    cursor = execute_query(conn, '''
-        DELETE FROM wishlist
-        WHERE id = ? AND user_id = ?
-    ''', (item_id, user_id))
+    try:
+        if USE_POSTGRES:
+            from psycopg2.extras import RealDictCursor
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            placeholder = '%s'
+        else:
+            placeholder = '?'
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+        cursor.execute(f'''
+            UPDATE wishlist
+            SET acquistato = NOT acquistato
+            WHERE id = {placeholder} AND user_id = {placeholder}
+        ''', (item_id, user_id))
 
-    flash('Item eliminato', 'success')
-    return redirect(url_for('wishlist.index'))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        flash('Stato aggiornato!', 'success')
+        return redirect(url_for('wishlist.index'))
+
+    except Exception as e:
+        print(f"Errore wishlist toggle: {e}")
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+        flash(f'Errore aggiornamento: {str(e)}', 'danger')
+        return redirect(url_for('wishlist.index'))
