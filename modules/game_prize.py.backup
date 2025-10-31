@@ -53,48 +53,7 @@ def get_db():
 @game_prize_password_required
 def admin_welcome():
     """Pagina di benvenuto per l'admin con guida setup"""
-    conn = get_db()
-
-    try:
-        # Carica tutte le sfide con le loro date
-        from app import execute_query
-
-        challenges = execute_query(conn, '''
-            SELECT id, challenge_number, title, description, points,
-                   start_date, end_date, location, instructions
-            FROM game_challenges
-            ORDER BY challenge_number ASC
-        ''', fetch_all=True)
-
-        # Per ogni sfida, carica i suoi indizi
-        challenges_with_clues = []
-        for challenge in challenges:
-            challenge_id = challenge[0]
-
-            clues = execute_query(conn, '''
-                SELECT id, challenge_id, clue_number, clue_text,
-                       clue_points, revealed_date
-                FROM game_clues
-                WHERE challenge_id = ?
-                ORDER BY clue_number ASC
-            ''', (challenge_id,), fetch_all=True)
-
-            challenges_with_clues.append({
-                'challenge': challenge,
-                'clues': clues
-            })
-
-        conn.close()
-        return render_template('game_prize/admin_welcome_new.html',
-                             challenges_with_clues=challenges_with_clues)
-
-    except Exception as e:
-        conn.close()
-        print(f"Errore caricamento admin_welcome: {e}")
-        import traceback
-        traceback.print_exc()
-        return render_template('game_prize/admin_welcome_new.html',
-                             challenges_with_clues=[])
+    return render_template('game_prize/admin_welcome.html')
 
 @bp.route('/dashboard')
 @login_required

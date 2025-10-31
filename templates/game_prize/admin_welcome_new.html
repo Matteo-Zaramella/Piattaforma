@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+
+{% block title %}The Game - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-3 mb-3">🎮 The Game - Admin Panel</h1>
+        <p class="lead">Gestisci il gioco del tuo 25esimo compleanno</p>
+        <p class="text-white">25 Gennaio 2026 - 24 Gennaio 2027</p>
+    </div>
+
+    <!-- Key Info Cards -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-4">
+            <div class="card border-success text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-white">🏆 Premio</h5>
+                    <p class="display-6 text-success fw-bold">€500</p>
+                    <small class="text-white">Per il vincitore finale</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-primary text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-white">👥 Partecipanti</h5>
+                    <p class="display-6 text-primary fw-bold">~100</p>
+                    <small class="text-white">Invitati al gioco</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-warning text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-white">🎯 Sfide Totali</h5>
+                    <p class="display-6 text-warning fw-bold">12</p>
+                    <small class="text-white">Una al mese + indizi weekend</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendario Completo (12 Mesi) -->
+    <div class="card mb-5">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0 text-white">📅 Calendario Completo (12 Mesi)</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-white mb-4">
+                <strong>Orario pubblicazione:</strong> Tutti gli eventi escono <strong>sabato a mezzanotte (00:00)</strong>
+            </p>
+
+            {% if challenges_with_clues %}
+                <div class="accordion" id="challengesAccordion">
+                    {% for item in challenges_with_clues %}
+                        {% set challenge = item.challenge %}
+                        {% set clues = item.clues %}
+                        {% set challenge_id = challenge[0] %}
+                        {% set challenge_number = challenge[1] %}
+                        {% set challenge_title = challenge[2] %}
+                        {% set challenge_description = challenge[3] %}
+                        {% set challenge_points = challenge[4] %}
+                        {% set start_date = challenge[5] %}
+                        {% set end_date = challenge[6] %}
+
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header" id="heading{{ challenge_id }}">
+                                <button class="accordion-button collapsed challenge-header-{{ (challenge_number - 1) % 6 }}" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#collapse{{ challenge_id }}"
+                                        aria-expanded="false" aria-controls="collapse{{ challenge_id }}">
+                                    <div class="d-flex w-100 justify-content-between align-items-center pe-3">
+                                        <div>
+                                            <span class="badge bg-dark me-2" style="font-size: 1.1rem;">Sfida {{ challenge_number }}</span>
+                                            <strong class="text-white">{{ challenge_title }}</strong>
+                                            {% if start_date %}
+                                                <span class="ms-3 text-white" style="font-size: 0.95rem;">
+                                                    📅 {{ start_date.strftime('%d/%m/%Y') if start_date.strftime else start_date[:10] }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-success" style="font-size: 0.95rem;">{{ challenge_points }} punti</span>
+                                            <button class="btn btn-sm btn-light ms-2" onclick="showChallengeOverlay({{ challenge_id }}, '{{ challenge_title }}', '{{ challenge_description }}', '{{ start_date }}', '{{ end_date }}')">
+                                                📋 Dettagli
+                                            </button>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ challenge_id }}" class="accordion-collapse collapse"
+                                 aria-labelledby="heading{{ challenge_id }}" data-bs-parent="#challengesAccordion">
+                                <div class="accordion-body bg-dark">
+                                    {% if clues %}
+                                        <h6 class="text-white mb-3">💡 Indizi ({{ clues|length }})</h6>
+                                        <div class="list-group">
+                                            {% for clue in clues %}
+                                                {% set clue_id = clue[0] %}
+                                                {% set clue_number = clue[2] %}
+                                                {% set clue_text = clue[3] %}
+                                                {% set clue_points = clue[4] %}
+                                                {% set revealed_date = clue[5] %}
+
+                                                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-secondary text-white border-0 mb-2">
+                                                    <div>
+                                                        <span class="badge bg-primary me-2">Indizio {{ clue_number }}</span>
+                                                        {{ clue_text[:50] }}...
+                                                        {% if revealed_date %}
+                                                            <small class="text-white-50 ms-2">
+                                                                📅 {{ revealed_date.strftime('%d/%m/%Y') if revealed_date.strftime else revealed_date[:10] }}
+                                                            </small>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <span class="badge bg-info me-2">{{ clue_points }} punti</span>
+                                                        <button class="btn btn-sm btn-outline-light" onclick="showClueOverlay({{ clue_id }}, {{ clue_number }}, '{{ clue_text }}', '{{ revealed_date }}')">
+                                                            👁️ Visualizza
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning text-dark">
+                                            Nessun indizio creato per questa sfida.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Nessuna sfida trovata nel database. Assicurati di aver applicato la migration.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <a href="{{ url_for('game_prize.admin_dashboard') }}" class="btn btn-primary btn-lg w-100">
+                📊 Vai al Dashboard Admin
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{{ url_for('game_prize.admin_setup') }}" class="btn btn-secondary btn-lg w-100">
+                ⚙️ Configura Gioco
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Overlay per Sfida -->
+<div class="modal fade" id="challengeOverlay" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white" id="challengeOverlayTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="challengeOverlayBody">
+                <!-- Contenuto dinamico -->
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overlay per Indizio -->
+<div class="modal fade" id="clueOverlay" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white" id="clueOverlayTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="clueOverlayBody">
+                <!-- Contenuto dinamico -->
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Gradienti colorati per le sfide */
+    .challenge-header-0 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+    .challenge-header-1 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important; }
+    .challenge-header-2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important; }
+    .challenge-header-3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important; }
+    .challenge-header-4 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important; }
+    .challenge-header-5 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%) !important; }
+
+    .accordion-button {
+        font-size: 1.1rem;
+        padding: 1.2rem 1.5rem;
+        border: none !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .accordion-button:focus {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        filter: brightness(0) invert(1);
+    }
+
+    .accordion-item {
+        border-radius: 10px !important;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .card {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+    }
+
+    .card-title {
+        color: #ffffff !important;
+    }
+
+    .text-muted {
+        color: #aaa !important;
+    }
+
+    body {
+        background-color: #0d0d0d;
+        color: #ffffff;
+    }
+</style>
+
+<script>
+function showChallengeOverlay(challengeId, title, description, startDate, endDate) {
+    const modal = new bootstrap.Modal(document.getElementById('challengeOverlay'));
+    document.getElementById('challengeOverlayTitle').textContent = title;
+
+    // Controlla se siamo dopo le 23:59 della data di fine
+    const now = new Date();
+    const endDateTime = new Date(endDate);
+    endDateTime.setHours(23, 59, 59);
+
+    let bodyHtml = '';
+
+    if (now > endDateTime) {
+        // Mostra classifica
+        bodyHtml = `
+            <div class="alert alert-info">
+                <h6>🏆 Classifica Sfida ${title}</h6>
+                <p>La sfida è terminata. Caricamento classifica in corso...</p>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <p><small>Funzionalità in fase di sviluppo: qui verrà mostrata la classifica dei giocatori per questa sfida.</small></p>
+        `;
+    } else {
+        // Mostra descrizione
+        bodyHtml = `
+            <h6 class="text-white">📝 Descrizione</h6>
+            <p class="text-white">${description || 'Nessuna descrizione disponibile'}</p>
+            <hr class="border-secondary">
+            <h6 class="text-white">📅 Date</h6>
+            <p class="text-white">
+                <strong>Inizio:</strong> ${new Date(startDate).toLocaleDateString('it-IT')}<br>
+                <strong>Fine:</strong> ${new Date(endDate).toLocaleDateString('it-IT')}
+            </p>
+            <div class="alert alert-warning text-dark mt-3">
+                <strong>📌 Nota:</strong> La classifica sarà disponibile dopo le 23:59 del ${new Date(endDate).toLocaleDateString('it-IT')}
+            </div>
+        `;
+    }
+
+    document.getElementById('challengeOverlayBody').innerHTML = bodyHtml;
+    modal.show();
+}
+
+function showClueOverlay(clueId, clueNumber, clueText, revealedDate) {
+    const modal = new bootstrap.Modal(document.getElementById('clueOverlay'));
+    document.getElementById('clueOverlayTitle').textContent = `💡 Indizio ${clueNumber}`;
+
+    // Controlla se siamo dopo le 23:59 della data di rilascio
+    const now = new Date();
+    const revealDateTime = new Date(revealedDate);
+    revealDateTime.setHours(23, 59, 59);
+
+    let bodyHtml = '';
+
+    if (now > revealDateTime) {
+        // Mostra classifica indizio
+        bodyHtml = `
+            <h6 class="text-white">📋 Testo Indizio</h6>
+            <p class="text-white">${clueText}</p>
+            <hr class="border-secondary">
+            <div class="alert alert-info">
+                <h6>🏆 Classifica Indizio</h6>
+                <p>Caricamento classifica in corso...</p>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <p><small>Funzionalità in fase di sviluppo: qui verrà mostrata la classifica dei giocatori per questo indizio.</small></p>
+        `;
+    } else {
+        // Mostra testo indizio
+        bodyHtml = `
+            <h6 class="text-white">📋 Testo Indizio</h6>
+            <p class="text-white">${clueText}</p>
+            <hr class="border-secondary">
+            <h6 class="text-white">📅 Data Rilascio</h6>
+            <p class="text-white">${new Date(revealedDate).toLocaleDateString('it-IT')}</p>
+            <div class="alert alert-warning text-dark mt-3">
+                <strong>📌 Nota:</strong> La classifica sarà disponibile dopo le 23:59 del ${new Date(revealedDate).toLocaleDateString('it-IT')}
+            </div>
+        `;
+    }
+
+    document.getElementById('clueOverlayBody').innerHTML = bodyHtml;
+    modal.show();
+}
+</script>
+{% endblock %}
