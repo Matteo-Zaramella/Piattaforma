@@ -54,42 +54,71 @@ def get_db():
 def admin_welcome():
     """Pagina di benvenuto per l'admin con guida setup"""
     conn = get_db()
+    cursor = conn.cursor()
 
     try:
         # Carica tutte le sfide con le loro date
-        from app import execute_query
+        if USE_POSTGRES:
+            from psycopg2.extras import RealDictCursor
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            placeholder = '%s'
+        else:
+            placeholder = '?'
 
-        challenges = execute_query(conn, '''
+        cursor.execute('''
             SELECT id, challenge_number, title, description, points,
                    start_date, end_date, location, instructions
             FROM game_challenges
             ORDER BY challenge_number ASC
-        ''', fetch_all=True)
+        ''')
+        challenges = cursor.fetchall()
 
         # Per ogni sfida, carica i suoi indizi
         challenges_with_clues = []
         for challenge in challenges:
-            challenge_id = challenge[0]
+            if USE_POSTGRES:
+                challenge_id = challenge['id']
+            else:
+                challenge_id = challenge[0]
 
-            clues = execute_query(conn, '''
+            cursor.execute(f'''
                 SELECT id, challenge_id, clue_number, clue_text,
                        clue_points, revealed_date
                 FROM game_clues
-                WHERE challenge_id = ?
+                WHERE challenge_id = {placeholder}
                 ORDER BY clue_number ASC
-            ''', (challenge_id,), fetch_all=True)
+            ''', (challenge_id,))
+            clues = cursor.fetchall()
+
+            # Converti in tuple per compatibilità con template
+            if USE_POSTGRES:
+                challenge_tuple = (challenge['id'], challenge['challenge_number'],
+                                 challenge['title'], challenge['description'],
+                                 challenge['points'], challenge['start_date'],
+                                 challenge['end_date'], challenge['location'],
+                                 challenge['instructions'])
+                clues_list = [(c['id'], c['challenge_id'], c['clue_number'],
+                              c['clue_text'], c['clue_points'], c['revealed_date'])
+                             for c in clues]
+            else:
+                challenge_tuple = challenge
+                clues_list = clues
 
             challenges_with_clues.append({
-                'challenge': challenge,
-                'clues': clues
+                'challenge': challenge_tuple,
+                'clues': clues_list
             })
 
+        cursor.close()
         conn.close()
         return render_template('game_prize/admin_welcome_new.html',
                              challenges_with_clues=challenges_with_clues)
 
     except Exception as e:
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
         print(f"Errore caricamento admin_welcome: {e}")
         import traceback
         traceback.print_exc()
