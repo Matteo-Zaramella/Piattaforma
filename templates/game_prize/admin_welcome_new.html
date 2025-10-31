@@ -92,8 +92,8 @@
                             <div id="collapse{{ challenge_id }}" class="accordion-collapse collapse"
                                  aria-labelledby="heading{{ challenge_id }}" data-bs-parent="#challengesAccordion">
                                 <div class="accordion-body bg-dark">
+                                    <h6 class="text-white mb-3">💡 Indizi</h6>
                                     {% if clues %}
-                                        <h6 class="text-white mb-3">💡 Indizi ({{ clues|length }})</h6>
                                         <div class="list-group">
                                             {% for clue in clues %}
                                                 {% set clue_id = clue[0] %}
