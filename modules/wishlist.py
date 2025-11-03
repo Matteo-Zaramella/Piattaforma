@@ -177,7 +177,7 @@ def edit_item(item_id):
         flash(f'Errore modifica item: {str(e)}', 'danger')
         return redirect(url_for('wishlist.index'))
 
-@bp.route('/delete/<int:item_id>')
+@bp.route('/delete/<int:item_id>', methods=['GET', 'POST'])
 @login_required
 def delete_item(item_id):
     """Elimina item dalla wishlist"""
