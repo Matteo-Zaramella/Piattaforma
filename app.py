@@ -40,15 +40,11 @@ else:
 from modules.fitness import bp as fitness_bp
 from modules.settings import bp as settings_bp
 from modules.wishlist import bp as wishlist_bp
-from modules.location import bp as location_bp
-from modules.appointments import bp as appointments_bp
 from modules.game_prize import bp as game_prize_bp
 
 app.register_blueprint(fitness_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(wishlist_bp)
-app.register_blueprint(location_bp)
-app.register_blueprint(appointments_bp)
 app.register_blueprint(game_prize_bp)
 
 # Password per Dev Tools (solo per Claude/manutenzione)
