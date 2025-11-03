@@ -38,7 +38,7 @@ def index():
             placeholder = '?'
 
         cursor.execute(f'''
-            SELECT id, titolo, descrizione, prezzo, link, priorita, acquistato, created_at
+            SELECT id, nome, descrizione, link, priorita, pubblico, created_at
             FROM wishlist
             WHERE user_id = {placeholder}
             ORDER BY
@@ -69,11 +69,11 @@ def index():
 def add_item():
     """Aggiungi nuovo item alla wishlist"""
     if request.method == 'POST':
-        titolo = request.form['titolo']
+        nome = request.form['nome']
         descrizione = request.form.get('descrizione', '')
-        prezzo = request.form.get('prezzo', 0)
         link = request.form.get('link', '')
         priorita = request.form.get('priorita', 'media')
+        pubblico = 'pubblico' in request.form  # Checkbox: True se presente, False altrimenti
 
         conn = get_db()
         cursor = conn.cursor()
@@ -82,13 +82,15 @@ def add_item():
         try:
             if USE_POSTGRES:
                 placeholder = '%s'
+                pubblico_value = pubblico
             else:
                 placeholder = '?'
+                pubblico_value = 1 if pubblico else 0
 
             cursor.execute(f'''
-                INSERT INTO wishlist (user_id, titolo, descrizione, prezzo, link, priorita, acquistato)
-                VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
-            ''', (user_id, titolo, descrizione, prezzo, link, priorita, False))
+                INSERT INTO wishlist (user_id, nome, descrizione, link, priorita, pubblico)
+                VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
+            ''', (user_id, nome, descrizione, link, priorita, pubblico_value))
 
             conn.commit()
             cursor.close()
@@ -124,18 +126,23 @@ def edit_item(item_id):
             placeholder = '?'
 
         if request.method == 'POST':
-            titolo = request.form['titolo']
+            nome = request.form['nome']
             descrizione = request.form.get('descrizione', '')
-            prezzo = request.form.get('prezzo', 0)
             link = request.form.get('link', '')
             priorita = request.form.get('priorita', 'media')
+            pubblico = 'pubblico' in request.form
+
+            if USE_POSTGRES:
+                pubblico_value = pubblico
+            else:
+                pubblico_value = 1 if pubblico else 0
 
             cursor.execute(f'''
                 UPDATE wishlist
-                SET titolo = {placeholder}, descrizione = {placeholder}, prezzo = {placeholder},
-                    link = {placeholder}, priorita = {placeholder}
+                SET nome = {placeholder}, descrizione = {placeholder}, link = {placeholder},
+                    priorita = {placeholder}, pubblico = {placeholder}
                 WHERE id = {placeholder} AND user_id = {placeholder}
-            ''', (titolo, descrizione, prezzo, link, priorita, item_id, user_id))
+            ''', (nome, descrizione, link, priorita, pubblico_value, item_id, user_id))
 
             conn.commit()
             cursor.close()
@@ -146,7 +153,7 @@ def edit_item(item_id):
 
         # GET request
         cursor.execute(f'''
-            SELECT id, titolo, descrizione, prezzo, link, priorita, acquistato
+            SELECT id, nome, descrizione, link, priorita, pubblico
             FROM wishlist
             WHERE id = {placeholder} AND user_id = {placeholder}
         ''', (item_id, user_id))
@@ -207,8 +214,8 @@ def delete_item(item_id):
 
 @bp.route('/toggle/<int:item_id>')
 @login_required
-def toggle_acquistato(item_id):
-    """Segna come acquistato/non acquistato"""
+def toggle_pubblico(item_id):
+    """Cambia visibilità pubblica dell'item"""
     conn = get_db()
     cursor = conn.cursor()
     user_id = session['user_id']
@@ -223,7 +230,7 @@ def toggle_acquistato(item_id):
 
         cursor.execute(f'''
             UPDATE wishlist
-            SET acquistato = NOT acquistato
+            SET pubblico = NOT pubblico
             WHERE id = {placeholder} AND user_id = {placeholder}
         ''', (item_id, user_id))
 
@@ -231,7 +238,7 @@ def toggle_acquistato(item_id):
         cursor.close()
         conn.close()
 
-        flash('Stato aggiornato!', 'success')
+        flash('Visibilità aggiornata!', 'success')
         return redirect(url_for('wishlist.index'))
 
     except Exception as e:
